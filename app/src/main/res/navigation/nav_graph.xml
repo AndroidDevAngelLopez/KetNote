@@ -3,33 +3,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/onBoardingSetUp">
+    app:startDestination="@id/splashScreen">
 
-    <fragment
-        android:id="@+id/firstOnBoarding"
-        android:name="com.complexsoft.ketnote.ui.screen.onboarding.FirstOnBoarding"
-        android:label="FirstOnBoarding"
-        tools:layout="@layout/first_onboarding_layout">
-        <action
-            android:id="@+id/action_firstOnBoarding_to_secondOnBoarding"
-            app:destination="@id/secondOnBoarding" />
-    </fragment>
-    <fragment
-        android:id="@+id/secondOnBoarding"
-        android:name="com.complexsoft.ketnote.ui.screen.onboarding.SecondOnBoarding"
-        android:label="SecondOnBoarding"
-        tools:layout="@layout/second_onboarding_layout">
-        <action
-            android:id="@+id/action_secondOnBoarding_to_thirdOnBoarding"
-            app:destination="@id/thirdOnBoarding" />
-    </fragment>
-    <fragment
-        android:id="@+id/thirdOnBoarding"
-        android:name="com.complexsoft.ketnote.ui.screen.onboarding.ThirdOnBoarding"
-        android:label="ThirdOnBoarding"
-        tools:layout="@layout/third_onboarding_layout"/>
     <fragment
         android:id="@+id/onBoardingSetUp"
         android:name="com.complexsoft.ketnote.ui.screen.onboarding.OnBoardingSetUp"
-        android:label="OnBoardingSetUp" />
+        android:label="OnBoardingSetUp"
+        tools:layout="@layout/setup_onboarding_layout">
+        <action
+            android:id="@+id/action_onBoardingSetUp_to_loginScreen"
+            app:destination="@id/loginScreen"
+            app:popUpTo="@id/onBoardingSetUp"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.login.LoginScreen"
+        android:label="LoginScreen"
+        tools:layout="@layout/login_screen_layout">
+        <action
+            android:id="@+id/action_loginScreen_to_homeScreen"
+            app:destination="@id/homeScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.home.HomeScreen"
+        android:label="HomeScreen"
+        tools:layout="@layout/home_screen_layout"/>
+    <fragment
+        android:id="@+id/splashScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.splash.SplashScreen"
+        android:label="SplashScreen"
+        tools:layout="@layout/splash_screen_layout">
+        <action
+            android:id="@+id/action_splashScreen_to_onBoardingSetUp"
+            app:destination="@id/onBoardingSetUp"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/splashScreen"
+            />
+        <action
+            android:id="@+id/action_splashScreen_to_loginScreen"
+            app:destination="@id/loginScreen"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/splashScreen"/>
+    </fragment>
+    <navigation android:id="@+id/navigation"
+        app:startDestination="@id/firstOnBoarding">
+        <fragment
+            android:id="@+id/firstOnBoarding"
+            android:name="com.complexsoft.ketnote.ui.screen.onboarding.FirstOnBoarding"
+            android:label="FirstOnBoarding"
+            tools:layout="@layout/first_onboarding_layout" />
+        <fragment
+            android:id="@+id/secondOnBoarding"
+            android:name="com.complexsoft.ketnote.ui.screen.onboarding.SecondOnBoarding"
+            android:label="SecondOnBoarding"
+            tools:layout="@layout/second_onboarding_layout" />
+        <fragment
+            android:id="@+id/thirdOnBoarding"
+            android:name="com.complexsoft.ketnote.ui.screen.onboarding.ThirdOnBoarding"
+            android:label="ThirdOnBoarding"
+            tools:layout="@layout/third_onboarding_layout" />
+    </navigation>
 </navigation>
