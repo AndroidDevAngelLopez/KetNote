@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">KetNote</string>
+    <string name="firstimage">firstimage</string>
+    <string name="bienvenido_a_ketnote">Bienvenido a KetNote!</string>
+    <string name="first_onboarding_subtitle">Aqui podras guardar todas tus notas del dia a dia y consultarlas en cualquier momento en cualquier lugar</string>
+    <string name="notas_con_imagenes">Notas con Imagenes!</string>
+    <string name="second_onboarding_subtitle">Enriquece tus notas usando las mejores imagenes de tu galeria o caputura momentos memorables desde tu camara.</string>
+    <string name="inicia_sesion_para_continuar">Inicia sesion para continuar...</string>
+    <string name="third_onboarding_subtitle">Usa tu cuenta de Google para acceder a la applicacion solo te llevara unos segundos para comenzar!</string>
+    <string name="welcome_back">Bienvenido de regreso!</string>
+    <string name="please_sign_in">Porfavor incicia sesion para continuar...</string>
+    <string name="inicia_sesion_con_google">Inicia sesion con Google</string>
+    <string name="welcome_to_home_screen">Welcome to HOME screen!</string>
+    <string name="onBoardingTextButton">Siguiente</string>
 </resources>

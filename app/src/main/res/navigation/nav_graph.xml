@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onBoardingSetUp">
+
+    <fragment
+        android:id="@+id/firstOnBoarding"
+        android:name="com.complexsoft.ketnote.ui.screen.onboarding.FirstOnBoarding"
+        android:label="FirstOnBoarding"
+        tools:layout="@layout/first_onboarding_layout">
+        <action
+            android:id="@+id/action_firstOnBoarding_to_secondOnBoarding"
+            app:destination="@id/secondOnBoarding" />
+    </fragment>
+    <fragment
+        android:id="@+id/secondOnBoarding"
+        android:name="com.complexsoft.ketnote.ui.screen.onboarding.SecondOnBoarding"
+        android:label="SecondOnBoarding"
+        tools:layout="@layout/second_onboarding_layout">
+        <action
+            android:id="@+id/action_secondOnBoarding_to_thirdOnBoarding"
+            app:destination="@id/thirdOnBoarding" />
+    </fragment>
+    <fragment
+        android:id="@+id/thirdOnBoarding"
+        android:name="com.complexsoft.ketnote.ui.screen.onboarding.ThirdOnBoarding"
+        android:label="ThirdOnBoarding"
+        tools:layout="@layout/third_onboarding_layout"/>
+    <fragment
+        android:id="@+id/onBoardingSetUp"
+        android:name="com.complexsoft.ketnote.ui.screen.onboarding.OnBoardingSetUp"
+        android:label="OnBoardingSetUp" />
+</navigation>
