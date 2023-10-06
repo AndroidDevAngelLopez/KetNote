@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import com.complexsoft.ketnote.R
+import com.complexsoft.ketnote.ui.screen.login.User
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -33,14 +34,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userLoggedInComplete.collectLatest {
+                    if (it) {
+                        onUserLogged()
+                        saveUserSettings(viewModel.userToSave)
+                    }
+                }
+            }
+        }
     }
 
 
-    suspend fun onBoardingComplete() {
+    suspend fun saveUserSettings(userSettings: User) {
+        dataStore.edit { preferences ->
+            preferences[getUserDataToken] = userSettings.idToken
+            preferences[getUserDataUserName] = userSettings.username
+            preferences[getUserDataProfilePic] = userSettings.userImage
+        }
+    }
+
+    suspend fun onUserLogged() {
         this.dataStore.edit { settings ->
             val currentValue = settings[isOnBoardingCompleted] ?: false
             settings[isOnBoardingCompleted] = !currentValue
+        }
+    }
+
+    suspend fun onBoardingComplete() {
+        this.dataStore.edit { settings ->
+            val currentValue = settings[isUserLogged] ?: false
+            settings[isUserLogged] = !currentValue
         }
     }
 

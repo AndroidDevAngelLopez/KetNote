@@ -11,7 +11,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SetupOnboardingLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainViewModel
-import kotlinx.coroutines.coroutineScope
 
 class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
 
