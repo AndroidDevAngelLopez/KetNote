@@ -12,4 +12,9 @@
     <string name="inicia_sesion_con_google">Inicia sesion con Google</string>
     <string name="welcome_to_home_screen">Welcome to HOME screen!</string>
     <string name="onBoardingTextButton">Siguiente</string>
+    <string name="options_subheader_title">Opciones</string>
+    <string name="signout_title">Cerrar Sesion</string>
+    <string name="delete_title">Borrar todas las notas</string>
+    <string name="page_title">KetNote</string>
+    <string name="search">Buscar</string>
 </resources>

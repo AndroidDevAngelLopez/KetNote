@@ -40,7 +40,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userSettingsFlow?.collectLatest {
-                    binding.materialTextView.text = it.username + it.userImage
+                    //binding.materialTextView.text = it.username + it.userImage
                 }
             }
         }
