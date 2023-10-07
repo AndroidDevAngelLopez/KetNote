@@ -7,26 +7,26 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".ui.screen.MainActivity"
-   tools:openDrawer="start">
+    tools:openDrawer="start">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:layout_marginTop="25dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp">
+
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
-                app:title="@string/page_title"
                 app:menu="@menu/top_app_bar"
-                app:titleCentered="true"
-                app:navigationIcon="@drawable/baseline_menu_24" />
+                app:navigationIcon="@drawable/baseline_menu_24"
+                app:title="@string/page_title"
+                app:titleCentered="true" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,19 +35,19 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
+            android:layout_marginBottom="40dp"
             app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph"
-            android:layout_marginBottom="50dp"/>
+            app:navGraph="@navigation/nav_graph" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/main_navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/navigation_menu"
         android:padding="12dp"
-        app:headerLayout="@layout/navigation_drawer_header_layout"/>
+        app:headerLayout="@layout/navigation_drawer_header_layout"
+        app:menu="@menu/navigation_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
 

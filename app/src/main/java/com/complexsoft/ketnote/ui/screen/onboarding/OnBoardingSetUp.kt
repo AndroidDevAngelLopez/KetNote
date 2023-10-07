@@ -6,11 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SetupOnboardingLayoutBinding
-import com.complexsoft.ketnote.ui.screen.MainViewModel
+import com.complexsoft.ketnote.ui.screen.login.isLoggedCompleted
+import com.complexsoft.ketnote.utils.Constants
+import io.realm.kotlin.mongodb.App
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
 
@@ -22,7 +31,7 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = SetupOnboardingLayoutBinding.inflate(layoutInflater)
-        val viewModel by activityViewModels<MainViewModel>()
+        val viewModel by activityViewModels<OnBoardingViewModel>()
         onBoardingAdapter = OnBoardingAdapter(this)
         binding.onboardingPager.adapter = onBoardingAdapter
         binding.onboardingPager.registerOnPageChangeCallback(object :
@@ -47,14 +56,35 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
                     2 -> {
                         binding.onboardingButton.text = "Comenzar!"
                         binding.onboardingButton.setOnClickListener {
-                            viewModel.onBoardingComplete()
-                            findNavController().navigate(R.id.action_onBoardingSetUp_to_loginScreen)
+                            context?.let { it1 -> viewModel.onBoardingComplete(it1) }
                         }
                     }
                 }
             }
         })
-
+        val isOnBoardingCompleted: Flow<Boolean>? = context?.dataStore?.data?.map { preferences ->
+            preferences[isOnBoardingCompleted] ?: false
+        }
+        val isLoggedCompleted: Flow<Boolean>? = context?.dataStore?.data?.map { preferences ->
+            preferences[isLoggedCompleted] ?: false
+        }
+        val app = App.Companion.create(Constants.APP_ID)
+        val user = app.currentUser
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                isOnBoardingCompleted?.collectLatest {
+                    if (it) {
+                        isLoggedCompleted?.collectLatest { islogged ->
+                            if (islogged && user != null) {
+                                findNavController().navigate(R.id.action_onBoardingSetUp_to_homeScreen)
+                            } else {
+                                findNavController().navigate(R.id.action_onBoardingSetUp_to_loginScreen)
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return binding.root
     }
 

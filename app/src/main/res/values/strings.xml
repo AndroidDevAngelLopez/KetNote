@@ -17,4 +17,10 @@
     <string name="delete_title">Borrar todas las notas</string>
     <string name="page_title">KetNote</string>
     <string name="search">Buscar</string>
+    <string name="title">Write a title for the note...</string>
+    <string name="text">Enter text for the note...</string>
+    <string name="submit_note">Send Note</string>
+    <string name="app_title">My First Note</string>
+    <string name="app_date">october 6 2023</string>
+    <string name="app_text_content">Show a dialog\n\nWhen you want to show your dialog, create an instance of your DialogFragment and call show(), passing the FragmentManager and a tag name for the dialog fragment.\n\nYou can get the FragmentManager by calling getSupportFragmentManager() from the FragmentActivity or by calling getParentFragmentManager() from a Fragment. See the following for an example:</string>
 </resources>

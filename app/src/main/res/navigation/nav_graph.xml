@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/splashScreen">
+    app:startDestination="@id/onBoardingSetUp">
 
     <fragment
         android:id="@+id/onBoardingSetUp"
@@ -15,6 +15,11 @@
             app:destination="@id/loginScreen"
             app:popUpTo="@id/onBoardingSetUp"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_onBoardingSetUp_to_homeScreen"
+            app:destination="@id/homeScreen"
+            app:popUpTo="@id/onBoardingSetUp"
+            app:popUpToInclusive="true"/>
 
     </fragment>
     <fragment
@@ -25,52 +30,25 @@
         <action
             android:id="@+id/action_loginScreen_to_homeScreen"
             app:destination="@id/homeScreen"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/loginScreen"/>
+            app:popUpTo="@id/loginScreen"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/homeScreen"
         android:name="com.complexsoft.ketnote.ui.screen.home.HomeScreen"
         android:label="HomeScreen"
-        tools:layout="@layout/home_screen_layout"/>
-    <fragment
-        android:id="@+id/splashScreen"
-        android:name="com.complexsoft.ketnote.ui.screen.splash.SplashScreen"
-        android:label="SplashScreen"
-        tools:layout="@layout/splash_screen_layout">
+        tools:layout="@layout/home_screen_layout">
         <action
-            android:id="@+id/action_splashScreen_to_onBoardingSetUp"
-            app:destination="@id/onBoardingSetUp"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/splashScreen"
-            />
-        <action
-            android:id="@+id/action_splashScreen_to_loginScreen"
-            app:destination="@id/loginScreen"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/splashScreen"/>
-        <action
-            android:id="@+id/action_splashScreen_to_homeScreen"
-            app:destination="@id/homeScreen"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/splashScreen"/>
+            android:id="@+id/action_homeScreen_to_createNoteScreen"
+            app:destination="@id/createNoteScreen" />
     </fragment>
-    <navigation android:id="@+id/navigation"
-        app:startDestination="@id/firstOnBoarding">
-        <fragment
-            android:id="@+id/firstOnBoarding"
-            android:name="com.complexsoft.ketnote.ui.screen.onboarding.FirstOnBoarding"
-            android:label="FirstOnBoarding"
-            tools:layout="@layout/first_onboarding_layout" />
-        <fragment
-            android:id="@+id/secondOnBoarding"
-            android:name="com.complexsoft.ketnote.ui.screen.onboarding.SecondOnBoarding"
-            android:label="SecondOnBoarding"
-            tools:layout="@layout/second_onboarding_layout" />
-        <fragment
-            android:id="@+id/thirdOnBoarding"
-            android:name="com.complexsoft.ketnote.ui.screen.onboarding.ThirdOnBoarding"
-            android:label="ThirdOnBoarding"
-            tools:layout="@layout/third_onboarding_layout" />
-    </navigation>
+    <dialog
+        android:id="@+id/createNoteScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.home.CreateNoteScreen"
+        android:label="CreateNoteScreen"
+        tools:layout="@layout/create_note_dialog_layout">
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </dialog>
 </navigation>

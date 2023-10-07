@@ -5,6 +5,8 @@
         android:id="@+id/main_item"
         android:title="@string/options_subheader_title">
         <menu>
+            <group
+                android:checkableBehavior="single">
             <item
                 android:id="@+id/delete_all_item"
                 android:icon="@android:drawable/ic_delete"
@@ -15,6 +17,7 @@
                 android:icon="@drawable/google"
                 android:title="@string/signout_title"
                 android:checkable="true"/>
+            </group>
         </menu>
     </item>
 

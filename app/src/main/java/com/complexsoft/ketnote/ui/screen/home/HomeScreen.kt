@@ -4,45 +4,92 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
-import com.complexsoft.ketnote.ui.screen.MainViewModel
-import com.complexsoft.ketnote.ui.screen.dataStore
-import com.complexsoft.ketnote.ui.screen.getUserDataProfilePic
-import com.complexsoft.ketnote.ui.screen.getUserDataToken
-import com.complexsoft.ketnote.ui.screen.getUserDataUserName
-import com.complexsoft.ketnote.ui.screen.login.User
-import kotlinx.coroutines.flow.Flow
+import com.complexsoft.ketnote.ui.screen.MainActivity
+import com.complexsoft.ketnote.ui.screen.home.adapters.NoteAdapter
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
     private lateinit var binding: HomeScreenLayoutBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = HomeScreenLayoutBinding.inflate(layoutInflater)
-        val viewModel by activityViewModels<MainViewModel>()
-        val userSettingsFlow: Flow<User>? =
-            activity?.applicationContext?.dataStore?.data?.map { preferences ->
-                val userTokenId = preferences[getUserDataToken] ?: ""
-                val username = preferences[getUserDataUserName] ?: ""
-                val userpic = preferences[getUserDataProfilePic] ?: ""
-                User(userTokenId, username, userpic)
+        val viewModel by viewModels<HomeScreenViewModel>()
+        // db password Y282lAEZODVckp3j
+        val notesAdapter = NoteAdapter(emptyList()) {
+            val action =
+                HomeScreenDirections.actionHomeScreenToCreateNoteScreen(it._id.toHexString())
+            findNavController().navigate(action)
+        }
+
+        val activity = requireActivity() as MainActivity
+
+        activity.binding.topAppBar.setNavigationOnClickListener {
+            activity.binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+            if (menuItem.itemId == R.id.delete_all_item) {
+                Toast.makeText(context, "deleted all clicked", Toast.LENGTH_SHORT).show()
+                viewModel.deleteAllNotes()
+                menuItem.isCheckable = false
             }
+//            if (menuItem.itemId == R.id.signout_item) {
+//                Toast.makeText(context, "siginout clicked", Toast.LENGTH_SHORT).show()
+//                viewModel.signOutWithMongoAtlas()
+//                findNavController().popBackStack()
+//                menuItem.isCheckable = false
+//            }
+            activity.binding.drawerLayout.close()
+            true
+        }
+
+        activity.binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search -> {
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        binding.createNoteButton.setOnClickListener {
+            val action = HomeScreenDirections.actionHomeScreenToCreateNoteScreen("")
+            findNavController().navigate(action)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userSettingsFlow?.collectLatest {
-                    //binding.materialTextView.text = it.username + it.userImage
+                viewModel.notesFlow.collectLatest { state ->
+                    when (state) {
+                        is HomeScreenViewModel.NotesUiState.Success -> {
+                            notesAdapter.updateList(state.notes)
+                        }
+
+                        else -> {}
+                    }
                 }
             }
+        }
+
+        binding.homeRecycler.apply {
+            layoutManager = LinearLayoutManager(this@HomeScreen.context)
+            adapter = notesAdapter
         }
         return binding.root
     }
