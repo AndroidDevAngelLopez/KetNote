@@ -9,13 +9,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 
 class HomeScreenViewModel : ViewModel() {
 
     private val _notesFlow = MutableStateFlow(NotesUiState.Success(emptyList()))
     val notesFlow: StateFlow<NotesUiState> = _notesFlow
+
+
+    private val _searchedNotesFlow = MutableStateFlow(NotesUiState.Success(emptyList()))
+    val searchedNotesFlow: StateFlow<NotesUiState> = _searchedNotesFlow
 
     sealed class NotesUiState {
         data class Success(val notes: List<Note>) : NotesUiState()
@@ -29,8 +32,16 @@ class HomeScreenViewModel : ViewModel() {
     }
 
 
-    fun signOutWithMongoAtlas() {
-        MongoDB.signOutWithMongoAtlas()
+    fun searchNotesByTitle(title: String) {
+        viewModelScope.launch {
+            MongoDB.searchNotesByTitle(title).collectLatest {
+                _searchedNotesFlow.value = NotesUiState.Success(it)
+            }
+        }
+    }
+
+    fun deleteNoteById(noteId: ObjectId) {
+        viewModelScope.launch { MongoDB.deleteNoteById(noteId) }
     }
 
     private suspend fun getAllNotes() {
@@ -39,7 +50,7 @@ class HomeScreenViewModel : ViewModel() {
         }
     }
 
-    fun getNoteById(noteId: BsonObjectId): Note? {
+    fun getNoteById(noteId: ObjectId): Note? {
         return MongoDB.getNoteById(noteId)
     }
 

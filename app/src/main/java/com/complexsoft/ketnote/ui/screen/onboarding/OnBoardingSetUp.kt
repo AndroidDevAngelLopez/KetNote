@@ -12,10 +12,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.complexsoft.ketnote.R
+import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.databinding.SetupOnboardingLayoutBinding
 import com.complexsoft.ketnote.ui.screen.login.isLoggedCompleted
-import com.complexsoft.ketnote.utils.Constants
-import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -68,17 +67,21 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
         val isLoggedCompleted: Flow<Boolean>? = context?.dataStore?.data?.map { preferences ->
             preferences[isLoggedCompleted] ?: false
         }
-        val app = App.Companion.create(Constants.APP_ID)
-        val user = app.currentUser
+
+        val user = MongoDBAPP.user?.loggedIn
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 isOnBoardingCompleted?.collectLatest {
                     if (it) {
                         isLoggedCompleted?.collectLatest { islogged ->
-                            if (islogged && user != null) {
+                            if (islogged && user == true) {
                                 findNavController().navigate(R.id.action_onBoardingSetUp_to_homeScreen)
                             } else {
-                                findNavController().navigate(R.id.action_onBoardingSetUp_to_loginScreen)
+                                val action =
+                                    OnBoardingSetUpDirections.actionOnBoardingSetUpToLoginScreen(
+                                        false
+                                    )
+                                findNavController().navigate(action)
                             }
                         }
                     }

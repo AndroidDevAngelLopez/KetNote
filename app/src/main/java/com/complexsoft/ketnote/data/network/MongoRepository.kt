@@ -6,11 +6,11 @@ import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 
 interface MongoRepository {
-    fun signOutWithMongoAtlas()
 
-    //suspend fun signInWithMongoAtlas(tokenId: String)
     fun configureTheRealm()
+    suspend fun deleteNoteById(noteId: ObjectId)
     fun getNotes(): Flow<List<Note>>
+    fun searchNotesByTitle(title: String): Flow<List<Note>>
     suspend fun createNote(currentTitle: String, currentText: String)
     suspend fun updateNote(noteId: ObjectId, newTitle: String, newText: String)
     fun getNoteById(noteId: BsonObjectId): Note?

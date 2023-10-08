@@ -19,7 +19,7 @@
             android:id="@+id/action_onBoardingSetUp_to_homeScreen"
             app:destination="@id/homeScreen"
             app:popUpTo="@id/onBoardingSetUp"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
 
     </fragment>
     <fragment
@@ -32,6 +32,9 @@
             app:destination="@id/homeScreen"
             app:popUpTo="@id/loginScreen"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="sesion_flag"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/homeScreen"
@@ -41,6 +44,14 @@
         <action
             android:id="@+id/action_homeScreen_to_createNoteScreen"
             app:destination="@id/createNoteScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_searchScreen"
+            app:destination="@id/searchScreen" />
+        <action
+            android:id="@+id/action_homeScreen_to_loginScreen"
+            app:destination="@id/loginScreen"
+            app:popUpTo="@id/homeScreen"
+            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/createNoteScreen"
@@ -51,4 +62,13 @@
             android:name="id"
             app:argType="string" />
     </dialog>
+    <fragment
+        android:id="@+id/searchScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.search.SearchScreen"
+        android:label="SearchScreen"
+        tools:layout="@layout/search_view_layout">
+        <action
+            android:id="@+id/action_searchScreen_to_createNoteScreen"
+            app:destination="@id/createNoteScreen" />
+    </fragment>
 </navigation>

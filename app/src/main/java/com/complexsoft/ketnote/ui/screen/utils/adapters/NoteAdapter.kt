@@ -1,4 +1,4 @@
-package com.complexsoft.ketnote.ui.screen.home.adapters
+package com.complexsoft.ketnote.ui.screen.utils.adapters
 
 import android.view.LayoutInflater
 import android.view.View

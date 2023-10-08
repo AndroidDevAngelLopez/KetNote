@@ -23,4 +23,7 @@
     <string name="app_title">My First Note</string>
     <string name="app_date">october 6 2023</string>
     <string name="app_text_content">Show a dialog\n\nWhen you want to show your dialog, create an instance of your DialogFragment and call show(), passing the FragmentManager and a tag name for the dialog fragment.\n\nYou can get the FragmentManager by calling getSupportFragmentManager() from the FragmentActivity or by calling getParentFragmentManager() from a Fragment. See the following for an example:</string>
+    <string name="delete_note">Delete Note</string>
+    <string name="searchbar_hint">Search Notes...</string>
+    <string name="action_text">Yes i do</string>
 </resources>

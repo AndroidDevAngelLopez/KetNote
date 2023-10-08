@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.LoginScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.onboarding.dataStore
@@ -25,6 +26,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
     private lateinit var binding: LoginScreenLayoutBinding
     val viewModel by activityViewModels<LoginViewModel>()
     private lateinit var activityForResult: ActivityResultLauncher<IntentSenderRequest>
+    private val args: LoginScreenArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityForResult = viewModel.getActivityForResult(this)

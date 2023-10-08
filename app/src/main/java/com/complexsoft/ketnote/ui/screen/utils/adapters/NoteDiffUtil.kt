@@ -1,4 +1,4 @@
-package com.complexsoft.ketnote.ui.screen.home.adapters
+package com.complexsoft.ketnote.ui.screen.utils.adapters
 
 import androidx.recyclerview.widget.DiffUtil
 import com.complexsoft.ketnote.data.model.Note

@@ -11,19 +11,20 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.ui.screen.onboarding.dataStore
 import com.complexsoft.ketnote.utils.Constants
-import com.complexsoft.ketnote.utils.Constants.APP_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
-import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.GoogleAuthType
+import io.realm.kotlin.mongodb.User
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.atomic.AtomicReference
 
 val isLoggedCompleted = booleanPreferencesKey("isLoggedCompleted")
 val globalTokenID = stringPreferencesKey("globalTokenID")
@@ -34,7 +35,7 @@ class LoginViewModel : ViewModel() {
     private lateinit var signInRequest: BeginSignInRequest
     private val TAG = "tag"
 
-    private fun setIsUserLogged(context: Context) {
+    fun setIsUserLogged(context: Context) {
         viewModelScope.launch {
             context.dataStore.edit { settings ->
                 val currentValue = settings[isLoggedCompleted] ?: false
@@ -85,10 +86,15 @@ class LoginViewModel : ViewModel() {
             try {
                 if (task.googleIdToken != null) {
                     val token = task.googleIdToken
-                    val app: App = App.create(APP_ID)
                     runBlocking {
-                        val user =
-                            app.login(Credentials.google(token.toString(), GoogleAuthType.ID_TOKEN))
+                        val user = AtomicReference<User?>()
+                        user.set(MongoDBAPP.app.currentUser)
+                        val googleCredentials = Credentials.google(
+                            token.toString(), GoogleAuthType.ID_TOKEN
+                        )
+                        MongoDBAPP.app.login(
+                            googleCredentials
+                        )
                         activity.context?.let { setGlobalTokenID(it, token.toString()) }
                         activity.context?.let { setIsUserLogged(it) }
                     }

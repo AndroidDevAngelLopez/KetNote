@@ -11,13 +11,19 @@ import io.realm.kotlin.query.RealmResults
 import io.realm.kotlin.query.Sort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 
+
+object MongoDBAPP {
+    val app: App = App.create(APP_ID)
+    var user = app.currentUser
+}
+
+
 object MongoDB : MongoRepository {
-    val app = App.Companion.create(APP_ID)
-    private val user = app.currentUser
+
+    private val user = MongoDBAPP.user
     private lateinit var realm: Realm
 
     init {
@@ -25,26 +31,29 @@ object MongoDB : MongoRepository {
     }
 
     override fun configureTheRealm() {
-        val config = user?.let {
-            SyncConfiguration.Builder(
-                it, setOf(Note::class)
-            ).initialSubscriptions { sub ->
-                add(query = sub.query<Note>(query = "owner_id == $0", user.id))
-            }.log(LogLevel.ALL).build()
+        if (user != null) {
+            val config =
+                SyncConfiguration.Builder(user, setOf(Note::class)).initialSubscriptions { sub ->
+                    add(query = sub.query<Note>(query = "owner_id == $0", user.id))
+                }.log(LogLevel.ALL).build()
+            realm = Realm.open(config)
         }
-        realm = config?.let { Realm.open(it) }!!
-
     }
 
-    override fun signOutWithMongoAtlas() {
-        runBlocking {
-            val user = app.currentUser
-            user?.logOut()
+    override suspend fun deleteNoteById(noteId: ObjectId) {
+        realm.write {
+            val note: Note = this.query<Note>("_id == $0", noteId).find().first()
+            delete(note)
         }
     }
 
     override fun getNotes(): Flow<List<Note>> {
         return realm.query<Note>().sort("date", Sort.DESCENDING).asFlow().map { it.list }
+    }
+
+    override fun searchNotesByTitle(title: String): Flow<List<Note>> {
+        return realm.query<Note>("title CONTAINS[c] $0", title).sort("date", Sort.DESCENDING)
+            .asFlow().map { it.list }
     }
 
     override suspend fun createNote(currentTitle: String, currentText: String) {
@@ -68,14 +77,15 @@ object MongoDB : MongoRepository {
 
     override suspend fun deleteAllNotes() {
         realm.write {
-            val notes: RealmResults<Note> =
-                this.query<Note>(query = "owner_id == $0", user?.id).find()
-            delete(notes)
+            val notes: RealmResults<Note>? =
+                user?.let { this.query<Note>(query = "owner_id == $0", it.id).find() }
+            if (notes != null) {
+                delete(notes)
+            }
         }
     }
 
     override fun getNoteById(noteId: BsonObjectId): Note? {
-        val note: Note? = realm.query<Note>("_id == $0", noteId).first().find()
-        return note
+        return realm.query<Note>("_id == $0", noteId).first().find()
     }
 }
