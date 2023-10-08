@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GravityCompat
-import androidx.datastore.preferences.core.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -17,13 +16,10 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainActivity
-import com.complexsoft.ketnote.ui.screen.login.isLoggedCompleted
-import com.complexsoft.ketnote.ui.screen.onboarding.dataStore
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
@@ -49,9 +45,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             activity.binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        val isLogged: Flow<Boolean>? = this.context?.dataStore?.data?.map { preferences ->
-            preferences[isLoggedCompleted] ?: false
-        }
 
         activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.delete_all_item) {
@@ -66,17 +59,9 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             if (menuItem.itemId == R.id.signout_item) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     MongoDBAPP.user?.logOut()
-                    context?.dataStore?.edit { settings ->
-                        val currentValue = settings[isLoggedCompleted] ?: false
-                        settings[isLoggedCompleted] = !currentValue
-                    }
-                    isLogged?.collectLatest {
-                        if (!it) {
-                            val action = HomeScreenDirections.actionHomeScreenToLoginScreen(true)
-                            findNavController().navigate(action)
-                        }
-                    }
-
+                    delay(800)
+                }.invokeOnCompletion {
+                    findNavController().navigate(R.id.action_homeScreen_to_loginScreen)
                 }
                 menuItem.isCheckable = false
             }

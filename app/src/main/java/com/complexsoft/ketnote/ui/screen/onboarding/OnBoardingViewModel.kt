@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "onboard_login")
 val isOnBoardingCompleted = booleanPreferencesKey("isOnBoardingCompleted")
 class OnBoardingViewModel : ViewModel() {
-
     fun onBoardingComplete(context: Context) {
         viewModelScope.launch {
             context.dataStore.edit { settings ->

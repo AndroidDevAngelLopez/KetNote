@@ -20,7 +20,6 @@ object MongoDBAPP {
     var user = app.currentUser
 }
 
-
 object MongoDB : MongoRepository {
 
     private val user = MongoDBAPP.user

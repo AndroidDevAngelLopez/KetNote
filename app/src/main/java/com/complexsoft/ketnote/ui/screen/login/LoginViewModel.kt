@@ -1,18 +1,13 @@
 package com.complexsoft.ketnote.ui.screen.login
 
-import android.content.Context
 import android.content.IntentSender
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.network.MongoDBAPP
-import com.complexsoft.ketnote.ui.screen.onboarding.dataStore
 import com.complexsoft.ketnote.utils.Constants
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -22,12 +17,9 @@ import com.google.android.gms.common.api.ApiException
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.GoogleAuthType
 import io.realm.kotlin.mongodb.User
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicReference
-
-val isLoggedCompleted = booleanPreferencesKey("isLoggedCompleted")
-val globalTokenID = stringPreferencesKey("globalTokenID")
 
 class LoginViewModel : ViewModel() {
 
@@ -35,23 +27,6 @@ class LoginViewModel : ViewModel() {
     private lateinit var signInRequest: BeginSignInRequest
     private val TAG = "tag"
 
-    fun setIsUserLogged(context: Context) {
-        viewModelScope.launch {
-            context.dataStore.edit { settings ->
-                val currentValue = settings[isLoggedCompleted] ?: false
-                settings[isLoggedCompleted] = !currentValue
-            }
-        }
-    }
-
-    private fun setGlobalTokenID(context: Context, tokenId: String) {
-        viewModelScope.launch {
-            context.dataStore.edit { settings ->
-                val currentValue = settings[globalTokenID] ?: ""
-                settings[globalTokenID] = tokenId
-            }
-        }
-    }
 
     fun startLoggingWithGoogle(
         activity: LoginScreen, activityForResult: ActivityResultLauncher<IntentSenderRequest>
@@ -86,7 +61,7 @@ class LoginViewModel : ViewModel() {
             try {
                 if (task.googleIdToken != null) {
                     val token = task.googleIdToken
-                    runBlocking {
+                    viewModelScope.launch {
                         val user = AtomicReference<User?>()
                         user.set(MongoDBAPP.app.currentUser)
                         val googleCredentials = Credentials.google(
@@ -95,8 +70,7 @@ class LoginViewModel : ViewModel() {
                         MongoDBAPP.app.login(
                             googleCredentials
                         )
-                        activity.context?.let { setGlobalTokenID(it, token.toString()) }
-                        activity.context?.let { setIsUserLogged(it) }
+                        delay(800)
                     }
                 } else {
                     Log.e("AUTH", "Google Auth failed: ${task.id}")

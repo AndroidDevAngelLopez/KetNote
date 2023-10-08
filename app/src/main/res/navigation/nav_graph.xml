@@ -15,11 +15,6 @@
             app:destination="@id/loginScreen"
             app:popUpTo="@id/onBoardingSetUp"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_onBoardingSetUp_to_homeScreen"
-            app:destination="@id/homeScreen"
-            app:popUpTo="@id/onBoardingSetUp"
-            app:popUpToInclusive="true" />
 
     </fragment>
     <fragment
@@ -32,9 +27,6 @@
             app:destination="@id/homeScreen"
             app:popUpTo="@id/loginScreen"
             app:popUpToInclusive="true" />
-        <argument
-            android:name="sesion_flag"
-            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/homeScreen"
