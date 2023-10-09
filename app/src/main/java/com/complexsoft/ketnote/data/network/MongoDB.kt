@@ -1,6 +1,7 @@
 package com.complexsoft.ketnote.data.network
 
 import com.complexsoft.ketnote.data.model.Note
+import com.complexsoft.ketnote.data.network.MongoDBAPP.app
 import com.complexsoft.ketnote.utils.Constants.APP_ID
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
@@ -16,24 +17,22 @@ import org.mongodb.kbson.ObjectId
 
 
 object MongoDBAPP {
-    val app: App = App.create(APP_ID)
-    var user = app.currentUser
+    var app: App = App.create(APP_ID)
 }
 
 object MongoDB : MongoRepository {
 
-    private val user = MongoDBAPP.user
-    private lateinit var realm: Realm
+    lateinit var realm: Realm
 
     init {
         configureTheRealm()
     }
 
     override fun configureTheRealm() {
-        if (user != null) {
-            val config =
-                SyncConfiguration.Builder(user, setOf(Note::class)).initialSubscriptions { sub ->
-                    add(query = sub.query<Note>(query = "owner_id == $0", user.id))
+        if (app.currentUser != null) {
+            val config = SyncConfiguration.Builder(app.currentUser!!, setOf(Note::class))
+                .initialSubscriptions { sub ->
+                    add(query = sub.query<Note>(query = "owner_id == $0", app.currentUser!!.id))
                 }.log(LogLevel.ALL).build()
             realm = Realm.open(config)
         }
@@ -61,7 +60,7 @@ object MongoDB : MongoRepository {
                 title = currentTitle
                 date = System.currentTimeMillis()
                 text = currentText
-                owner_id = user?.id ?: ""
+                owner_id = app.currentUser?.id ?: ""
             })
         }
     }
@@ -77,7 +76,7 @@ object MongoDB : MongoRepository {
     override suspend fun deleteAllNotes() {
         realm.write {
             val notes: RealmResults<Note>? =
-                user?.let { this.query<Note>(query = "owner_id == $0", it.id).find() }
+                app.currentUser?.let { this.query<Note>(query = "owner_id == $0", it.id).find() }
             if (notes != null) {
                 delete(notes)
             }

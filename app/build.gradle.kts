@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("io.realm.kotlin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -43,6 +44,11 @@ android {
 }
 
 dependencies {
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
     //Mongo Realm
     implementation ("io.realm.kotlin:library-sync:1.11.1")
     //SplashScreen

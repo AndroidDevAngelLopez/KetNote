@@ -38,7 +38,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
         binding = LoginScreenLayoutBinding.inflate(layoutInflater)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                if (MongoDBAPP.user?.loggedIn == true) {
+                if (MongoDBAPP.app.currentUser?.loggedIn == true) {
                     findNavController().navigate(R.id.action_loginScreen_to_homeScreen)
                 } else {
                     MongoDBAPP.app.authenticationChangeAsFlow()
@@ -46,7 +46,6 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                             when (change) {
                                 is LoggedIn -> findNavController().navigate(R.id.action_loginScreen_to_homeScreen)
                                 is LoggedOut -> {
-                                    // BUG OVER HERE!!! MongoDBAPP.user?.refreshCustomData()
                                 }
 
                                 is Removed -> {}

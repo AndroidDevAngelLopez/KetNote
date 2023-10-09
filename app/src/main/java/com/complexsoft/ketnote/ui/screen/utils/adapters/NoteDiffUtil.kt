@@ -31,6 +31,9 @@ class NoteDiffUtil(
             oldList[oldItemPosition].date != newList[newItemPosition].date -> {
                 false
             }
+            oldList[oldItemPosition].owner_id != newList[newItemPosition].owner_id -> {
+                false
+            }
 
             else -> {
                 true

@@ -39,11 +39,6 @@
         <action
             android:id="@+id/action_homeScreen_to_searchScreen"
             app:destination="@id/searchScreen" />
-        <action
-            android:id="@+id/action_homeScreen_to_loginScreen"
-            app:destination="@id/loginScreen"
-            app:popUpTo="@id/homeScreen"
-            app:popUpToInclusive="true" />
     </fragment>
     <dialog
         android:id="@+id/createNoteScreen"

@@ -14,19 +14,21 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.GoogleAuthType
-import io.realm.kotlin.mongodb.User
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicReference
 
 class LoginViewModel : ViewModel() {
 
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private val TAG = "tag"
-
+    private lateinit var auth: FirebaseAuth
 
     fun startLoggingWithGoogle(
         activity: LoginScreen, activityForResult: ActivityResultLauncher<IntentSenderRequest>
@@ -46,6 +48,11 @@ class LoginViewModel : ViewModel() {
     }
 
     fun getActivityForResult(activity: LoginScreen): ActivityResultLauncher<IntentSenderRequest> {
+        auth = Firebase.auth
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            //already logged in firebase
+        }
         oneTapClient = activity.let { Identity.getSignInClient(it.requireActivity()) }
         signInRequest = BeginSignInRequest.builder().setPasswordRequestOptions(
             BeginSignInRequest.PasswordRequestOptions.builder().setSupported(true).build()
@@ -62,15 +69,28 @@ class LoginViewModel : ViewModel() {
                 if (task.googleIdToken != null) {
                     val token = task.googleIdToken
                     viewModelScope.launch {
-                        val user = AtomicReference<User?>()
-                        user.set(MongoDBAPP.app.currentUser)
-                        val googleCredentials = Credentials.google(
-                            token.toString(), GoogleAuthType.ID_TOKEN
-                        )
-                        MongoDBAPP.app.login(
-                            googleCredentials
-                        )
-                        delay(800)
+                        val firebaseCredential = GoogleAuthProvider.getCredential(token, null)
+                        auth.signInWithCredential(firebaseCredential)
+                            .addOnCompleteListener(activity.requireActivity()) { task ->
+                                if (task.isSuccessful) {
+                                    viewModelScope.launch(Dispatchers.IO) {
+                                        runCatching {
+                                            MongoDBAPP.app.login(
+                                                Credentials.google(
+                                                    token.toString(), GoogleAuthType.ID_TOKEN
+                                                )
+                                            )
+                                        }.onSuccess {
+                                            Log.d(
+                                                TAG,
+                                                "you logged in mongo with this account ${MongoDBAPP.app.currentUser?.id}!"
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                                }
+                            }
                     }
                 } else {
                     Log.e("AUTH", "Google Auth failed: ${task.id}")

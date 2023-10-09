@@ -1,6 +1,9 @@
 package com.complexsoft.ketnote.ui.screen.home
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Process
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +21,12 @@ import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainActivity
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
@@ -58,10 +64,24 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             }
             if (menuItem.itemId == R.id.signout_item) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    MongoDBAPP.user?.logOut()
-                    delay(800)
-                }.invokeOnCompletion {
-                    findNavController().navigate(R.id.action_homeScreen_to_loginScreen)
+                    runCatching {
+//                        MongoDBAPP.app.currentUser?.logOut()
+                        MongoDBAPP.app.currentUser?.remove()
+                    }.onSuccess {
+                        Firebase.auth.signOut()
+                        delay(800)
+                        val intent =
+                            requireActivity().baseContext.packageManager.getLaunchIntentForPackage(
+                                requireActivity().baseContext.packageName
+                            )
+                        intent!!.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        Process.killProcess(Process.myPid())
+                        exitProcess(0)
+                    }.onFailure {
+                        Log.d("LOGOUT FAILED", it.message.toString())
+                    }
                 }
                 menuItem.isCheckable = false
             }
