@@ -54,22 +54,24 @@ object MongoDB : MongoRepository {
             .asFlow().map { it.list }
     }
 
-    override suspend fun createNote(currentTitle: String, currentText: String) {
+    override suspend fun createNote(currentTitle: String, currentText: String,image:String) {
         realm.writeBlocking {
             copyToRealm(Note().apply {
                 title = currentTitle
                 date = System.currentTimeMillis()
                 text = currentText
+                images = image
                 owner_id = app.currentUser?.id ?: ""
             })
         }
     }
 
-    override suspend fun updateNote(noteId: ObjectId, newTitle: String, newText: String) {
+    override suspend fun updateNote(noteId: ObjectId, newTitle: String, newText: String,image:String) {
         realm.write {
             val note: Note? = this.query<Note>("_id == $0", noteId).first().find()
             note?.title = newTitle
             note?.text = newText
+            note?.images=image
         }
     }
 

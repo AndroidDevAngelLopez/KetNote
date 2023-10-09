@@ -19,17 +19,17 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxWidth="200dp"
+            android:maxLines="2"
             android:text="@string/app_title"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            android:textStyle="bold"
-            android:maxLines="2"
-            android:maxWidth="200dp"
-            android:ellipsize="end"/>
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_date"
@@ -48,9 +48,9 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_text"
             style="@style/TextAppearance.Material3.BodyLarge"
-            android:layout_marginTop="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:ellipsize="end"
             android:maxLines="6"
             android:text="@string/app_text_content"
@@ -58,6 +58,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/note_item_title"
+            app:layout_constraintVertical_bias="0" />
+
+        <ImageView
+            android:id="@+id/note_item_image"
+            android:layout_width="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/first"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/note_item_text"
             app:layout_constraintVertical_bias="0.3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

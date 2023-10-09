@@ -26,4 +26,5 @@
     <string name="delete_note">Delete Note</string>
     <string name="searchbar_hint">Search Notes...</string>
     <string name="action_text">Yes i do</string>
+    <string name="notas">Crear Nota</string>
 </resources>

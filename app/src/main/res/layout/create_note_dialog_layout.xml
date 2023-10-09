@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Widget.Material3.CardView.Elevated"
@@ -12,6 +11,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/note_dialog_title"
+            style="@style/TextAppearance.Material3.HeadlineLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notas"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/title_edit_text_layout"
             android:layout_width="match_parent"
@@ -19,7 +31,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/note_dialog_title"
             app:layout_constraintVertical_bias="0.1">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -42,6 +54,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/home_text_note_text"
+                style="@style/ThemeOverlay.Material3.TextInputEditText.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text" />
@@ -65,19 +78,17 @@
             app:layout_constraintTop_toBottomOf="@id/text_edit_text_layout"
             app:layout_constraintVertical_bias="0.2" />
 
-        <ImageView
-            android:id="@+id/image_received_test"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/image_received_recycler"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/add_image_button"
             app:layout_constraintTop_toBottomOf="@id/text_edit_text_layout"
-            app:layout_constraintVertical_bias="0.2"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:layout_constraintHorizontal_bias="0.05"
-            android:src="@drawable/ic_launcher_foreground"/>
-
+            app:layout_constraintVertical_bias="0.2" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/send_note_button"
@@ -95,16 +106,15 @@
             android:id="@+id/delete_note_button"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
-            android:background="@color/design_default_color_error"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:background="@color/design_default_color_error"
             android:text="@string/delete_note"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/send_note_button"
             app:layout_constraintTop_toBottomOf="@id/add_image_button"
             app:layout_constraintVertical_bias="0.2" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

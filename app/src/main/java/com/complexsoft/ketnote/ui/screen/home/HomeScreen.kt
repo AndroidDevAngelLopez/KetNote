@@ -65,7 +65,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             if (menuItem.itemId == R.id.signout_item) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     runCatching {
-//                        MongoDBAPP.app.currentUser?.logOut()
                         MongoDBAPP.app.currentUser?.remove()
                     }.onSuccess {
                         Firebase.auth.signOut()

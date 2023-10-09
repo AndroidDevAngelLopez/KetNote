@@ -3,8 +3,10 @@ package com.complexsoft.ketnote.ui.screen.utils.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.utils.toHumanDate
@@ -30,11 +32,13 @@ class NoteAdapter(private var notes: List<Note>, private val onNoteClick: (Note)
         val noteTitle: MaterialTextView
         val noteText: MaterialTextView
         val noteDate: MaterialTextView
+        val noteImage: ImageView
 
         init {
             noteTitle = view.findViewById(R.id.note_item_title)
             noteText = view.findViewById(R.id.note_item_text)
             noteDate = view.findViewById(R.id.note_item_date)
+            noteImage = view.findViewById(R.id.note_item_image)
         }
     }
 
@@ -42,6 +46,11 @@ class NoteAdapter(private var notes: List<Note>, private val onNoteClick: (Note)
         holder.noteTitle.text = notes[position].title
         holder.noteText.text = notes[position].text
         holder.noteDate.text = notes[position].date.toHumanDate()
+        if (notes[position].images.isNotBlank()) {
+            Glide.with(holder.noteImage).load(notes[position].images).into(holder.noteImage)
+        } else {
+            holder.noteImage.visibility = View.GONE
+        }
         holder.itemView.setOnClickListener {
             onNoteClick(notes[position])
         }

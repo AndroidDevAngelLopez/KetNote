@@ -11,9 +11,9 @@ class NoteDiffUtil(
     override fun getNewListSize(): Int = newList.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return if (oldList.size == newList.size){
+        return if (oldList.size == newList.size) {
             oldList[oldItemPosition]._id == newList[newItemPosition]._id
-        }else{
+        } else {
             false
         }
     }
@@ -31,7 +31,12 @@ class NoteDiffUtil(
             oldList[oldItemPosition].date != newList[newItemPosition].date -> {
                 false
             }
+
             oldList[oldItemPosition].owner_id != newList[newItemPosition].owner_id -> {
+                false
+            }
+
+            oldList[oldItemPosition].images != newList[newItemPosition].images -> {
                 false
             }
 
