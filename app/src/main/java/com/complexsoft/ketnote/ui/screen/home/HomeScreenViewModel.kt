@@ -1,17 +1,24 @@
 package com.complexsoft.ketnote.ui.screen.home
 
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.network.MongoDB
+import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
+import javax.inject.Inject
 
-class HomeScreenViewModel : ViewModel() {
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
+    private val logoutUseCase: LogoutUseCase
+) : ViewModel() {
 
     private val _notesFlow = MutableStateFlow(NotesUiState.Success(emptyList()))
     val notesFlow: StateFlow<NotesUiState> = _notesFlow
@@ -31,6 +38,9 @@ class HomeScreenViewModel : ViewModel() {
         }
     }
 
+    fun logout(activity: FragmentActivity) {
+        logoutUseCase.logoutUser(activity)
+    }
 
     fun searchNotesByTitle(title: String) {
         viewModelScope.launch {

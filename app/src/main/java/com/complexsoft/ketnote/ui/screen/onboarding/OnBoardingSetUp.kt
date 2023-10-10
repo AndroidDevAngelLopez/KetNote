@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SetupOnboardingLayoutBinding
+import com.complexsoft.ketnote.ui.screen.utils.adapters.OnBoardingAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map

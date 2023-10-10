@@ -1,9 +1,6 @@
 package com.complexsoft.ketnote.ui.screen.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Process
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,19 +16,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
-import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainActivity
+import com.complexsoft.ketnote.ui.screen.components.createDialog
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.delay
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.system.exitProcess
 
+@AndroidEntryPoint
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
     private lateinit var binding: HomeScreenLayoutBinding
@@ -62,61 +59,43 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         profileName.text = Firebase.auth.currentUser?.displayName
 
         activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
-            if (menuItem.itemId == R.id.delete_all_item) {
-                context?.let {
-                    MaterialAlertDialogBuilder(it).setTitle("Are you sure to delete all notes?")
-                        .setMessage("All notes will be deleted !")
-                        .setNeutralButton("Cancel") { dialog, which ->
-                            // Respond to neutral button press
-                            dialog.dismiss()
-                        }.setPositiveButton("delete notes") { dialog, which ->
-                            viewModel.deleteAllNotes()
-                        }.show()
+            when (menuItem.itemId) {
+                R.id.delete_all_item -> {
+                    createDialog(
+                        this.context,
+                        "Are you sure to delete all notes?",
+                        "All notes will be deleted !",
+                        "Cancel",
+                        "delete notes"
+                    ) {
+                        viewModel.deleteAllNotes()
+                    }?.show()
+                    menuItem.isCheckable = false
                 }
-                menuItem.isCheckable = false
-            }
 
-            if (menuItem.itemId == R.id.about_item) {
-                context?.let {
-                    val appVersion = "2310-alpha-0.9 Trinity"
-                    MaterialAlertDialogBuilder(it).setTitle("KetNote")
-                        .setMessage("KetNote belongs to ComplexSoftSolutions©\ncurrent version is : $appVersion")
-                        .setNeutralButton("OK") { dialog, which ->
-                            dialog.dismiss()
-                        }.show()
+                R.id.about_item -> {
+                    createDialog(
+                        this.context,
+                        "KetNote",
+                        "KetNote is an ComplexSoftSolutions © product.\ncurrent version is : $APP_VERSION",
+                        "",
+                        "OK"
+                    ) {}?.show()
+                    menuItem.isCheckable = false
                 }
-                menuItem.isCheckable = false
-            }
 
-            if (menuItem.itemId == R.id.signout_item) {
-                context?.let {
-                    MaterialAlertDialogBuilder(it).setTitle("Are you sure to logout?")
-                        .setMessage("save your work before logout!")
-                        .setNeutralButton("Cancel") { dialog, which ->
-                            dialog.dismiss()
-                        }.setPositiveButton("Logout") { dialog, which ->
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                runCatching {
-                                    MongoDBAPP.app.currentUser?.remove()
-                                }.onSuccess {
-                                    Firebase.auth.signOut()
-                                    delay(800)
-                                    val intent =
-                                        requireActivity().baseContext.packageManager.getLaunchIntentForPackage(
-                                            requireActivity().baseContext.packageName
-                                        )
-                                    intent!!.flags =
-                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                    startActivity(intent)
-                                    Process.killProcess(Process.myPid())
-                                    exitProcess(0)
-                                }.onFailure {
-                                    Log.d("LOGOUT FAILED", it.message.toString())
-                                }
-                            }
-                        }.show()
+                R.id.signout_item -> {
+                    createDialog(
+                        this.context,
+                        "Are you sure to logout?",
+                        "save your work before logout!",
+                        "Cancel",
+                        "Logout"
+                    ) {
+                        viewModel.logout(requireActivity())
+                    }?.show()
+                    menuItem.isCheckable = false
                 }
-                menuItem.isCheckable = false
             }
             activity.binding.drawerLayout.close()
             true
@@ -151,7 +130,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                 }
             }
         }
-
         binding.homeRecycler.apply {
             layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
             adapter = notesAdapter

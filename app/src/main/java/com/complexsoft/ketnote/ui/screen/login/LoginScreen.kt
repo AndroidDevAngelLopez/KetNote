@@ -15,12 +15,14 @@ import androidx.navigation.fragment.findNavController
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.databinding.LoginScreenLayoutBinding
+import dagger.hilt.android.AndroidEntryPoint
 import io.realm.kotlin.mongodb.AuthenticationChange
 import io.realm.kotlin.mongodb.LoggedIn
 import io.realm.kotlin.mongodb.LoggedOut
 import io.realm.kotlin.mongodb.Removed
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
     private lateinit var binding: LoginScreenLayoutBinding

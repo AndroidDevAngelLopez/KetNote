@@ -18,9 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.model.ImageNote
 import com.complexsoft.ketnote.databinding.CreateNoteDialogLayoutBinding
+import com.complexsoft.ketnote.ui.screen.components.createDialog
 import com.complexsoft.ketnote.ui.screen.utils.adapters.ImageNoteAdapter
 import com.complexsoft.ketnote.utils.toImageNoteList
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -39,6 +39,8 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
     private lateinit var imageNoteAdapter: ImageNoteAdapter
     val viewModel by viewModels<HomeScreenViewModel>()
     private var flag = false
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         storage = Firebase.storage
@@ -59,7 +61,6 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 Log.d("PhotoPicker", "No media selected")
             }
         }
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -71,17 +72,16 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.deleteNoteButton.visibility = View.VISIBLE
             val note = viewModel.getNoteById(ObjectId(args.id))
             imageNoteAdapter = ImageNoteAdapter(listOf(ImageNote(src = note!!.images))) {
-                context?.let {
-                    MaterialAlertDialogBuilder(it)
-                        .setTitle("Selected Photo")
-                        .setMessage("All notes will be deleted !")
-                        .setNeutralButton("Cancel") { dialog, which ->
-                            // Respond to neutral button press
-                            dialog.dismiss()
-                        }.setPositiveButton("delete notes") { dialog, which ->
-                            viewModel.deleteAllNotes()
-                        }.show()
-                }
+                createDialog(
+                    this.context,
+                    "image clicked",
+                    "this image has been clicked",
+                    "dismiss",
+                    "action"
+                ) {
+                    Log.d("image Clicked", "omg clicked")
+                }?.show()
+
             }
             imageNoteAdapter.updateList(listOf(ImageNote(src = note.images)))
             binding.sendNoteButton.text = "Update Note"
@@ -92,6 +92,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             }
             binding.sendNoteButton.setOnClickListener {
                 if (flag) {
+                    //Upload image to firebase
                     uploadTask.putFile(_image).addOnFailureListener {
                         Log.d("failure in upload image", it.message.toString())
                     }.addOnSuccessListener { taskSnapshot ->
