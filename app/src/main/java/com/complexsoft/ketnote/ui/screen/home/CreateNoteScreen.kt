@@ -126,17 +126,26 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
             binding.sendNoteButton.setOnClickListener {
-                uploadTask.putFile(_image).addOnFailureListener {
-                    Log.d("failure in upload image", it.message.toString())
-                }.addOnSuccessListener { taskSnapshot ->
-                    uploadTask.downloadUrl.addOnSuccessListener {
-                        viewModel.insertNote(
-                            binding.homeTitleNoteText.text.toString(),
-                            binding.homeTextNoteText.text.toString(),
-                            it.toString()
-                        )
-                        this.dismiss()
+                if (flag) {
+                    uploadTask.putFile(_image).addOnFailureListener {
+                        Log.d("failure in upload image", it.message.toString())
+                    }.addOnSuccessListener { taskSnapshot ->
+                        uploadTask.downloadUrl.addOnSuccessListener { uri ->
+                            viewModel.insertNote(
+                                binding.homeTitleNoteText.text.toString(),
+                                binding.homeTextNoteText.text.toString(),
+                                uri.toString()
+                            )
+                            this.dismiss()
+                        }
                     }
+                } else {
+                    viewModel.insertNote(
+                        binding.homeTitleNoteText.text.toString(),
+                        binding.homeTextNoteText.text.toString(),
+                        ""
+                    )
+                    this.dismiss()
                 }
             }
         }

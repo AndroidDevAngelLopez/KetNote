@@ -17,6 +17,7 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
 import com.complexsoft.ketnote.ui.screen.home.HomeScreenViewModel
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView.TransitionState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -72,9 +73,18 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
             }
         }
 
+
+        val divider = this.context?.let {
+            MaterialDividerItemDecoration(
+                it, LinearLayoutManager.VERTICAL /*or LinearLayoutManager.HORIZONTAL*/
+            )
+        }
         binding.searchRecycler.apply {
             layoutManager = LinearLayoutManager(this@SearchScreen.context)
             adapter = notesAdapter
+            if (divider != null) {
+                addItemDecoration(divider)
+            }
         }
 
         return binding.root

@@ -58,15 +58,15 @@ class HomeScreenViewModel : ViewModel() {
         viewModelScope.launch { MongoDB.deleteAllNotes() }
     }
 
-    fun updateNote(id: ObjectId, title: String, text: String,image: String) {
+    fun updateNote(id: ObjectId, title: String, text: String, image: String) {
         viewModelScope.launch {
-            MongoDB.updateNote(id, title, text,image)
+            MongoDB.updateNote(id, title, text, image)
         }
     }
 
-    fun insertNote(title: String, text: String,image :String) {
+    fun insertNote(title: String, text: String, image: String) {
         viewModelScope.launch {
-            MongoDB.createNote(title, text,image)
+            MongoDB.createNote(title, text, image)
         }
     }
 

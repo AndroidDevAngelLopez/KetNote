@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,12 +16,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.MongoDBAPP
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainActivity
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
@@ -52,35 +56,61 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         }
 
 
+        val header = activity.binding.mainNavigationView.getHeaderView(0)
+        val profilePic = header.findViewById<ImageView>(R.id.drawer_layout_header_profile_pic)
+        val profileName =
+            header.findViewById<MaterialTextView>(R.id.drawer_layout_header_profile_name)
+        Glide.with(this).load(Firebase.auth.currentUser?.photoUrl).into(profilePic)
+        profileName.text = Firebase.auth.currentUser?.displayName
+
+
+
         activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.delete_all_item) {
-                this.view?.let {
-                    Snackbar.make(it, "Are you sure to delete all notes?", Snackbar.LENGTH_LONG)
-                        .setAnchorView(binding.createNoteButton).setAction(R.string.action_text) {
+                context?.let {
+                    MaterialAlertDialogBuilder(it).setTitle("Are you sure to delete all notes?")
+                        .setMessage("All notes will be deleted !")
+                        .setNeutralButton("Cancel") { dialog, which ->
+                            // Respond to neutral button press
+                            dialog.dismiss()
+                        }
+//                        .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
+//                            // Respond to negative button press
+//                        }
+                        .setPositiveButton("delete notes") { dialog, which ->
                             viewModel.deleteAllNotes()
                         }.show()
                 }
                 menuItem.isCheckable = false
             }
+
             if (menuItem.itemId == R.id.signout_item) {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    runCatching {
-                        MongoDBAPP.app.currentUser?.remove()
-                    }.onSuccess {
-                        Firebase.auth.signOut()
-                        delay(800)
-                        val intent =
-                            requireActivity().baseContext.packageManager.getLaunchIntentForPackage(
-                                requireActivity().baseContext.packageName
-                            )
-                        intent!!.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        Process.killProcess(Process.myPid())
-                        exitProcess(0)
-                    }.onFailure {
-                        Log.d("LOGOUT FAILED", it.message.toString())
-                    }
+                context?.let {
+                    MaterialAlertDialogBuilder(it).setTitle("Are you sure to logout?")
+                        .setMessage("save your work before logout!")
+                        .setNeutralButton("Cancel") { dialog, which ->
+                            dialog.dismiss()
+                        }.setPositiveButton("Logout") { dialog, which ->
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                runCatching {
+                                    MongoDBAPP.app.currentUser?.remove()
+                                }.onSuccess {
+                                    Firebase.auth.signOut()
+                                    delay(800)
+                                    val intent =
+                                        requireActivity().baseContext.packageManager.getLaunchIntentForPackage(
+                                            requireActivity().baseContext.packageName
+                                        )
+                                    intent!!.flags =
+                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                    Process.killProcess(Process.myPid())
+                                    exitProcess(0)
+                                }.onFailure {
+                                    Log.d("LOGOUT FAILED", it.message.toString())
+                                }
+                            }
+                        }.show()
                 }
                 menuItem.isCheckable = false
             }
@@ -119,7 +149,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         }
 
         binding.homeRecycler.apply {
-            layoutManager = LinearLayoutManager(this@HomeScreen.context)
+            layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
             adapter = notesAdapter
         }
         return binding.root
