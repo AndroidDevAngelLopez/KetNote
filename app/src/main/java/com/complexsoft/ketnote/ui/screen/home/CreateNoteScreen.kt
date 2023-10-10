@@ -2,6 +2,7 @@ package com.complexsoft.ketnote.ui.screen.home
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -26,17 +27,23 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import dagger.hilt.android.AndroidEntryPoint
 import org.mongodb.kbson.ObjectId
 
+@AndroidEntryPoint
 class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
+
     private lateinit var binding: CreateNoteDialogLayoutBinding
     private val args: CreateNoteScreenArgs by navArgs()
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var openChooser: ActivityResultLauncher<Intent>
     private lateinit var uploadTask: StorageReference
     private lateinit var _image: Uri
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private lateinit var imageNoteAdapter: ImageNoteAdapter
+    private lateinit var sendIntent: Intent
+    private lateinit var shareIntent: Intent
     val viewModel by viewModels<HomeScreenViewModel>()
     private var flag = false
 
@@ -45,22 +52,18 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         super.onViewCreated(view, savedInstanceState)
         storage = Firebase.storage
         storageRef = storage.reference
-        pickMedia = this.registerForActivityResult(
-            ActivityResultContracts.PickMultipleVisualMedia(5)
-        ) { images ->
-            if (images != null) {
-                imageNoteAdapter.updateList(images.toImageNoteList())
-                for (image in images) {
-                    _image = image
-                    val remoteImagePath =
-                        "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${image.lastPathSegment}-${System.currentTimeMillis()}.jpg"
-                    uploadTask = storageRef.child(remoteImagePath)
-                    flag = true
-                }
-            } else {
-                Log.d("PhotoPicker", "No media selected")
+        openChooser = viewModel.openPhotoShareDialog(this)
+        pickMedia = viewModel.openPhotoPicker(this) { images ->
+            imageNoteAdapter.updateList(images.toImageNoteList())
+            for (image in images) {
+                _image = image
+                val remoteImagePath =
+                    "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${image.lastPathSegment}-${System.currentTimeMillis()}.jpg"
+                uploadTask = storageRef.child(remoteImagePath)
+                flag = true
             }
         }
+
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -68,6 +71,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         val builder = AlertDialog.Builder(requireActivity())
         builder.setView(binding.root)
         if (args.id.isNotBlank()) {
+            binding.noteDialogShare.visibility = View.VISIBLE
             binding.noteDialogTitle.text = "Update Note"
             binding.deleteNoteButton.visibility = View.VISIBLE
             val note = viewModel.getNoteById(ObjectId(args.id))
@@ -90,21 +94,27 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.addImageButton.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
+            binding.noteDialogShare.setOnClickListener {
+                val bitmap = viewModel.generateJpegImage(note, this)
+                val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, bitmap)
+                    type = "image/jpeg"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, "Share with")
+//                openChooser.launch(shareIntent)
+                requireContext().startActivity(shareIntent)
+            }
             binding.sendNoteButton.setOnClickListener {
                 if (flag) {
-                    //Upload image to firebase
-                    uploadTask.putFile(_image).addOnFailureListener {
-                        Log.d("failure in upload image", it.message.toString())
-                    }.addOnSuccessListener { taskSnapshot ->
-                        uploadTask.downloadUrl.addOnSuccessListener {
-                            viewModel.updateNote(
-                                ObjectId(args.id),
-                                binding.homeTitleNoteText.text.toString(),
-                                binding.homeTextNoteText.text.toString(),
-                                it.toString()
-                            )
-                            this.dismiss()
-                        }
+                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
+                        viewModel.updateNote(
+                            ObjectId(args.id),
+                            binding.homeTitleNoteText.text.toString(),
+                            binding.homeTextNoteText.text.toString(),
+                            it
+                        )
+                        this.dismiss()
                     }
                 } else {
                     viewModel.updateNote(
@@ -119,7 +129,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.deleteNoteButton.setOnClickListener {
                 if (note.images.isNotEmpty()) {
                     val toDeleteRef = storage.getReferenceFromUrl(note.images)
-                    toDeleteRef.delete().addOnSuccessListener {
+                    viewModel.deletePhotoFromFirebase(toDeleteRef) {
                         viewModel.deleteNoteById(ObjectId(args.id))
                         this.dismiss()
                     }
@@ -129,6 +139,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 }
             }
         } else {
+            binding.noteDialogShare.visibility = View.GONE
             binding.noteDialogTitle.text = "Create Note"
             imageNoteAdapter = ImageNoteAdapter(emptyList()) {
 
@@ -139,17 +150,13 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             }
             binding.sendNoteButton.setOnClickListener {
                 if (flag) {
-                    uploadTask.putFile(_image).addOnFailureListener {
-                        Log.d("failure in upload image", it.message.toString())
-                    }.addOnSuccessListener { taskSnapshot ->
-                        uploadTask.downloadUrl.addOnSuccessListener { uri ->
-                            viewModel.insertNote(
-                                binding.homeTitleNoteText.text.toString(),
-                                binding.homeTextNoteText.text.toString(),
-                                uri.toString()
-                            )
-                            this.dismiss()
-                        }
+                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
+                        viewModel.insertNote(
+                            binding.homeTitleNoteText.text.toString(),
+                            binding.homeTextNoteText.text.toString(),
+                            it
+                        )
+                        this.dismiss()
                     }
                 } else {
                     viewModel.insertNote(

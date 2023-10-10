@@ -28,4 +28,6 @@
     <string name="action_text">Yes i do</string>
     <string name="notas">Crear Nota</string>
     <string name="about_title">Acerca de...</string>
+    <string name="add_image">Agregar imagen</string>
+    <string name="generate_all_pdf">Generar Informe PDF</string>
 </resources>

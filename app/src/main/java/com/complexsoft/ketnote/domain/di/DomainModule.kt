@@ -1,5 +1,6 @@
 package com.complexsoft.ketnote.domain.di
 
+import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LoginUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
 import dagger.Module
@@ -20,5 +21,9 @@ object DomainModule {
     @Singleton
     @Provides
     fun providesLogoutUseCase(): LogoutUseCase = LogoutUseCase()
+
+    @Singleton
+    @Provides
+    fun providesHandleNotesUseCase(): HandleNotesUseCase = HandleNotesUseCase()
 
 }

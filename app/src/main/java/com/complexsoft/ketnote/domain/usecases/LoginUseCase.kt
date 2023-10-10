@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import com.complexsoft.ketnote.data.network.MongoDBAPP
+import com.complexsoft.ketnote.data.repository.MongoDBAPP
 import com.complexsoft.ketnote.ui.screen.login.LoginScreen
 import com.complexsoft.ketnote.utils.Constants
 import com.google.android.gms.auth.api.identity.BeginSignInRequest

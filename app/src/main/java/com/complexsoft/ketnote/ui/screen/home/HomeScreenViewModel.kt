@@ -1,11 +1,16 @@
 package com.complexsoft.ketnote.ui.screen.home
 
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.model.Note
-import com.complexsoft.ketnote.data.network.MongoDB
+import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase, private val handleNotesUseCase: HandleNotesUseCase
 ) : ViewModel() {
 
     private val _notesFlow = MutableStateFlow(NotesUiState.Success(emptyList()))
@@ -42,41 +47,63 @@ class HomeScreenViewModel @Inject constructor(
         logoutUseCase.logoutUser(activity)
     }
 
+    fun uploadPhotoToFirebase(
+        uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit
+    ) {
+        handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
+    }
+
+    fun generateJpegImage(note: Note, activity: DialogFragment): Bitmap {
+        return handleNotesUseCase.generateJpegImage(note, activity)
+    }
+
+    fun deletePhotoFromFirebase(imageToDelete: StorageReference, onImageDeleted: () -> Unit) {
+        handleNotesUseCase.deletePhotoFromFirebase(imageToDelete, onImageDeleted)
+    }
+
+    fun openPhotoPicker(activity: DialogFragment, onImagesFetched: (images: List<Uri>) -> Unit) =
+        handleNotesUseCase.openPhotoPicker(
+            activity, onImagesFetched
+        )
+
+    fun openPhotoShareDialog(activity: DialogFragment) =
+        handleNotesUseCase.openPhotoShareDialog(activity)
+
     fun searchNotesByTitle(title: String) {
         viewModelScope.launch {
-            MongoDB.searchNotesByTitle(title).collectLatest {
+            handleNotesUseCase.searchNotesByTitle(title).collectLatest {
                 _searchedNotesFlow.value = NotesUiState.Success(it)
             }
         }
     }
 
     fun deleteNoteById(noteId: ObjectId) {
-        viewModelScope.launch { MongoDB.deleteNoteById(noteId) }
+        viewModelScope.launch { handleNotesUseCase.deleteNoteById(noteId) }
     }
 
     private suspend fun getAllNotes() {
-        MongoDB.getNotes().collectLatest {
+        handleNotesUseCase.getAllNotes().collectLatest {
             _notesFlow.value = NotesUiState.Success(it)
         }
     }
 
     fun getNoteById(noteId: ObjectId): Note? {
-        return MongoDB.getNoteById(noteId)
+        return handleNotesUseCase.getNoteById(noteId)
     }
 
-    fun deleteAllNotes() {
-        viewModelScope.launch { MongoDB.deleteAllNotes() }
+    fun deleteAllNotes(storage: FirebaseStorage) {
+        viewModelScope.launch { handleNotesUseCase.deleteAllNotes(storage) }
     }
 
     fun updateNote(id: ObjectId, title: String, text: String, image: String) {
         viewModelScope.launch {
-            MongoDB.updateNote(id, title, text, image)
+            handleNotesUseCase.updateNote(id, title, text, image)
         }
     }
 
     fun insertNote(title: String, text: String, image: String) {
         viewModelScope.launch {
-            MongoDB.createNote(title, text, image)
+            handleNotesUseCase.insertNote(title, text, image)
         }
     }
 

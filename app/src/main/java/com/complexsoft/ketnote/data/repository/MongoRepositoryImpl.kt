@@ -1,7 +1,7 @@
-package com.complexsoft.ketnote.data.network
+package com.complexsoft.ketnote.data.repository
 
 import com.complexsoft.ketnote.data.model.Note
-import com.complexsoft.ketnote.data.network.MongoDBAPP.app
+import com.complexsoft.ketnote.data.repository.MongoDBAPP.app
 import com.complexsoft.ketnote.utils.Constants.APP_ID
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query

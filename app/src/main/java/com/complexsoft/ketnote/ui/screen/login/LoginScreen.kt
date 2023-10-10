@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.complexsoft.ketnote.R
-import com.complexsoft.ketnote.data.network.MongoDBAPP
+import com.complexsoft.ketnote.data.repository.MongoDBAPP
 import com.complexsoft.ketnote.databinding.LoginScreenLayoutBinding
 import dagger.hilt.android.AndroidEntryPoint
 import io.realm.kotlin.mongodb.AuthenticationChange

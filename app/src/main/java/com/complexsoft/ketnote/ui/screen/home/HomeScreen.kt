@@ -24,6 +24,7 @@ import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -38,7 +39,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
     ): View {
         binding = HomeScreenLayoutBinding.inflate(layoutInflater)
         val viewModel by viewModels<HomeScreenViewModel>()
-        // db password Y282lAEZODVckp3j
         val notesAdapter = NoteAdapter(emptyList()) {
             val action =
                 HomeScreenDirections.actionHomeScreenToCreateNoteScreen(it._id.toHexString())
@@ -68,8 +68,16 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         "Cancel",
                         "delete notes"
                     ) {
-                        viewModel.deleteAllNotes()
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.deleteAllNotes(Firebase.storage)
+                        }
                     }?.show()
+                    menuItem.isCheckable = false
+                }
+
+                R.id.generate_all_notes_pdf -> {
+
+
                     menuItem.isCheckable = false
                 }
 

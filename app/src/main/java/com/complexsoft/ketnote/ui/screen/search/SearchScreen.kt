@@ -19,10 +19,11 @@ import com.complexsoft.ketnote.ui.screen.home.HomeScreenViewModel
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView.TransitionState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class SearchScreen : Fragment(R.layout.search_view_layout) {
 
     private lateinit var binding: SearchViewLayoutBinding

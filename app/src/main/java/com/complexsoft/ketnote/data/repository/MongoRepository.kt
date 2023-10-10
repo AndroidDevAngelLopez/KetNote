@@ -1,4 +1,4 @@
-package com.complexsoft.ketnote.data.network
+package com.complexsoft.ketnote.data.repository
 
 import com.complexsoft.ketnote.data.model.Note
 import kotlinx.coroutines.flow.Flow
