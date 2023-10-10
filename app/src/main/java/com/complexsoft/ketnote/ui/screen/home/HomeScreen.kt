@@ -48,13 +48,11 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             findNavController().navigate(action)
         }
 
-
         val activity = requireActivity() as MainActivity
 
         activity.binding.topAppBar.setNavigationOnClickListener {
             activity.binding.drawerLayout.openDrawer(GravityCompat.START)
         }
-
 
         val header = activity.binding.mainNavigationView.getHeaderView(0)
         val profilePic = header.findViewById<ImageView>(R.id.drawer_layout_header_profile_pic)
@@ -62,8 +60,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             header.findViewById<MaterialTextView>(R.id.drawer_layout_header_profile_name)
         Glide.with(this).load(Firebase.auth.currentUser?.photoUrl).into(profilePic)
         profileName.text = Firebase.auth.currentUser?.displayName
-
-
 
         activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             if (menuItem.itemId == R.id.delete_all_item) {
@@ -73,12 +69,20 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         .setNeutralButton("Cancel") { dialog, which ->
                             // Respond to neutral button press
                             dialog.dismiss()
-                        }
-//                        .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
-//                            // Respond to negative button press
-//                        }
-                        .setPositiveButton("delete notes") { dialog, which ->
+                        }.setPositiveButton("delete notes") { dialog, which ->
                             viewModel.deleteAllNotes()
+                        }.show()
+                }
+                menuItem.isCheckable = false
+            }
+
+            if (menuItem.itemId == R.id.about_item) {
+                context?.let {
+                    val appVersion = "2310-alpha-0.9 Trinity"
+                    MaterialAlertDialogBuilder(it).setTitle("KetNote")
+                        .setMessage("KetNote belongs to ComplexSoftSolutions©\ncurrent version is : $appVersion")
+                        .setNeutralButton("OK") { dialog, which ->
+                            dialog.dismiss()
                         }.show()
                 }
                 menuItem.isCheckable = false

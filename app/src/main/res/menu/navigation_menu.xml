@@ -16,6 +16,11 @@
                     android:checkable="true"
                     android:icon="@drawable/google"
                     android:title="@string/signout_title" />
+                <item
+                    android:id="@+id/about_item"
+                    android:checkable="true"
+                    android:icon="@drawable/baseline_info_24"
+                    android:title="@string/about_title" />
             </group>
         </menu>
     </item>

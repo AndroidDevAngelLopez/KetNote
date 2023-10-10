@@ -20,6 +20,7 @@ import com.complexsoft.ketnote.data.model.ImageNote
 import com.complexsoft.ketnote.databinding.CreateNoteDialogLayoutBinding
 import com.complexsoft.ketnote.ui.screen.utils.adapters.ImageNoteAdapter
 import com.complexsoft.ketnote.utils.toImageNoteList
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -70,7 +71,17 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.deleteNoteButton.visibility = View.VISIBLE
             val note = viewModel.getNoteById(ObjectId(args.id))
             imageNoteAdapter = ImageNoteAdapter(listOf(ImageNote(src = note!!.images))) {
-
+                context?.let {
+                    MaterialAlertDialogBuilder(it)
+                        .setTitle("Selected Photo")
+                        .setMessage("All notes will be deleted !")
+                        .setNeutralButton("Cancel") { dialog, which ->
+                            // Respond to neutral button press
+                            dialog.dismiss()
+                        }.setPositiveButton("delete notes") { dialog, which ->
+                            viewModel.deleteAllNotes()
+                        }.show()
+                }
             }
             imageNoteAdapter.updateList(listOf(ImageNote(src = note.images)))
             binding.sendNoteButton.text = "Update Note"
