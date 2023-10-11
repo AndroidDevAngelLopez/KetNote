@@ -1,6 +1,5 @@
 package com.complexsoft.ketnote.ui.screen.home
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -52,10 +51,6 @@ class HomeScreenViewModel @Inject constructor(
         handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
     }
 
-    fun generateJpegImage(note: Note, activity: DialogFragment): Bitmap {
-        return handleNotesUseCase.generateJpegImage(note, activity)
-    }
-
     fun deletePhotoFromFirebase(imageToDelete: StorageReference, onImageDeleted: () -> Unit) {
         handleNotesUseCase.deletePhotoFromFirebase(imageToDelete, onImageDeleted)
     }
@@ -64,9 +59,6 @@ class HomeScreenViewModel @Inject constructor(
         handleNotesUseCase.openPhotoPicker(
             activity, onImagesFetched
         )
-
-    fun openPhotoShareDialog(activity: DialogFragment) =
-        handleNotesUseCase.openPhotoShareDialog(activity)
 
     fun searchNotesByTitle(title: String) {
         viewModelScope.launch {

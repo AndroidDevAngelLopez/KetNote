@@ -1,4 +1,4 @@
-package com.complexsoft.ketnote.ui.screen
+package com.complexsoft.ketnote.ui
 
 import android.os.Build
 import android.os.Bundle

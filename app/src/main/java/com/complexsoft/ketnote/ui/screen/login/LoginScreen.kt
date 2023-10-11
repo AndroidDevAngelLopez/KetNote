@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.repository.MongoDBAPP
 import com.complexsoft.ketnote.databinding.LoginScreenLayoutBinding
@@ -38,6 +39,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = LoginScreenLayoutBinding.inflate(layoutInflater)
+        context?.let { Glide.with(it).load(R.drawable.google).into(binding.loginLogo) }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 if (MongoDBAPP.app.currentUser?.loggedIn == true) {

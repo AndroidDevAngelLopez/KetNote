@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
-import com.complexsoft.ketnote.ui.screen.MainActivity
+import com.complexsoft.ketnote.ui.MainActivity
 import com.complexsoft.ketnote.ui.screen.components.createDialog
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
@@ -76,12 +76,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                     menuItem.isCheckable = false
                 }
 
-                R.id.generate_all_notes_pdf -> {
-
-
-                    menuItem.isCheckable = false
-                }
-
                 R.id.about_item -> {
                     createDialog(
                         this.context,
@@ -137,6 +131,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                                 binding.homeScreenProgressIndicator.visibility = View.GONE
                             } else {
                                 emptyUI()
+                                notesAdapter.updateList(emptyList())
                             }
                         }
 

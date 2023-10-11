@@ -30,4 +30,5 @@
     <string name="about_title">Acerca de...</string>
     <string name="add_image">Agregar imagen</string>
     <string name="generate_all_pdf">Generar Informe PDF</string>
+    <string name="add_image_new">Imagen</string>
 </resources>
