@@ -25,11 +25,14 @@
     <string name="app_text_content">Show a dialog\n\nWhen you want to show your dialog, create an instance of your DialogFragment and call show(), passing the FragmentManager and a tag name for the dialog fragment.\n\nYou can get the FragmentManager by calling getSupportFragmentManager() from the FragmentActivity or by calling getParentFragmentManager() from a Fragment. See the following for an example:</string>
     <string name="delete_note">Eliminar nota</string>
     <string name="searchbar_hint">Buscar notas…</string>
-    <string name="action_text">Ok</string>
+    <string name="action_text">OK</string>
     <string name="notas">Crear Nota</string>
     <string name="about_title">Acerca de…</string>
     <string name="add_image">Agregar imagen</string>
     <string name="add_image_new">Imagen</string>
     <string name="update_note">Actualizar</string>
     <string name="create_note">Crear Nota</string>
+    <string name="image_visor">image_visor</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="comenzar">Comenzar!</string>
 </resources>

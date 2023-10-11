@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
     private lateinit var binding: LoginScreenLayoutBinding
-    val viewModel by activityViewModels<LoginViewModel>()
+    private val viewModel by activityViewModels<LoginViewModel>()
     private lateinit var activityForResult: ActivityResultLauncher<IntentSenderRequest>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -48,6 +48,9 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_createNoteScreen_to_imageVisorFragment"
+            app:destination="@id/imageVisorFragment" />
     </dialog>
     <fragment
         android:id="@+id/searchScreen"
@@ -57,5 +60,14 @@
         <action
             android:id="@+id/action_searchScreen_to_createNoteScreen"
             app:destination="@id/createNoteScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageVisorFragment"
+        android:name="com.complexsoft.ketnote.ui.screen.imagevisor.ImageVisorFragment"
+        android:label="ImageVisorFragment"
+        tools:layout="@layout/image_visor_layout">
+        <argument
+            android:name="image"
+            app:argType="string" />
     </fragment>
 </navigation>

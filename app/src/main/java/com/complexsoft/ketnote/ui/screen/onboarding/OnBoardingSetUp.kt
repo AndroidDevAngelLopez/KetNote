@@ -37,21 +37,21 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
                 super.onPageSelected(position)
                 when (position) {
                     0 -> {
-                        binding.onboardingButton.text = "Siguiente"
+                        binding.onboardingButton.text = getString(R.string.siguiente)
                         binding.onboardingButton.setOnClickListener {
                             binding.onboardingPager.currentItem = 1
                         }
                     }
 
                     1 -> {
-                        binding.onboardingButton.text = "Siguiente"
+                        binding.onboardingButton.text = getString(R.string.siguiente)
                         binding.onboardingButton.setOnClickListener {
                             binding.onboardingPager.currentItem = 2
                         }
                     }
 
                     2 -> {
-                        binding.onboardingButton.text = "Comenzar!"
+                        binding.onboardingButton.text = getString(R.string.comenzar)
                         binding.onboardingButton.setOnClickListener {
                             context?.let { it1 -> viewModel.onBoardingComplete(it1) }
                         }

@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -14,12 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.model.ImageNote
 import com.complexsoft.ketnote.databinding.CreateNoteDialogLayoutBinding
-import com.complexsoft.ketnote.ui.screen.components.createDialog
 import com.complexsoft.ketnote.ui.screen.utils.adapters.ImageNoteAdapter
 import com.complexsoft.ketnote.utils.toImageNoteList
 import com.google.firebase.auth.FirebaseAuth
@@ -41,9 +40,8 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private lateinit var imageNoteAdapter: ImageNoteAdapter
-    val viewModel by viewModels<HomeScreenViewModel>()
-    private var flag = false
-
+    private val viewModel by viewModels<HomeScreenViewModel>()
+    private var isPhotoPickerOpen = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,7 +56,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 val remoteImagePath =
                     "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${image.lastPathSegment}-${System.currentTimeMillis()}.jpg"
                 uploadTask = storageRef.child(remoteImagePath)
-                flag = true
+                isPhotoPickerOpen = true
             }
         }
 
@@ -69,11 +67,11 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         val builder = AlertDialog.Builder(requireActivity())
         builder.setView(binding.root)
         imageNoteAdapter = ImageNoteAdapter(emptyList()) {
-            createDialog(
-                this.context, "image clicked", "this image has been clicked", "dismiss", "action"
-            ) {
-                Log.d("image Clicked", "omg clicked")
-            }?.show()
+            if (it.src.isNotEmpty()) {
+                val action =
+                    CreateNoteScreenDirections.actionCreateNoteScreenToImageVisorFragment(it.src)
+                findNavController().navigate(action)
+            }
         }
         if (args.id.isNotBlank()) {
             val note = viewModel.getNoteById(ObjectId(args.id))
@@ -121,7 +119,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
             binding.sendNoteButton.setOnClickListener {
-                if (flag) {
+                if (isPhotoPickerOpen) {
                     if (_image.toString().isNotBlank()) {
                         if (note != null) {
                             if (note.images.isNotEmpty()) {
@@ -189,7 +187,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
             binding.sendNoteButton.setOnClickListener {
-                if (flag) {
+                if (isPhotoPickerOpen) {
                     viewModel.uploadPhotoToFirebase(uploadTask, _image) {
                         viewModel.insertNote(
                             binding.homeTitleNoteText.text.toString(),
