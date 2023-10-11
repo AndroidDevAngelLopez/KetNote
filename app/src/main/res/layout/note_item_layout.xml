@@ -33,7 +33,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_date"
-            style="@style/TextAppearance.Material3.BodyLarge"
+            style="@style/TextAppearance.Material3.BodyMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_date"
@@ -47,7 +47,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_text"
-            style="@style/TextAppearance.Material3.BodyMedium"
+            style="@style/TextAppearance.Material3.BodySmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"

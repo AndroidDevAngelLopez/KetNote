@@ -64,10 +64,10 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                 R.id.delete_all_item -> {
                     createDialog(
                         this.context,
-                        "Are you sure to delete all notes?",
-                        "All notes will be deleted !",
-                        "Cancel",
-                        "delete notes"
+                        "¿Estas seguro de borrar todas las notas?",
+                        "Todas las notas seran eliminadas!",
+                        "Cancelar",
+                        "Eliminar notas"
                     ) {
                         viewLifecycleOwner.lifecycleScope.launch {
                             viewModel.deleteAllNotes(Firebase.storage)
@@ -90,10 +90,10 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                 R.id.signout_item -> {
                     createDialog(
                         this.context,
-                        "Are you sure to logout?",
-                        "save your work before logout!",
-                        "Cancel",
-                        "Logout"
+                        "¿Estas seguro de cerrar sesion?",
+                        "guarda tu trabajo antes de continuar!",
+                        "Cancelar",
+                        "Cerrar sesion"
                     ) {
                         viewModel.logout(requireActivity())
                     }?.show()
@@ -157,7 +157,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         return binding.root
     }
 
-    private fun emptyUI(loading: Boolean = false, message: String = "No notes to show") {
+    private fun emptyUI(loading: Boolean = false, message: String = "No hay notas que mostrar") {
         if (loading) {
             binding.homeScreenProgressIndicator.visibility = View.VISIBLE
             binding.homeScreenMessage.visibility = View.GONE

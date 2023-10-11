@@ -77,8 +77,8 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         }
         if (args.id.isNotBlank()) {
             val note = viewModel.getNoteById(ObjectId(args.id))
-            binding.noteDialogTitle.text = "Update Note"
-            binding.sendNoteButton.text = "Update Note"
+            binding.noteDialogTitle.text = getString(R.string.update_note)
+            binding.sendNoteButton.text = getString(R.string.update_note)
             if (note?.images?.isNotEmpty() == true) {
                 binding.addImageButton.icon =
                     context?.let { ContextCompat.getDrawable(it, R.drawable.baseline_edit_24) }
@@ -183,7 +183,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                     it, R.drawable.baseline_add_photo_alternate_24
                 )
             }
-            binding.noteDialogTitle.text = "Create Note"
+            binding.noteDialogTitle.text = getString(R.string.create_note)
             binding.deleteNoteButton.visibility = View.GONE
             binding.addImageButton.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))

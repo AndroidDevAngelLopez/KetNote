@@ -109,7 +109,7 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
         return binding.root
     }
 
-    private fun emptyUI(loading: Boolean = false, message: String = "No posts to show") {
+    private fun emptyUI(loading: Boolean = false, message: String = "No hay notas que mostrar") {
         if (loading) {
             binding.searchScreenProgressIndicator.visibility = View.VISIBLE
             binding.searchScreenMessage.visibility = View.GONE
