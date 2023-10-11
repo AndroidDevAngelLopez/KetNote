@@ -1,17 +1,21 @@
 package com.complexsoft.ketnote.domain.usecases
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
+import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.MongoDB
+import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +26,7 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
+import java.io.OutputStream
 
 class HandleNotesUseCase {
 
@@ -63,17 +67,37 @@ class HandleNotesUseCase {
                 paint
             )
             withContext(Dispatchers.IO) {
-                val file = File(activity.context?.externalCacheDir?.absolutePath, "image.jpg")
+                val imagesDir = File(
+                    Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES),
+                    "YourDirectory"
+                )
+                imagesDir.mkdirs()
+                val imageFile = File(imagesDir, "image.jpg")
+                val fos: OutputStream
                 try {
-                    val outputStream = FileOutputStream(file)
-                    bitmap.compress(
-                        Bitmap.CompressFormat.JPEG, 100, outputStream
+                    fos = FileOutputStream(imageFile)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    fos.close()
+                    // Send a broadcast to notify the MediaScanner about the new file
+                    activity.context?.sendBroadcast(
+                        Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)
+                        )
                     )
-                    outputStream.flush()
-                    outputStream.close()
-                } catch (e: IOException) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
+//                val file = File(activity.context?.externalCacheDir?.absolutePath, "image.jpg")
+//                try {
+//                    val outputStream = FileOutputStream(file)
+//                    bitmap.compress(
+//                        Bitmap.CompressFormat.JPEG, 100, outputStream
+//                    )
+//                    outputStream.flush()
+//                    outputStream.close()
+//                } catch (e: IOException) {
+//                    e.printStackTrace()
+//                }
             }
         }
         return bitmap
@@ -111,11 +135,13 @@ class HandleNotesUseCase {
     fun getNoteById(noteId: ObjectId): Note? = MongoDB.getNoteById(noteId)
     suspend fun deleteAllNotes(storage: FirebaseStorage) {
         getAllNotes().collectLatest {
-            for (note in it) {
-                if (note.images.isNotEmpty()) {
-                    val toDeleteRef = storage.getReferenceFromUrl(note.images)
-                    deletePhotoFromFirebase(toDeleteRef) {
-                        Log.d("Firebase on all notes deleted : ", "image successfully deleted!")
+            if (it is NotesState.Success) {
+                for (note in it.data) {
+                    if (note.images.isNotEmpty()) {
+                        val toDeleteRef = storage.getReferenceFromUrl(note.images)
+                        deletePhotoFromFirebase(toDeleteRef) {
+                            Log.d("Firebase on all notes deleted : ", "image successfully deleted!")
+                        }
                     }
                 }
             }

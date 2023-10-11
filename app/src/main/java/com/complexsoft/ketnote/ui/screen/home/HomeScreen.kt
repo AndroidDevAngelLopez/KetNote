@@ -19,6 +19,7 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.MainActivity
 import com.complexsoft.ketnote.ui.screen.components.createDialog
+import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
@@ -129,11 +130,27 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.notesFlow.collectLatest { state ->
                     when (state) {
-                        is HomeScreenViewModel.NotesUiState.Success -> {
-                            notesAdapter.updateList(state.notes)
+                        is NotesState.Success -> {
+                            if (state.data.isNotEmpty()) {
+                                notesAdapter.updateList(state.data)
+                                binding.homeScreenMessage.visibility = View.GONE
+                                binding.homeScreenProgressIndicator.visibility = View.GONE
+                            } else {
+                                emptyUI()
+                            }
                         }
 
-                        else -> {}
+                        is NotesState.Error -> {
+                            emptyUI(message = state.error.message.toString())
+                        }
+
+                        is NotesState.Idle -> {
+                            emptyUI()
+                        }
+
+                        is NotesState.Loading -> {
+                            emptyUI(loading = true)
+                        }
                     }
                 }
             }
@@ -143,5 +160,16 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             adapter = notesAdapter
         }
         return binding.root
+    }
+
+    private fun emptyUI(loading: Boolean = false, message: String = "No notes to show") {
+        if (loading) {
+            binding.homeScreenProgressIndicator.visibility = View.VISIBLE
+            binding.homeScreenMessage.visibility = View.GONE
+        } else {
+            binding.homeScreenProgressIndicator.visibility = View.GONE
+            binding.homeScreenMessage.visibility = View.VISIBLE
+            binding.homeScreenMessage.text = message
+        }
     }
 }

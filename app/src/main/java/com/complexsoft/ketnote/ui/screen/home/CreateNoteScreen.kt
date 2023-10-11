@@ -71,10 +71,10 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         val builder = AlertDialog.Builder(requireActivity())
         builder.setView(binding.root)
         if (args.id.isNotBlank()) {
+            val note = viewModel.getNoteById(ObjectId(args.id))
             binding.noteDialogShare.visibility = View.VISIBLE
             binding.noteDialogTitle.text = "Update Note"
             binding.deleteNoteButton.visibility = View.VISIBLE
-            val note = viewModel.getNoteById(ObjectId(args.id))
             imageNoteAdapter = ImageNoteAdapter(listOf(ImageNote(src = note!!.images))) {
                 createDialog(
                     this.context,
@@ -107,18 +107,21 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             }
             binding.sendNoteButton.setOnClickListener {
                 if (flag) {
-                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
-                        viewModel.updateNote(
-                            ObjectId(args.id),
-                            binding.homeTitleNoteText.text.toString(),
-                            binding.homeTextNoteText.text.toString(),
-                            it
-                        )
-                        this.dismiss()
+                    val toDeleteRef = storage.getReferenceFromUrl(note.images)
+                    viewModel.deletePhotoFromFirebase(toDeleteRef) {
+                        viewModel.uploadPhotoToFirebase(uploadTask, _image) {
+                            viewModel.updateNote(
+                                note._id,
+                                binding.homeTitleNoteText.text.toString(),
+                                binding.homeTextNoteText.text.toString(),
+                                it
+                            )
+                            this.dismiss()
+                        }
                     }
                 } else {
                     viewModel.updateNote(
-                        ObjectId(args.id),
+                        note._id,
                         binding.homeTitleNoteText.text.toString(),
                         binding.homeTextNoteText.text.toString(),
                         note.images
@@ -130,11 +133,11 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 if (note.images.isNotEmpty()) {
                     val toDeleteRef = storage.getReferenceFromUrl(note.images)
                     viewModel.deletePhotoFromFirebase(toDeleteRef) {
-                        viewModel.deleteNoteById(ObjectId(args.id))
+                        viewModel.deleteNoteById(note._id)
                         this.dismiss()
                     }
                 } else {
-                    viewModel.deleteNoteById(ObjectId(args.id))
+                    viewModel.deleteNoteById(note._id)
                     this.dismiss()
                 }
             }

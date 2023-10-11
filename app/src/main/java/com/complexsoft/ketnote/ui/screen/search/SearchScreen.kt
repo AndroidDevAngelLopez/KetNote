@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
 import com.complexsoft.ketnote.ui.screen.home.HomeScreenViewModel
+import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView.TransitionState
@@ -32,6 +33,7 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
     ): View {
         binding = SearchViewLayoutBinding.inflate(layoutInflater)
         val viewModel by viewModels<HomeScreenViewModel>()
+
         binding.searchBar.visibility = View.GONE
         binding.searchView.show()
         binding.searchView.addTransitionListener { searchView, previousState, newState ->
@@ -64,20 +66,36 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchedNotesFlow.collectLatest { state ->
                     when (state) {
-                        is HomeScreenViewModel.NotesUiState.Success -> {
-                            notesAdapter.updateList(state.notes)
+                        is NotesState.Success -> {
+                            if (state.data.isNotEmpty()) {
+                                notesAdapter.updateList(state.data)
+                                binding.searchScreenMessage.visibility = View.GONE
+                                binding.searchScreenProgressIndicator.visibility = View.GONE
+                            } else {
+                                notesAdapter.updateList(emptyList())
+                                emptyUI()
+                            }
                         }
 
-                        else -> {}
+                        is NotesState.Error -> {
+                            emptyUI(message = state.error.message.toString())
+                        }
+
+                        is NotesState.Idle -> {
+                            emptyUI()
+                        }
+
+                        is NotesState.Loading -> {
+                            emptyUI(loading = true)
+                        }
                     }
                 }
             }
         }
 
-
         val divider = this.context?.let {
             MaterialDividerItemDecoration(
-                it, LinearLayoutManager.VERTICAL /*or LinearLayoutManager.HORIZONTAL*/
+                it, LinearLayoutManager.VERTICAL
             )
         }
         binding.searchRecycler.apply {
@@ -89,6 +107,17 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
         }
 
         return binding.root
+    }
+
+    private fun emptyUI(loading: Boolean = false, message: String = "No posts to show") {
+        if (loading) {
+            binding.searchScreenProgressIndicator.visibility = View.VISIBLE
+            binding.searchScreenMessage.visibility = View.GONE
+        } else {
+            binding.searchScreenProgressIndicator.visibility = View.GONE
+            binding.searchScreenMessage.visibility = View.VISIBLE
+            binding.searchScreenMessage.text = message
+        }
     }
 
 }
