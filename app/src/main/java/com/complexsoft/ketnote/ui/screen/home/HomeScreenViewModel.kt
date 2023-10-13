@@ -40,6 +40,17 @@ class HomeScreenViewModel @Inject constructor(
         MutableStateFlow(ConnectivityObserver.Status.Unavailable)
     val connectivityStateFlow: StateFlow<ConnectivityObserver.Status> = _connectivityStateFlow
 
+    private val _searchedNotesFlow: MutableStateFlow<NotesState<List<Note>>> =
+        MutableStateFlow(NotesState.Idle)
+    val searchedNotesFlow: StateFlow<NotesState<List<Note>>> = _searchedNotesFlow
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            observeConnectivity()
+            getAllNotes()
+        }
+    }
+
     private fun observeConnectivity() {
         connectivityUseCase().onEach {
             when (it) {
@@ -64,26 +75,48 @@ class HomeScreenViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-
-    private val _searchedNotesFlow: MutableStateFlow<NotesState<List<Note>>> =
-        MutableStateFlow(NotesState.Idle)
-    val searchedNotesFlow: StateFlow<NotesState<List<Note>>> = _searchedNotesFlow
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            observeConnectivity()
-            getAllNotes()
+    private fun addImageToLocalDatabase(
+        remoteImagePath: String, imageUri: String, sessionUri: String
+    ) {
+        viewModelScope.launch {
+            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, sessionUri)
         }
-    }
-
-    fun logout(activity: FragmentActivity) {
-        logoutUseCase.logoutUser(activity)
     }
 
     fun uploadPhotoToFirebase(
         uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit
     ) {
+
         handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
+    }
+
+    fun insertNewNote(uploadTask: StorageReference, title: String, text: String, image: Uri) {
+        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+            addImageToLocalDatabase(uploadTask.path, image.toString(), "this session")
+            insertNote(
+                title, text, image.toString()
+            )
+        } else {
+            uploadPhotoToFirebase(uploadTask, image) {
+                insertNote(
+                    title, text, it
+                )
+            }
+        }
+    }
+
+
+    suspend fun cleanUpImageFromLocalDatabase(imageId: Int) {
+        handleNotesUseCase.cleanUpImageFromLocalDatabase(imageId)
+    }
+
+    suspend fun getAllImagesFromLocalDatabase() {
+        handleNotesUseCase.getAllImagesFromLocalDatabase()
+    }
+
+
+    fun logout(activity: FragmentActivity) {
+        logoutUseCase.logoutUser(activity)
     }
 
     fun deletePhotoFromFirebase(imageToDelete: StorageReference, onImageDeleted: () -> Unit) {

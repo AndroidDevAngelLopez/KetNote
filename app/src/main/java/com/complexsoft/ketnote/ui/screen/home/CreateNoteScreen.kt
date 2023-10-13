@@ -50,16 +50,15 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         pickMedia = viewModel.openPhotoPicker(this) { images ->
             if (images.isNotEmpty()) {
                 imageNoteAdapter.updateList(images.toImageNoteList())
-            }
-            for (image in images) {
-                _image = image
-                val remoteImagePath =
-                    "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${image.lastPathSegment}-${System.currentTimeMillis()}.jpg"
-                uploadTask = storageRef.child(remoteImagePath)
-                isPhotoPickerOpen = true
+                for (image in images) {
+                    _image = image
+                    val remoteImagePath =
+                        "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${image.lastPathSegment}-${System.currentTimeMillis()}.jpg"
+                    uploadTask = storageRef.child(remoteImagePath)
+                    isPhotoPickerOpen = true
+                }
             }
         }
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -78,6 +77,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.noteDialogTitle.text = getString(R.string.update_note)
             binding.sendNoteButton.text = getString(R.string.update_note)
             if (note?.images?.isNotEmpty() == true) {
+                binding.imageReceivedRecycler.visibility = View.VISIBLE
                 binding.addImageButton.icon =
                     context?.let { ContextCompat.getDrawable(it, R.drawable.baseline_edit_24) }
                 binding.deleteImageButton.visibility = View.VISIBLE
@@ -103,6 +103,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 imageNoteAdapter.updateList(listOf(ImageNote(src = note.images)))
             } else {
                 binding.deleteImageButton.visibility = View.GONE
+                binding.imageReceivedRecycler.visibility = View.GONE
                 binding.addImageButton.icon = context?.let {
                     ContextCompat.getDrawable(
                         it, R.drawable.baseline_add_photo_alternate_24
@@ -177,32 +178,26 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
         } else {
             binding.imageReceivedRecycler.visibility = View.GONE
             binding.deleteImageButton.visibility = View.GONE
+            binding.deleteNoteButton.visibility = View.GONE
+
             binding.addImageButton.icon = context?.let {
                 ContextCompat.getDrawable(
                     it, R.drawable.baseline_add_photo_alternate_24
                 )
             }
             binding.noteDialogTitle.text = getString(R.string.create_note)
-            binding.deleteNoteButton.visibility = View.GONE
             binding.addImageButton.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                binding.imageReceivedRecycler.visibility = View.VISIBLE
-                binding.addImageButton.icon = context?.let {
-                    ContextCompat.getDrawable(
-                        it, R.drawable.baseline_edit_24
-                    )
-                }
             }
             binding.sendNoteButton.setOnClickListener {
                 if (isPhotoPickerOpen) {
-                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
-                        viewModel.insertNote(
-                            binding.homeTitleNoteText.text.toString(),
-                            binding.homeTextNoteText.text.toString(),
-                            it
-                        )
-                        this.dismiss()
-                    }
+                    viewModel.insertNewNote(
+                        uploadTask,
+                        binding.homeTitleNoteText.text.toString(),
+                        binding.homeTextNoteText.text.toString(),
+                        _image
+                    )
+                    this.dismiss()
                 } else {
                     viewModel.insertNote(
                         binding.homeTitleNoteText.text.toString(),
