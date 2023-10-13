@@ -175,6 +175,7 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                 }
             }
         } else {
+            binding.imageReceivedRecycler.visibility = View.GONE
             binding.deleteImageButton.visibility = View.GONE
             binding.addImageButton.icon = context?.let {
                 ContextCompat.getDrawable(
@@ -185,6 +186,12 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             binding.deleteNoteButton.visibility = View.GONE
             binding.addImageButton.setOnClickListener {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                binding.imageReceivedRecycler.visibility = View.VISIBLE
+                binding.addImageButton.icon = context?.let {
+                    ContextCompat.getDrawable(
+                        it, R.drawable.baseline_edit_24
+                    )
+                }
             }
             binding.sendNoteButton.setOnClickListener {
                 if (isPhotoPickerOpen) {

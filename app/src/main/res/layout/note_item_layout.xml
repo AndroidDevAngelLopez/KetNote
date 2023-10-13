@@ -8,7 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     app:cardUseCompatPadding="true"
-    app:contentPadding="12dp">
+    app:contentPadding="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

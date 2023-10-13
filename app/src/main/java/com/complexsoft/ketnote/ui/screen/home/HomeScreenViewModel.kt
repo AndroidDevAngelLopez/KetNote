@@ -6,6 +6,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.model.Note
+import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
+import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
@@ -16,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
@@ -23,12 +27,42 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val logoutUseCase: LogoutUseCase, private val handleNotesUseCase: HandleNotesUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val handleNotesUseCase: HandleNotesUseCase,
+    private val connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
 
     private val _notesFlow: MutableStateFlow<NotesState<List<Note>>> =
         MutableStateFlow(NotesState.Idle)
     val notesFlow: StateFlow<NotesState<List<Note>>> = _notesFlow
+
+    private val _connectivityStateFlow: MutableStateFlow<ConnectivityObserver.Status> =
+        MutableStateFlow(ConnectivityObserver.Status.Unavailable)
+    val connectivityStateFlow: StateFlow<ConnectivityObserver.Status> = _connectivityStateFlow
+
+    private fun observeConnectivity() {
+        connectivityUseCase().onEach {
+            when (it) {
+                ConnectivityObserver.Status.Unavailable -> {
+                    _connectivityStateFlow.value = ConnectivityObserver.Status.Unavailable
+                }
+
+                ConnectivityObserver.Status.Losing -> {
+                    _connectivityStateFlow.value = ConnectivityObserver.Status.Losing
+                }
+
+                ConnectivityObserver.Status.Available -> {
+                    _connectivityStateFlow.value = ConnectivityObserver.Status.Available
+                }
+
+                ConnectivityObserver.Status.Lost -> {
+                    _connectivityStateFlow.value = ConnectivityObserver.Status.Lost
+                }
+
+            }
+
+        }.launchIn(viewModelScope)
+    }
 
 
     private val _searchedNotesFlow: MutableStateFlow<NotesState<List<Note>>> =
@@ -37,6 +71,7 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            observeConnectivity()
             getAllNotes()
         }
     }

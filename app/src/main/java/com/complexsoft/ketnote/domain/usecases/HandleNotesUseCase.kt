@@ -4,15 +4,38 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import com.complexsoft.ketnote.data.local.entity.ImageToUpload
 import com.complexsoft.ketnote.data.model.Note
+import com.complexsoft.ketnote.data.repository.LocalImagesRepository
 import com.complexsoft.ketnote.data.repository.MongoDB
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.collectLatest
 import org.mongodb.kbson.ObjectId
+import javax.inject.Inject
 
-class HandleNotesUseCase {
+class HandleNotesUseCase @Inject constructor(
+    private val localImagesRepository: LocalImagesRepository
+) {
+    suspend fun addImageToLocalDatabase(
+        remoteImagePath: String,
+        imageUri: String,
+        sessionUri: String
+    ) {
+        val imageToUpload = ImageToUpload(
+            remoteImagePath = remoteImagePath, imageUri = imageUri, sessionUri = sessionUri
+        )
+        localImagesRepository.addImageToUpload(imageToUpload)
+    }
+
+    suspend fun cleanUpImageFromLocalDatabase(imageId: Int) {
+        localImagesRepository.cleanupImage(imageId)
+    }
+
+    suspend fun getAllImagesFromLocalDatabase() {
+        localImagesRepository.getAllImages()
+    }
 
     fun uploadPhotoToFirebase(
         uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit

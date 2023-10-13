@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
+import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.MainActivity
 import com.complexsoft.ketnote.ui.screen.components.createDialog
@@ -27,8 +29,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
@@ -115,6 +119,10 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             }
         }
 
+        binding.homeScreenSwipe.setOnRefreshListener {
+            binding.homeScreenSwipe.isRefreshing = false
+        }
+
         binding.createNoteButton.setOnClickListener {
             val action = HomeScreenDirections.actionHomeScreenToCreateNoteScreen("")
             findNavController().navigate(action)
@@ -122,29 +130,72 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.notesFlow.collectLatest { state ->
-                    when (state) {
-                        is NotesState.Success -> {
-                            if (state.data.isNotEmpty()) {
-                                notesAdapter.updateList(state.data)
-                                binding.homeScreenMessage.visibility = View.GONE
-                                binding.homeScreenProgressIndicator.visibility = View.GONE
-                            } else {
+                launch {
+                    viewModel.notesFlow.collectLatest { state ->
+                        when (state) {
+                            is NotesState.Success -> {
+                                if (state.data.isNotEmpty()) {
+                                    notesAdapter.updateList(state.data)
+                                    binding.homeScreenMessage.visibility = View.GONE
+                                    binding.homeScreenProgressIndicator.visibility = View.GONE
+                                } else {
+                                    emptyUI()
+                                    notesAdapter.updateList(emptyList())
+                                }
+                            }
+
+                            is NotesState.Error -> {
+                                emptyUI(message = state.error.message.toString())
+                            }
+
+                            is NotesState.Idle -> {
                                 emptyUI()
-                                notesAdapter.updateList(emptyList())
+                            }
+
+                            is NotesState.Loading -> {
+                                emptyUI(loading = true)
                             }
                         }
+                    }
+                }
+                launch {
+                    viewModel.connectivityStateFlow.collectLatest {
+                        when (it) {
+                            ConnectivityObserver.Status.Unavailable -> {
+                                binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
+                                binding.homeConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Estas trabajando sin conexion"
+                                delay(3000)
+                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                            }
 
-                        is NotesState.Error -> {
-                            emptyUI(message = state.error.message.toString())
-                        }
+                            ConnectivityObserver.Status.Losing -> {
+                                binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
+                                binding.homeConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Estas perdiendo conexion!"
+                                delay(2000)
+                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                            }
 
-                        is NotesState.Idle -> {
-                            emptyUI()
-                        }
+                            ConnectivityObserver.Status.Available -> {
+                                binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(true)
+                                binding.homeConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Sincronizando notas..."
+                                delay(1600)
+                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                            }
 
-                        is NotesState.Loading -> {
-                            emptyUI(loading = true)
+                            ConnectivityObserver.Status.Lost -> {
+                                binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
+                                binding.homeConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Estas trabajando sin conexion!"
+                                delay(3000)
+                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                            }
                         }
                     }
                 }
@@ -165,6 +216,30 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             binding.homeScreenProgressIndicator.visibility = View.GONE
             binding.homeScreenMessage.visibility = View.VISIBLE
             binding.homeScreenMessage.text = message
+        }
+    }
+
+    private fun switchConnectivityObserverLayoutColor(isAvailable: Boolean) {
+        if (isAvailable) {
+            this@HomeScreen.context?.let { it1 ->
+                ContextCompat.getColor(
+                    it1, R.color.md_theme_light_tertiary
+                )
+            }?.let { it2 ->
+                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
+                    it2
+                )
+            }
+        } else {
+            this@HomeScreen.context?.let { it1 ->
+                ContextCompat.getColor(
+                    it1, R.color.md_theme_dark_inversePrimary
+                )
+            }?.let { it2 ->
+                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
+                    it2
+                )
+            }
         }
     }
 }

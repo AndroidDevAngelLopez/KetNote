@@ -1,5 +1,8 @@
 package com.complexsoft.ketnote.domain.di
 
+import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
+import com.complexsoft.ketnote.data.repository.LocalImagesRepository
+import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LoginUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
@@ -24,6 +27,12 @@ object DomainModule {
 
     @Singleton
     @Provides
-    fun providesHandleNotesUseCase(): HandleNotesUseCase = HandleNotesUseCase()
+    fun providesHandleNotesUseCase(localImagesRepository: LocalImagesRepository): HandleNotesUseCase =
+        HandleNotesUseCase(localImagesRepository)
+
+    @Singleton
+    @Provides
+    fun providesHandleConnectivityUseCase(connectivityObserver: ConnectivityObserver): HandleConnectivityUseCase =
+        HandleConnectivityUseCase(connectivityObserver)
 
 }
