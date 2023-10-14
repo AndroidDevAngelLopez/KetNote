@@ -19,9 +19,7 @@ class HandleNotesUseCase @Inject constructor(
     private val localImagesRepository: LocalImagesRepository
 ) {
     suspend fun addImageToLocalDatabase(
-        remoteImagePath: String,
-        imageUri: String,
-        sessionUri: String
+        remoteImagePath: String, imageUri: String, sessionUri: String
     ) {
         val imageToUpload = ImageToUpload(
             remoteImagePath = remoteImagePath, imageUri = imageUri, sessionUri = sessionUri
@@ -38,13 +36,15 @@ class HandleNotesUseCase @Inject constructor(
     }
 
     fun uploadPhotoToFirebase(
-        uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit
+        uploadTask: StorageReference, image: String, onUriDownloadReceived: (String) -> Unit
     ) {
-        uploadTask.putFile(image).addOnFailureListener {
+        uploadTask.putFile(Uri.parse(image)).addOnFailureListener {
             Log.d("failure in upload image", it.message.toString())
-        }.addOnSuccessListener { taskSnapshot ->
+        }.addOnSuccessListener {
             uploadTask.downloadUrl.addOnSuccessListener {
                 onUriDownloadReceived(it.toString())
+            }.addOnFailureListener {
+                Log.d("EXCEPTOIN ON RETURNING URL", "from firebase $it")
             }
         }
     }

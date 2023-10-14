@@ -47,6 +47,7 @@ class NoteAdapter(private var notes: List<Note>, private val onNoteClick: (Note)
         holder.noteText.text = notes[position].text
         holder.noteDate.text = notes[position].date.toHumanDate()
         if (notes[position].images.isNotBlank()) {
+            holder.noteImage.visibility = View.VISIBLE
             Glide.with(holder.noteImage).load(notes[position].images).into(holder.noteImage)
         } else {
             holder.noteImage.visibility = View.GONE

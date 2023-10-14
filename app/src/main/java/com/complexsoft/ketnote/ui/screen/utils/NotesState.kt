@@ -6,3 +6,7 @@ sealed class NotesState<out T> {
     data class Success<T>(val data: T) : NotesState<T>()
     data class Error(val error: Throwable) : NotesState<Nothing>()
 }
+
+data class NoteUiState(
+    val title: String = "", val text: String = "", val image: String = ""
+)

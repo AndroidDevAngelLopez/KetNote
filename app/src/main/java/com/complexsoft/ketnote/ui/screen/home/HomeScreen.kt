@@ -45,8 +45,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         binding = HomeScreenLayoutBinding.inflate(layoutInflater)
         val viewModel by viewModels<HomeScreenViewModel>()
         val notesAdapter = NoteAdapter(emptyList()) {
-            val action =
-                HomeScreenDirections.actionHomeScreenToCreateNoteScreen(it._id.toHexString())
+            val action = HomeScreenDirections.actionHomeScreenToNewCreateNote(it._id.toHexString())
             findNavController().navigate(action)
         }
 
@@ -124,7 +123,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         }
 
         binding.createNoteButton.setOnClickListener {
-            val action = HomeScreenDirections.actionHomeScreenToCreateNoteScreen("")
+            val action = HomeScreenDirections.actionHomeScreenToNewCreateNote("")
             findNavController().navigate(action)
         }
 

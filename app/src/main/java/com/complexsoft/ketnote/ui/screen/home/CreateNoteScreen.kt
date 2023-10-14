@@ -124,28 +124,28 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
                     if (_image.toString().isNotBlank()) {
                         if (note != null) {
                             if (note.images.isNotEmpty()) {
-                                val toDeleteRef = storage.getReferenceFromUrl(note.images)
-                                viewModel.deletePhotoFromFirebase(toDeleteRef) {
-                                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
-                                        viewModel.updateNote(
-                                            note._id,
-                                            binding.homeTitleNoteText.text.toString(),
-                                            binding.homeTextNoteText.text.toString(),
-                                            it
-                                        )
-                                        this.dismiss()
-                                    }
-                                }
+//                                val toDeleteRef = storage.getReferenceFromUrl(note.images)
+//                                viewModel.deletePhotoFromFirebase(toDeleteRef) {
+//                                    viewModel.uploadPhotoToFirebase(uploadTask, _image) {
+//                                        viewModel.updateNote(
+//                                            note._id,
+//                                            binding.homeTitleNoteText.text.toString(),
+//                                            binding.homeTextNoteText.text.toString(),
+//                                            it
+//                                        )
+//                                        this.dismiss()
+//                                    }
+//                                }
                             } else {
-                                viewModel.uploadPhotoToFirebase(uploadTask, _image) {
-                                    viewModel.updateNote(
-                                        note._id,
-                                        binding.homeTitleNoteText.text.toString(),
-                                        binding.homeTextNoteText.text.toString(),
-                                        it
-                                    )
-                                    this.dismiss()
-                                }
+//                                viewModel.uploadPhotoToFirebase(uploadTask, _image) {
+//                                    viewModel.updateNote(
+//                                        note._id,
+//                                        binding.homeTitleNoteText.text.toString(),
+//                                        binding.homeTextNoteText.text.toString(),
+//                                        it
+//                                    )
+//                                    this.dismiss()
+//                                }
                             }
                         }
                     }
@@ -191,13 +191,13 @@ class CreateNoteScreen : DialogFragment(R.layout.create_note_dialog_layout) {
             }
             binding.sendNoteButton.setOnClickListener {
                 if (isPhotoPickerOpen) {
-                    viewModel.insertNewNote(
-                        uploadTask,
-                        binding.homeTitleNoteText.text.toString(),
-                        binding.homeTextNoteText.text.toString(),
-                        _image
-                    )
-                    this.dismiss()
+//                    viewModel.insertNewNote(
+//                        uploadTask,
+//                        binding.homeTitleNoteText.text.toString(),
+//                        binding.homeTextNoteText.text.toString(),
+//                        _image
+//                    )
+//                    this.dismiss()
                 } else {
                     viewModel.insertNote(
                         binding.homeTitleNoteText.text.toString(),

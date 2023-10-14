@@ -75,35 +75,35 @@ class HomeScreenViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun addImageToLocalDatabase(
-        remoteImagePath: String, imageUri: String, sessionUri: String
-    ) {
-        viewModelScope.launch {
-            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, sessionUri)
-        }
-    }
+//    private fun addImageToLocalDatabase(
+//        remoteImagePath: String, imageUri: String, sessionUri: String
+//    ) {
+//        viewModelScope.launch {
+//            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, sessionUri)
+//        }
+//    }
 
-    fun uploadPhotoToFirebase(
-        uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit
-    ) {
-
-        handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
-    }
-
-    fun insertNewNote(uploadTask: StorageReference, title: String, text: String, image: Uri) {
-        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
-            addImageToLocalDatabase(uploadTask.path, image.toString(), "this session")
-            insertNote(
-                title, text, image.toString()
-            )
-        } else {
-            uploadPhotoToFirebase(uploadTask, image) {
-                insertNote(
-                    title, text, it
-                )
-            }
-        }
-    }
+//    fun uploadPhotoToFirebase(
+//        uploadTask: StorageReference, image: Uri, onUriDownloadReceived: (String) -> Unit
+//    ) {
+//
+//        handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image.toString(), onUriDownloadReceived)
+//    }
+//
+//    fun insertNewNote(uploadTask: StorageReference, title: String, text: String, image: Uri) {
+//        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+//            addImageToLocalDatabase(uploadTask.path, image.toString(), "this session")
+//            insertNote(
+//                title, text, image.toString()
+//            )
+//        } else {
+//            uploadPhotoToFirebase(uploadTask, image) {
+//                insertNote(
+//                    title, text, it
+//                )
+//            }
+//        }
+//    }
 
 
     suspend fun cleanUpImageFromLocalDatabase(imageId: Int) {
