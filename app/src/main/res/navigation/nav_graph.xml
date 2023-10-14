@@ -34,34 +34,19 @@
         android:label="HomeScreen"
         tools:layout="@layout/home_screen_layout">
         <action
-            android:id="@+id/action_homeScreen_to_createNoteScreen"
-            app:destination="@id/createNoteScreen" />
-        <action
             android:id="@+id/action_homeScreen_to_searchScreen"
             app:destination="@id/searchScreen" />
         <action
             android:id="@+id/action_homeScreen_to_newCreateNote"
-            app:destination="@id/newCreateNote" />
+            app:destination="@id/createNoteScreen" />
     </fragment>
-    <dialog
-        android:id="@+id/createNoteScreen"
-        android:name="com.complexsoft.ketnote.ui.screen.home.CreateNoteScreen"
-        android:label="CreateNoteScreen"
-        tools:layout="@layout/create_note_dialog_layout">
-        <argument
-            android:name="id"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_createNoteScreen_to_imageVisorFragment"
-            app:destination="@id/imageVisorFragment" />
-    </dialog>
     <fragment
         android:id="@+id/searchScreen"
         android:name="com.complexsoft.ketnote.ui.screen.search.SearchScreen"
         android:label="SearchScreen"
         tools:layout="@layout/search_view_layout">
         <action
-            android:id="@+id/action_searchScreen_to_createNoteScreen"
+            android:id="@+id/action_searchScreen_to_newCreateNote"
             app:destination="@id/createNoteScreen" />
     </fragment>
     <fragment
@@ -74,8 +59,8 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/newCreateNote"
-        android:name="com.complexsoft.ketnote.ui.screen.createnote.NewCreateNote"
+        android:id="@+id/createNoteScreen"
+        android:name="com.complexsoft.ketnote.ui.screen.createnote.CreateNoteScreen"
         android:label="NewCreateNote"
         tools:layout="@layout/new_create_fragment_layout">
         <argument

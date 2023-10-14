@@ -98,10 +98,29 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 
-    private fun uploadPhotoToFirebase(
+
+    fun uploadPhotoToFirebase(
         uploadTask: StorageReference, image: String, onUriDownloadReceived: (String) -> Unit
     ) {
         handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
+    }
+
+    fun deleteCurrentNote(noteId: ObjectId) {
+        viewModelScope.launch {
+            handleNotesUseCase.deleteNoteById(noteId)
+        }.invokeOnCompletion {
+            Log.d("inserted!", "inserted!")
+            _isNoteJobDone.value = true
+        }
+    }
+
+    fun updateCurrentNote(id: ObjectId, title: String, text: String, image: String) {
+        viewModelScope.launch {
+            handleNotesUseCase.updateNote(id, title, text, image)
+        }.invokeOnCompletion {
+            Log.d("updated!", "updated!")
+            _isNoteJobDone.value = true
+        }
     }
 
     fun insertNewNote(uploadTask: StorageReference) {
@@ -116,9 +135,11 @@ class CreateNoteViewModel @Inject constructor(
                     updateCurrentState(
                         noteUiState.value.title, noteUiState.value.text, Uri.parse(it)
                     )
+                    createNote()
                 }
+            } else {
+                createNote()
             }
-            createNote()
         }
     }
 
@@ -130,7 +151,7 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 
-    private fun createNote() {
+    fun createNote() {
         viewModelScope.launch {
             handleNotesUseCase.insertNote(
                 title = noteUiState.value.title,

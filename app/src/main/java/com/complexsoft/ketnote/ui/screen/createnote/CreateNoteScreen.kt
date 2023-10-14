@@ -32,15 +32,14 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 @AndroidEntryPoint
-class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
+class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
     private lateinit var uploadTask: StorageReference
-    private lateinit var _image: Uri
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private lateinit var imageNoteAdapter: ImageNoteAdapter
     private lateinit var binding: NewCreateFragmentLayoutBinding
     private val viewModel by viewModels<CreateNoteViewModel>()
-    private val args: NewCreateNoteArgs by navArgs()
+    private val args: CreateNoteScreenArgs by navArgs()
     private var isImagePickerOpened = false
 
     override fun onCreateView(
@@ -51,24 +50,29 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
         binding = NewCreateFragmentLayoutBinding.inflate(layoutInflater)
         imageNoteAdapter = ImageNoteAdapter(emptyList()) {
             if (it.src.isNotEmpty()) {
-                val action = NewCreateNoteDirections.actionNewCreateNoteToImageVisorFragment(it.src)
+                val action =
+                    CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(it.src)
                 findNavController().navigate(action)
             }
         }
 
         val pickMedia =
-            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uri ->
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
-                    if (uri.isNotEmpty()) {
-                        viewModel.updateCurrentState(
-                            binding.noteTitle.text.toString(),
-                            binding.noteText.text.toString(),
-                            uri[0]
-                        )
-                        imageNoteAdapter.updateList(listOf(ImageNote(src = uri[0].toString())))
+                    if (uri.toString().isNotEmpty()) {
+                        imageNoteAdapter.updateList(listOf(ImageNote(src = uri.toString())))
                         val remoteImagePath =
-                            "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${uri[0].lastPathSegment}-${System.currentTimeMillis()}.jpg"
+                            "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${uri.lastPathSegment}-${System.currentTimeMillis()}.jpg"
                         uploadTask = storageRef.child(remoteImagePath)
+                        viewModel.uploadPhotoToFirebase(
+                            uploadTask, uri.toString()
+                        ) {
+                            viewModel.updateCurrentState(
+                                binding.noteTitle.text.toString(),
+                                binding.noteText.text.toString(),
+                                Uri.parse(it)
+                            )
+                        }
                         isImagePickerOpened = true
                     }
                 } else {
@@ -86,10 +90,17 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
                 launch {
                     viewModel.noteUiState.collectLatest { noteUIState ->
                         if (args.id.isNotEmpty()) {
-                            binding.noteAddImageButton.setOnClickListener {
-                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                            }
                             binding.noteDeleteButton.visibility = View.VISIBLE
+                            binding.noteDeleteButton.setOnClickListener {
+                                if (noteUIState.image.isNotEmpty()) {
+                                    val toDeleteRef = storage.getReferenceFromUrl(noteUIState.image)
+                                    viewModel.deletePhotoFromFirebase(toDeleteRef) {
+                                        viewModel.deleteCurrentNote(ObjectId(args.id))
+                                    }
+                                } else {
+                                    viewModel.deleteCurrentNote(ObjectId(args.id))
+                                }
+                            }
                             binding.noteSendButton.text = "Actualizar Nota"
                             binding.titleLabel.text = "Actualizar Nota"
                             binding.noteAddImageButton.icon = context?.let { context ->
@@ -100,6 +111,16 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
                             binding.noteSendButton.visibility = View.VISIBLE
                             binding.noteTitle.setText(noteUIState.title)
                             binding.noteText.setText(noteUIState.text)
+                            binding.noteSendButton.setOnClickListener {
+                                if (binding.noteTitle.text.toString().isNotEmpty()) {
+                                    viewModel.updateCurrentNote(
+                                        ObjectId(args.id),
+                                        binding.noteTitle.text.toString(),
+                                        binding.noteText.text.toString(),
+                                        noteUIState.image
+                                    )
+                                }
+                            }
                             if (noteUIState.image.isNotEmpty()) {
                                 imageNoteAdapter.updateList(listOf(ImageNote(src = noteUIState.image)))
                                 binding.noteDeleteImageButton.setOnClickListener {
@@ -116,9 +137,13 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
                                 }
 
                                 binding.noteDeleteImageButton.visibility = View.VISIBLE
-                                binding.noteAddImageButton.visibility = View.VISIBLE
+                                binding.noteAddImageButton.visibility = View.GONE
                                 binding.noteImageRecyclerView.visibility = View.VISIBLE
                             } else {
+                                binding.noteAddImageButton.visibility = View.VISIBLE
+                                binding.noteAddImageButton.setOnClickListener {
+                                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                                }
                                 binding.noteAddImageButton.icon = context?.let { context ->
                                     ContextCompat.getDrawable(
                                         context, R.drawable.baseline_add_photo_alternate_24
@@ -148,8 +173,8 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
                                     )
                                     isImagePickerOpened = false
                                     imageNoteAdapter.updateList(emptyList())
-                                }
 
+                                }
                                 binding.noteDeleteImageButton.visibility = View.VISIBLE
                                 binding.noteAddImageButton.visibility = View.VISIBLE
                                 binding.noteImageRecyclerView.visibility = View.VISIBLE
@@ -169,12 +194,7 @@ class NewCreateNote : Fragment(R.layout.new_create_fragment_layout) {
                                     binding.noteText.text.toString(),
                                     Uri.parse(noteUIState.image)
                                 )
-                                if (!isImagePickerOpened) {
-                                    uploadTask = storageRef.child("images/")
-                                }
-                                viewModel.insertNewNote(
-                                    uploadTask
-                                )
+                                viewModel.createNote()
                             }
                         }
                     }

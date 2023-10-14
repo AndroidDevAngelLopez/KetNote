@@ -58,7 +58,7 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
 
         val notesAdapter = NoteAdapter(emptyList()) {
             val action =
-                SearchScreenDirections.actionSearchScreenToCreateNoteScreen(it._id.toHexString())
+                SearchScreenDirections.actionSearchScreenToNewCreateNote(it._id.toHexString())
             findNavController().navigate(action)
         }
 
