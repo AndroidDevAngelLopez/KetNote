@@ -5,23 +5,24 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.MainActivity"
-    tools:openDrawer="start">
+    tools:context=".ui.MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="30dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
                 android:minHeight="?attr/actionBarSize"
                 app:menu="@menu/top_app_bar"
                 app:navigationIcon="@drawable/baseline_menu_24"
@@ -34,7 +35,7 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="35dp"
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -44,6 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         android:padding="12dp"
         app:headerLayout="@layout/navigation_drawer_header_layout"
         app:itemTextAppearance="@style/TextAppearance.Material3.TitleMedium"
@@ -51,5 +53,4 @@
         app:subheaderTextAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
-
 

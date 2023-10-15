@@ -33,8 +33,6 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
     ): View {
         binding = SearchViewLayoutBinding.inflate(layoutInflater)
         val viewModel by viewModels<HomeScreenViewModel>()
-
-        binding.searchBar.visibility = View.GONE
         binding.searchView.show()
         binding.searchView.addTransitionListener { searchView, previousState, newState ->
             if (newState === TransitionState.HIDDEN) {

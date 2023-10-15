@@ -62,7 +62,7 @@
         android:id="@+id/createNoteScreen"
         android:name="com.complexsoft.ketnote.ui.screen.createnote.CreateNoteScreen"
         android:label="NewCreateNote"
-        tools:layout="@layout/new_create_fragment_layout">
+        tools:layout="@layout/create_note_screen_layout">
         <argument
             android:name="id"
             app:argType="string" />

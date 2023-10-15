@@ -19,7 +19,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.model.ImageNote
-import com.complexsoft.ketnote.databinding.NewCreateFragmentLayoutBinding
+import com.complexsoft.ketnote.databinding.CreateNoteScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.utils.adapters.ImageNoteAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
@@ -32,12 +32,12 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
 @AndroidEntryPoint
-class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
+class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
     private lateinit var uploadTask: StorageReference
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private lateinit var imageNoteAdapter: ImageNoteAdapter
-    private lateinit var binding: NewCreateFragmentLayoutBinding
+    private lateinit var binding: CreateNoteScreenLayoutBinding
     private val viewModel by viewModels<CreateNoteViewModel>()
     private val args: CreateNoteScreenArgs by navArgs()
     private var isImagePickerOpened = false
@@ -47,13 +47,17 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
     ): View {
         storage = Firebase.storage
         storageRef = storage.reference
-        binding = NewCreateFragmentLayoutBinding.inflate(layoutInflater)
+        binding = CreateNoteScreenLayoutBinding.inflate(layoutInflater)
         imageNoteAdapter = ImageNoteAdapter(emptyList()) {
             if (it.src.isNotEmpty()) {
                 val action =
                     CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(it.src)
                 findNavController().navigate(action)
             }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
         val pickMedia =
@@ -64,6 +68,8 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
                         val remoteImagePath =
                             "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${uri.lastPathSegment}-${System.currentTimeMillis()}.jpg"
                         uploadTask = storageRef.child(remoteImagePath)
+                        binding.noteImageRecyclerView.visibility = View.GONE
+                        binding.createNoteProgressIndicator.visibility = View.VISIBLE
                         viewModel.uploadPhotoToFirebase(
                             uploadTask, uri.toString()
                         ) {
@@ -72,6 +78,8 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
                                 binding.noteText.text.toString(),
                                 Uri.parse(it)
                             )
+                            binding.createNoteProgressIndicator.visibility = View.GONE
+                            binding.noteImageRecyclerView.visibility = View.VISIBLE
                         }
                         isImagePickerOpened = true
                     }
@@ -102,7 +110,7 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
                                 }
                             }
                             binding.noteSendButton.text = "Actualizar Nota"
-                            binding.titleLabel.text = "Actualizar Nota"
+                            binding.topAppBar.title = "Actualizar Nota"
                             binding.noteAddImageButton.icon = context?.let { context ->
                                 ContextCompat.getDrawable(
                                     context, R.drawable.baseline_edit_24
@@ -124,6 +132,8 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
                             if (noteUIState.image.isNotEmpty()) {
                                 imageNoteAdapter.updateList(listOf(ImageNote(src = noteUIState.image)))
                                 binding.noteDeleteImageButton.setOnClickListener {
+                                    binding.noteImageRecyclerView.visibility = View.GONE
+                                    binding.createNoteProgressIndicator.visibility = View.VISIBLE
                                     Log.d("regrence url", noteUIState.image)
                                     val toDeleteRef = storage.getReferenceFromUrl(noteUIState.image)
                                     viewModel.deletePhotoFromFirebase(toDeleteRef) {
@@ -133,6 +143,8 @@ class CreateNoteScreen : Fragment(R.layout.new_create_fragment_layout) {
                                             Uri.EMPTY
                                         )
                                         imageNoteAdapter.updateList(emptyList())
+                                        binding.createNoteProgressIndicator.visibility = View.GONE
+                                        binding.noteImageRecyclerView.visibility = View.VISIBLE
                                     }
                                 }
 
