@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginBottom="45dp">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout2"
@@ -23,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
+                app:menu="@menu/create_note_menu"
                 app:navigationIcon="@drawable/baseline_arrow_back_24"
                 app:title="@string/create_note" />
 
@@ -43,8 +45,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp">
+                    android:layout_gravity="center">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/note_title"
@@ -66,16 +67,16 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/note_text"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp"
+                        android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:gravity="start"
                         android:hint="@string/text"
-                        android:inputType="text"
+                        android:inputType="text|textMultiLine|textLongMessage"
                         android:maxLength="520" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textview.MaterialTextView
-                    style="@style/TextAppearance.Material3.TitleMedium"
+                    style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
@@ -135,30 +136,17 @@
                         android:layout_gravity="center" />
                 </RelativeLayout>
 
-                <LinearLayout
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/note_send_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginTop="10dp"
-                    android:gravity="end"
-                    android:orientation="horizontal">
+                    android:text="@string/submit_note"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    app:cornerRadius="0dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/note_send_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/submit_note" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/note_delete_button"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        android:text="@string/delete_note"
-                        android:textColor="@color/md_theme_light_onPrimary"
-                        app:backgroundTint="@color/design_default_color_error" />
-
-                </LinearLayout>
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>

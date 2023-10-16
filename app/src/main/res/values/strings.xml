@@ -35,4 +35,6 @@
     <string name="image_visor">image_visor</string>
     <string name="siguiente">Siguiente</string>
     <string name="comenzar">Comenzar!</string>
+    <string name="content_description_more">Delete Note</string>
+    <string name="more">Borrar Nota</string>
 </resources>

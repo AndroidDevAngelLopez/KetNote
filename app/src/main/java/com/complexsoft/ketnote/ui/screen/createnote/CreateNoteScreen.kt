@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -98,24 +97,30 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                 launch {
                     viewModel.noteUiState.collectLatest { noteUIState ->
                         if (args.id.isNotEmpty()) {
-                            binding.noteDeleteButton.visibility = View.VISIBLE
-                            binding.noteDeleteButton.setOnClickListener {
-                                if (noteUIState.image.isNotEmpty()) {
-                                    val toDeleteRef = storage.getReferenceFromUrl(noteUIState.image)
-                                    viewModel.deletePhotoFromFirebase(toDeleteRef) {
-                                        viewModel.deleteCurrentNote(ObjectId(args.id))
+                            binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                true
+                            binding.topAppBar.setOnMenuItemClickListener {
+                                when (it.itemId) {
+                                    R.id.delete_note_menu_option -> {
+                                        if (noteUIState.image.isNotEmpty()) {
+                                            val toDeleteRef =
+                                                storage.getReferenceFromUrl(noteUIState.image)
+                                            viewModel.deletePhotoFromFirebase(toDeleteRef) {
+                                                viewModel.deleteCurrentNote(ObjectId(args.id))
+                                            }
+                                        } else {
+                                            viewModel.deleteCurrentNote(ObjectId(args.id))
+                                        }
+                                        true
                                     }
-                                } else {
-                                    viewModel.deleteCurrentNote(ObjectId(args.id))
+
+                                    else -> {
+                                        true
+                                    }
                                 }
                             }
-                            binding.noteSendButton.text = "Actualizar Nota"
+                            binding.noteSendButton.text = "Actualizar"
                             binding.topAppBar.title = "Actualizar Nota"
-                            binding.noteAddImageButton.icon = context?.let { context ->
-                                ContextCompat.getDrawable(
-                                    context, R.drawable.baseline_edit_24
-                                )
-                            }
                             binding.noteSendButton.visibility = View.VISIBLE
                             binding.noteTitle.setText(noteUIState.title)
                             binding.noteText.setText(noteUIState.text)
@@ -144,7 +149,6 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                         )
                                         imageNoteAdapter.updateList(emptyList())
                                         binding.createNoteProgressIndicator.visibility = View.GONE
-                                        binding.noteImageRecyclerView.visibility = View.VISIBLE
                                     }
                                 }
 
@@ -156,24 +160,15 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.noteAddImageButton.setOnClickListener {
                                     pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                                 }
-                                binding.noteAddImageButton.icon = context?.let { context ->
-                                    ContextCompat.getDrawable(
-                                        context, R.drawable.baseline_add_photo_alternate_24
-                                    )
-                                }
                                 binding.noteDeleteImageButton.visibility = View.GONE
                                 binding.noteAddImageButton.visibility = View.VISIBLE
                                 binding.noteImageRecyclerView.visibility = View.GONE
                             }
                         } else {
-                            binding.noteDeleteButton.visibility = View.GONE
+                            binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                false
                             binding.noteAddImageButton.setOnClickListener {
                                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                            }
-                            binding.noteAddImageButton.icon = context?.let { context ->
-                                ContextCompat.getDrawable(
-                                    context, R.drawable.baseline_add_photo_alternate_24
-                                )
                             }
                             if (noteUIState.image.isNotEmpty()) {
                                 imageNoteAdapter.updateList(listOf(ImageNote(src = noteUIState.image)))
@@ -191,11 +186,6 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.noteAddImageButton.visibility = View.VISIBLE
                                 binding.noteImageRecyclerView.visibility = View.VISIBLE
                             } else {
-                                binding.noteAddImageButton.icon = context?.let { context ->
-                                    ContextCompat.getDrawable(
-                                        context, R.drawable.baseline_add_photo_alternate_24
-                                    )
-                                }
                                 binding.noteDeleteImageButton.visibility = View.GONE
                                 binding.noteAddImageButton.visibility = View.VISIBLE
                                 binding.noteImageRecyclerView.visibility = View.GONE

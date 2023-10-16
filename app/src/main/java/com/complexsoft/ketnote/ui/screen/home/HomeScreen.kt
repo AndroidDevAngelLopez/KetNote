@@ -183,7 +183,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                                 switchConnectivityObserverLayoutColor(true)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Sincronizando notas..."
-                                delay(1600)
+                                delay(1200)
                                 binding.homeConnectivityLayout.root.visibility = View.GONE
                             }
 
