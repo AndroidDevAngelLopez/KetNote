@@ -91,10 +91,10 @@ class CreateNoteViewModel @Inject constructor(
     }
 
     private fun addImageToLocalDatabase(
-        remoteImagePath: String, imageUri: String, sessionUri: String
+        remoteImagePath: String, imageUri: String, ownerId: String
     ) {
         viewModelScope.launch {
-            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, sessionUri)
+            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, ownerId)
         }
     }
 
@@ -123,22 +123,23 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 
-    fun insertNewNote(uploadTask: StorageReference) {
+    fun insertNewImage(
+        uploadTask: StorageReference, noteId: ObjectId, uri: Uri, title: String, text: String
+    ) {
         if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
-            if (noteUiState.value.image.isNotEmpty()) {
-                addImageToLocalDatabase(uploadTask.path, noteUiState.value.image, "this session")
-            }
-            createNote()
+            addImageToLocalDatabase(
+                uploadTask.path, uri.toString(), noteId.toHexString()
+            )
+            updateCurrentState(
+                title, text, uri
+            )
         } else {
-            if (noteUiState.value.image.isNotEmpty() && uploadTask.path != "/images") {
-                uploadPhotoToFirebase(uploadTask, noteUiState.value.image) {
-                    updateCurrentState(
-                        noteUiState.value.title, noteUiState.value.text, Uri.parse(it)
-                    )
-                    createNote()
-                }
-            } else {
-                createNote()
+            uploadPhotoToFirebase(
+                uploadTask, uri.toString()
+            ) {
+                updateCurrentState(
+                    title, text, Uri.parse(it)
+                )
             }
         }
     }

@@ -9,12 +9,12 @@ import androidx.room.Query
 interface ImageToUploadDAO {
 
     @Query("SELECT * FROM image_to_upload_table ORDER BY id ASC")
-    suspend fun getAllImages(): List<ImageToUpload>
+    suspend fun getAllUploadImages(): List<ImageToUpload>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addImageToUpload(imageToUpload: ImageToUpload)
 
     @Query("DELETE FROM image_to_upload_table WHERE id=:imageId")
-    suspend fun cleanupImage(imageId: Int)
+    suspend fun cleanupImageToUpload(imageId: Int)
 
 }

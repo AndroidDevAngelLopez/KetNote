@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.complexsoft.ketnote.data.local.datasource.LocalImagesDataSource
 import com.complexsoft.ketnote.data.local.datasource.LocalImagesDataSourceImpl
 import com.complexsoft.ketnote.data.local.db.ImagesDatabase
+import com.complexsoft.ketnote.data.local.entity.ImageToDeleteDAO
 import com.complexsoft.ketnote.data.local.entity.ImageToUploadDAO
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.data.network.connectivity.NetworkConnectivityObserver
@@ -32,12 +33,16 @@ object DataModule {
     @Singleton
     @Provides
     fun provideLocalImagesDataSource(
-        imagesToUploadDAO: ImageToUploadDAO
-    ): LocalImagesDataSource = LocalImagesDataSourceImpl(imagesToUploadDAO)
+        imagesToUploadDAO: ImageToUploadDAO, imagesToDeleteDAO: ImageToDeleteDAO
+    ): LocalImagesDataSource = LocalImagesDataSourceImpl(imagesToUploadDAO, imagesToDeleteDAO)
 
     @Singleton
     @Provides
     fun provideImagesToUploadDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imageToUploadDao()
+
+    @Singleton
+    @Provides
+    fun provideImagesToDeleteDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imageToDeleteDao()
 
     @Singleton
     @Provides

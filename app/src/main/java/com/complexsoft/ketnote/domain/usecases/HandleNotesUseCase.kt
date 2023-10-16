@@ -19,20 +19,12 @@ class HandleNotesUseCase @Inject constructor(
     private val localImagesRepository: LocalImagesRepository
 ) {
     suspend fun addImageToLocalDatabase(
-        remoteImagePath: String, imageUri: String, sessionUri: String
+        remoteImagePath: String, imageUri: String, ownerId: String
     ) {
         val imageToUpload = ImageToUpload(
-            remoteImagePath = remoteImagePath, imageUri = imageUri, sessionUri = sessionUri
+            remoteImagePath = remoteImagePath, imageUri = imageUri, ownerId = ownerId
         )
         localImagesRepository.addImageToUpload(imageToUpload)
-    }
-
-    suspend fun cleanUpImageFromLocalDatabase(imageId: Int) {
-        localImagesRepository.cleanupImage(imageId)
-    }
-
-    suspend fun getAllImagesFromLocalDatabase() {
-        localImagesRepository.getAllImages()
     }
 
     fun uploadPhotoToFirebase(

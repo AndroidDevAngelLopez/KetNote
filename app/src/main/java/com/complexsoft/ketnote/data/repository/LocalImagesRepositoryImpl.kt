@@ -1,21 +1,34 @@
 package com.complexsoft.ketnote.data.repository
 
 import com.complexsoft.ketnote.data.local.datasource.LocalImagesDataSource
+import com.complexsoft.ketnote.data.local.entity.ImageToDelete
 import com.complexsoft.ketnote.data.local.entity.ImageToUpload
 import javax.inject.Inject
 
 class LocalImagesRepositoryImpl @Inject constructor(
     private val localImagesDataSource: LocalImagesDataSource
 ) : LocalImagesRepository {
-    override suspend fun getAllImages(): List<ImageToUpload> {
-        return localImagesDataSource.getAllImages()
+    override suspend fun getAllUploadImages(): List<ImageToUpload> {
+        return localImagesDataSource.getAllUploadImages()
     }
 
     override suspend fun addImageToUpload(imageToUpload: ImageToUpload) {
         localImagesDataSource.addImageToUpload(imageToUpload = imageToUpload)
     }
 
-    override suspend fun cleanupImage(imageId: Int) {
-        localImagesDataSource.cleanupImage(imageId = imageId)
+    override suspend fun cleanupImageToUpload(imageId: Int) {
+        localImagesDataSource.cleanupImageToUpload(imageId = imageId)
+    }
+
+    override suspend fun getAllDeleteImages(): List<ImageToDelete> {
+        return localImagesDataSource.getAllDeleteImages()
+    }
+
+    override suspend fun addImageToDelete(imageToDelete: ImageToDelete) {
+        localImagesDataSource.addImageToDelete(imageToDelete = imageToDelete)
+    }
+
+    override suspend fun cleanupImageToDelete(imageId: Int) {
+        localImagesDataSource.cleanupImageToDelete(imageId = imageId)
     }
 }
