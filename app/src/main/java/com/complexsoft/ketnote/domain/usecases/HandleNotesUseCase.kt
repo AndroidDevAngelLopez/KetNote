@@ -2,15 +2,17 @@ package com.complexsoft.ketnote.domain.usecases
 
 import android.net.Uri
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.DialogFragment
+import com.complexsoft.ketnote.data.local.entity.ImageToDelete
 import com.complexsoft.ketnote.data.local.entity.ImageToUpload
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.LocalImagesRepository
 import com.complexsoft.ketnote.data.repository.MongoDB
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
@@ -18,13 +20,36 @@ import javax.inject.Inject
 class HandleNotesUseCase @Inject constructor(
     private val localImagesRepository: LocalImagesRepository
 ) {
-    suspend fun addImageToLocalDatabase(
+    suspend fun addImageToUpload(
         remoteImagePath: String, imageUri: String, ownerId: String
     ) {
         val imageToUpload = ImageToUpload(
             remoteImagePath = remoteImagePath, imageUri = imageUri, ownerId = ownerId
         )
         localImagesRepository.addImageToUpload(imageToUpload)
+    }
+
+    suspend fun uploadLocalImages(
+        onUriDownloadReceived: (String, String) -> Unit,
+    ) {
+        val storage = Firebase.storage
+        val storageRef = storage.reference
+        var counter = 0
+        localImagesRepository.getAllUploadImages().asFlow().collectLatest {
+            uploadPhotoToFirebase(storageRef.child(it.remoteImagePath), it.imageUri) { uri ->
+                onUriDownloadReceived(uri, it.ownerId)
+            }
+        }
+    }
+
+
+    suspend fun addImageToDelete(
+        remoteImagePath: String, ownerId: String
+    ) {
+        val imageToDelete = ImageToDelete(
+            remoteImagePath = remoteImagePath, ownerId = ownerId
+        )
+        localImagesRepository.addImageToDelete(imageToDelete = imageToDelete)
     }
 
     fun uploadPhotoToFirebase(
@@ -46,17 +71,6 @@ class HandleNotesUseCase @Inject constructor(
             onImageDeleted()
         }
     }
-
-    fun openPhotoPicker(activity: DialogFragment, onImagesFetched: (images: List<Uri>) -> Unit) =
-        activity.registerForActivityResult(
-            ActivityResultContracts.PickMultipleVisualMedia(5)
-        ) { images ->
-            if (images != null) {
-                onImagesFetched(images)
-            } else {
-                Log.d("PhotoPicker", "No media selected")
-            }
-        }
 
     fun searchNotesByTitle(title: String) = MongoDB.searchNotesByTitle(title)
     suspend fun deleteNoteById(noteId: ObjectId) = MongoDB.deleteNoteById(noteId)

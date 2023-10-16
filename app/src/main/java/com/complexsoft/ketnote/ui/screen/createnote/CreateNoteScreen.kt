@@ -67,19 +67,35 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                         val remoteImagePath =
                             "images/${FirebaseAuth.getInstance().currentUser?.uid}/" + "${uri.lastPathSegment}-${System.currentTimeMillis()}.jpg"
                         uploadTask = storageRef.child(remoteImagePath)
-                        binding.noteImageRecyclerView.visibility = View.GONE
-                        binding.createNoteProgressIndicator.visibility = View.VISIBLE
-                        viewModel.uploadPhotoToFirebase(
-                            uploadTask, uri.toString()
-                        ) {
-                            viewModel.updateCurrentState(
+                        if (args.id.isNotBlank()) {
+                            binding.noteImageRecyclerView.visibility = View.GONE
+                            binding.noteAddImageButton.visibility = View.GONE
+                            binding.createNoteProgressIndicator.visibility = View.VISIBLE
+                            viewModel.insertNewImage(
+                                uploadTask,
+                                ObjectId(args.id),
+                                uri,
                                 binding.noteTitle.text.toString(),
-                                binding.noteText.text.toString(),
-                                Uri.parse(it)
+                                binding.noteText.text.toString()
                             )
                             binding.createNoteProgressIndicator.visibility = View.GONE
+                            binding.noteAddImageButton.visibility = View.VISIBLE
+                            binding.noteImageRecyclerView.visibility = View.VISIBLE
+                        } else {
+                            binding.noteImageRecyclerView.visibility = View.GONE
+                            binding.noteAddImageButton.visibility = View.GONE
+                            binding.createNoteProgressIndicator.visibility = View.VISIBLE
+                            viewModel.insertNewImage(
+                                uploadTask = uploadTask,
+                                uri = uri,
+                                title = binding.noteTitle.text.toString(),
+                                text = binding.noteText.text.toString()
+                            )
+                            binding.createNoteProgressIndicator.visibility = View.GONE
+                            binding.noteAddImageButton.visibility = View.VISIBLE
                             binding.noteImageRecyclerView.visibility = View.VISIBLE
                         }
+
                         isImagePickerOpened = true
                     }
                 } else {
@@ -103,14 +119,20 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 when (it.itemId) {
                                     R.id.delete_note_menu_option -> {
                                         if (noteUIState.image.isNotEmpty()) {
-                                            val toDeleteRef =
-                                                storage.getReferenceFromUrl(noteUIState.image)
-                                            viewModel.deletePhotoFromFirebase(toDeleteRef) {
+                                            if (!noteUIState.image.contains("content")) {
+                                                val toDeleteRef =
+                                                    storage.getReferenceFromUrl(noteUIState.image)
+                                                viewModel.deleteImage(
+                                                    toDeleteRef,
+                                                    ObjectId(args.id),
+                                                    binding.noteTitle.text.toString(),
+                                                    binding.noteText.text.toString()
+                                                )
+                                            } else {
                                                 viewModel.deleteCurrentNote(ObjectId(args.id))
                                             }
-                                        } else {
-                                            viewModel.deleteCurrentNote(ObjectId(args.id))
                                         }
+                                        viewModel.deleteCurrentNote(ObjectId(args.id))
                                         true
                                     }
 
@@ -130,7 +152,8 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                         ObjectId(args.id),
                                         binding.noteTitle.text.toString(),
                                         binding.noteText.text.toString(),
-                                        noteUIState.image
+                                        noteUIState.image,
+                                        false
                                     )
                                 }
                             }
@@ -139,17 +162,27 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.noteDeleteImageButton.setOnClickListener {
                                     binding.noteImageRecyclerView.visibility = View.GONE
                                     binding.createNoteProgressIndicator.visibility = View.VISIBLE
-                                    Log.d("regrence url", noteUIState.image)
-                                    val toDeleteRef = storage.getReferenceFromUrl(noteUIState.image)
-                                    viewModel.deletePhotoFromFirebase(toDeleteRef) {
-                                        viewModel.updateCurrentState(
+                                    if (!noteUIState.image.contains("content")) {
+                                        val toDeleteRef =
+                                            storage.getReferenceFromUrl(noteUIState.image)
+                                        viewModel.deleteImage(
+                                            toDeleteRef,
+                                            ObjectId(args.id),
+                                            binding.noteTitle.text.toString(),
+                                            binding.noteText.text.toString()
+                                        )
+                                    } else {
+                                        viewModel.updateCurrentNote(
+                                            ObjectId(args.id),
                                             binding.noteTitle.text.toString(),
                                             binding.noteText.text.toString(),
-                                            Uri.EMPTY
+                                            "",
+                                            true
                                         )
-                                        imageNoteAdapter.updateList(emptyList())
-                                        binding.createNoteProgressIndicator.visibility = View.GONE
                                     }
+                                    imageNoteAdapter.updateList(emptyList())
+                                    binding.createNoteProgressIndicator.visibility = View.GONE
+
                                 }
 
                                 binding.noteDeleteImageButton.visibility = View.VISIBLE

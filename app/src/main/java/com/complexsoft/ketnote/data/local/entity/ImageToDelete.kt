@@ -8,5 +8,6 @@ import com.complexsoft.ketnote.utils.Constants.IMAGE_TO_DELETE_TABLE
 data class ImageToDelete(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val remoteImagePath: String
+    val remoteImagePath: String,
+    val ownerId:String
 )

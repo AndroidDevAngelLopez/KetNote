@@ -67,10 +67,6 @@ class CreateNoteViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun deletePhotoFromFirebase(imageToDelete: StorageReference, onImageDeleted: () -> Unit) {
-        handleNotesUseCase.deletePhotoFromFirebase(imageToDelete, onImageDeleted)
-    }
-
     fun updateCurrentState(title: String, text: String, image: Uri) {
         _noteUiState.update { currentUiState ->
             currentUiState.copy(
@@ -90,19 +86,109 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 
-    private fun addImageToLocalDatabase(
-        remoteImagePath: String, imageUri: String, ownerId: String
+    fun insertNewImage(
+        uploadTask: StorageReference,
+        noteId: ObjectId? = null,
+        uri: Uri,
+        title: String,
+        text: String
     ) {
-        viewModelScope.launch {
-            handleNotesUseCase.addImageToLocalDatabase(remoteImagePath, imageUri, ownerId)
+        var ownerId = ""
+        if (noteId != null) {
+            ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id.toString()
+            if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+                viewModelScope.launch {
+                    handleNotesUseCase.addImageToUpload(
+                        uploadTask.path, uri.toString(), ownerId
+                    )
+                }
+                updateCurrentState(
+                    title, text, uri
+                )
+                updateCurrentNote(
+                    noteId,
+                    noteUiState.value.title,
+                    noteUiState.value.text,
+                    noteUiState.value.image,
+                    true
+                )
+            } else {
+                handleNotesUseCase.uploadPhotoToFirebase(
+                    uploadTask, uri.toString()
+                ) {
+                    updateCurrentState(
+                        title, text, Uri.parse(it)
+                    )
+                    updateCurrentNote(
+                        noteId,
+                        noteUiState.value.title,
+                        noteUiState.value.text,
+                        noteUiState.value.image,
+                        true
+                    )
+                }
+            }
+        } else {
+            if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+                viewModelScope.launch {
+                    handleNotesUseCase.addImageToUpload(
+                        uploadTask.path, uri.toString(), ownerId
+                    )
+                }
+                updateCurrentState(
+                    title, text, uri
+                )
+                createNote()
+            } else {
+                handleNotesUseCase.uploadPhotoToFirebase(
+                    uploadTask, uri.toString()
+                ) {
+                    updateCurrentState(
+                        title, text, Uri.parse(it)
+                    )
+                    createNote()
+                }
+            }
         }
+
+
     }
 
-
-    fun uploadPhotoToFirebase(
-        uploadTask: StorageReference, image: String, onUriDownloadReceived: (String) -> Unit
+    fun deleteImage(
+        toDeleteRef: StorageReference, noteId: ObjectId, title: String, text: String
     ) {
-        handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image, onUriDownloadReceived)
+        val ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id
+        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+            viewModelScope.launch {
+                if (ownerId != null) {
+                    handleNotesUseCase.addImageToDelete(toDeleteRef.path, ownerId)
+                }
+            }
+            updateCurrentState(
+                title, text, Uri.EMPTY
+            )
+            updateCurrentNote(
+                noteId,
+                noteUiState.value.title,
+                noteUiState.value.text,
+                noteUiState.value.image,
+                true
+            )
+        } else {
+            handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+                updateCurrentState(
+                    title, text, Uri.EMPTY
+                )
+                updateCurrentNote(
+                    noteId,
+                    noteUiState.value.title,
+                    noteUiState.value.text,
+                    noteUiState.value.image,
+                    true
+                )
+            }
+        }
+
     }
 
     fun deleteCurrentNote(noteId: ObjectId) {
@@ -114,35 +200,19 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 
-    fun updateCurrentNote(id: ObjectId, title: String, text: String, image: String) {
+    fun updateCurrentNote(
+        id: ObjectId, title: String, text: String, image: String, isUpdatingFromImage: Boolean
+    ) {
         viewModelScope.launch {
             handleNotesUseCase.updateNote(id, title, text, image)
         }.invokeOnCompletion {
-            Log.d("updated!", "updated!")
-            _isNoteJobDone.value = true
-        }
-    }
-
-    fun insertNewImage(
-        uploadTask: StorageReference, noteId: ObjectId, uri: Uri, title: String, text: String
-    ) {
-        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
-            addImageToLocalDatabase(
-                uploadTask.path, uri.toString(), noteId.toHexString()
-            )
-            updateCurrentState(
-                title, text, uri
-            )
-        } else {
-            uploadPhotoToFirebase(
-                uploadTask, uri.toString()
-            ) {
-                updateCurrentState(
-                    title, text, Uri.parse(it)
-                )
+            if (!isUpdatingFromImage) {
+                Log.d("updated!", "updated!")
+                _isNoteJobDone.value = true
             }
         }
     }
+
 
     fun setEmptyNote() {
         _noteUiState.update { currentUiState ->

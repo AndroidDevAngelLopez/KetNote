@@ -1,7 +1,5 @@
 package com.complexsoft.ketnote.utils
 
-import android.net.Uri
-import com.complexsoft.ketnote.data.model.ImageNote
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -19,10 +17,4 @@ object Constants {
 fun Long.toHumanDate(): String {
     val format = SimpleDateFormat("yyyy.dd.MM HH:mm", Locale.ENGLISH)
     return format.format(this)
-}
-
-fun List<Uri>.toImageNoteList(): List<ImageNote> {
-    return this.map {
-        ImageNote(src = it.toString())
-    }
 }

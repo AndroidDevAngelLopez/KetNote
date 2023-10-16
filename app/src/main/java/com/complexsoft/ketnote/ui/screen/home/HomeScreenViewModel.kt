@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,6 +61,7 @@ class HomeScreenViewModel @Inject constructor(
 
                 ConnectivityObserver.Status.Available -> {
                     _connectivityStateFlow.value = ConnectivityObserver.Status.Available
+                    uploadImages()
                 }
 
                 ConnectivityObserver.Status.Lost -> {
@@ -69,6 +71,21 @@ class HomeScreenViewModel @Inject constructor(
             }
 
         }.launchIn(viewModelScope)
+    }
+
+    private fun uploadImages() {
+        viewModelScope.launch {
+            handleNotesUseCase.uploadLocalImages { uri, id ->
+                viewModelScope.launch {
+                    val note = handleNotesUseCase.getNoteById(ObjectId(id))
+                    if (note != null) {
+                        handleNotesUseCase.updateNote(
+                            ObjectId(id), note.title, note.text, uri
+                        )
+                    }
+                }
+            }
+        }
     }
 
 
