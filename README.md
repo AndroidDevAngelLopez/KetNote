@@ -24,4 +24,4 @@ y el patron de presentacion MVVM+ el cual consiste en añadir elementos de MVI c
 Del mismo modo la destreza en el uso del viejo sistema de vistas para crear una applicacion moderna utilizando views y xml.
 
 
-<img src='./screenshot1.jpeg' width=60%>
+<img src='./screenshot1.jpeg' width=60%><img src='./screenshot2.jpeg' width=60%><img src='./screenshot3.jpeg' width=60%><img src='./screenshot4.jpeg' width=60%><img src='./screenshot5.jpeg' width=60%>
