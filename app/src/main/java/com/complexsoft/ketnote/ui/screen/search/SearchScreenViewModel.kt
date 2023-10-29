@@ -10,9 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class SearchScreenViewModel(
+class SearchScreenViewModel @Inject constructor(
     private val handleNotesUseCase: HandleNotesUseCase,
 ) : ViewModel() {
 

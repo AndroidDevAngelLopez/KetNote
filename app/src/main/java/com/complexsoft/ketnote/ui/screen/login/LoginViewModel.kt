@@ -46,7 +46,6 @@ class LoginViewModel @Inject constructor(
                 ConnectivityObserver.Status.Lost -> {
                     _connectivityStateFlow.value = ConnectivityObserver.Status.Lost
                 }
-                else -> {}
             }
 
         }.launchIn(viewModelScope)

@@ -128,10 +128,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             }
         }
 
-        binding.homeScreenSwipe.setOnRefreshListener {
-            binding.homeScreenSwipe.isRefreshing = false
-        }
-
         binding.createNoteButton.setOnClickListener {
             val action = HomeScreenDirections.actionHomeScreenToNewCreateNote("")
             findNavController().navigate(action)
