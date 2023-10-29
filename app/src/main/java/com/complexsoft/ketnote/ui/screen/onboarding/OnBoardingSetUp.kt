@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -28,6 +31,16 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = SetupOnboardingLayoutBinding.inflate(layoutInflater)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.onboardingConstraint) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         val viewModel by activityViewModels<OnBoardingViewModel>()
         onBoardingAdapter = OnBoardingAdapter(this)
         binding.onboardingPager.adapter = onBoardingAdapter

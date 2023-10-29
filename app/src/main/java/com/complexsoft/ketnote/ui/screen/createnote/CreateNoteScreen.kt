@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -47,6 +50,16 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
         storage = Firebase.storage
         storageRef = storage.reference
         binding = CreateNoteScreenLayoutBinding.inflate(layoutInflater)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.createNoteConstraint) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         imageNoteAdapter = ImageNoteAdapter(emptyList()) {
             if (it.src.isNotEmpty()) {
                 val action =

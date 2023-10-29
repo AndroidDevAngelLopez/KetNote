@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -19,7 +22,6 @@ import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
-import com.complexsoft.ketnote.ui.MainActivity
 import com.complexsoft.ketnote.ui.screen.components.createDialog
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
@@ -49,20 +51,28 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             findNavController().navigate(action)
         }
 
-        val activity = requireActivity() as MainActivity
-
-        activity.binding.topAppBar.setNavigationOnClickListener {
-            activity.binding.drawerLayout.openDrawer(GravityCompat.START)
+        binding.topAppBar.setNavigationOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        val header = activity.binding.mainNavigationView.getHeaderView(0)
+        val header = binding.mainNavigationView.getHeaderView(0)
         val profilePic = header.findViewById<ImageView>(R.id.drawer_layout_header_profile_pic)
         val profileName =
             header.findViewById<MaterialTextView>(R.id.drawer_layout_header_profile_name)
         Glide.with(this).load(Firebase.auth.currentUser?.photoUrl).into(profilePic)
         profileName.text = Firebase.auth.currentUser?.displayName
 
-        activity.binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainCoordinatorLayout) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+        binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.delete_all_item -> {
                     createDialog(
@@ -103,11 +113,11 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                     menuItem.isCheckable = false
                 }
             }
-            activity.binding.drawerLayout.close()
+            binding.drawerLayout.close()
             true
         }
 
-        activity.binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.search -> {
                     findNavController().navigate(R.id.action_homeScreen_to_searchScreen)

@@ -6,6 +6,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -34,6 +37,16 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
         binding = SearchViewLayoutBinding.inflate(layoutInflater)
         val viewModel by viewModels<HomeScreenViewModel>()
         binding.searchView.show()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.searchConstraint) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
+            WindowInsetsCompat.CONSUMED
+        }
         binding.searchView.addTransitionListener { searchView, previousState, newState ->
             if (newState === TransitionState.HIDDEN) {
                 findNavController().popBackStack()

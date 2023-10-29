@@ -26,8 +26,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -47,7 +46,7 @@ dependencies {
     //Swipe Refresh Layout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     //ROOM
-    val roomVersion = "2.5.2"
+    val roomVersion = "2.6.0"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
@@ -57,7 +56,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     //Mongo Realm
-    implementation ("io.realm.kotlin:library-sync:1.11.1")
+    implementation("io.realm.kotlin:library-sync:1.11.1")
     //SplashScreen
     implementation("androidx.core:core-splashscreen:1.0.1")
     //Coroutines
@@ -71,7 +70,7 @@ dependencies {
     val fragmentVersion = "1.7.0-alpha06"
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     //Recyclerview
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
     //Activity extensions
     val activityVersion = "1.8.0"
@@ -82,8 +81,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.48")
-    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    ksp("com.google.dagger:hilt-compiler:2.48.1")
     //DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     //GMS Auth
