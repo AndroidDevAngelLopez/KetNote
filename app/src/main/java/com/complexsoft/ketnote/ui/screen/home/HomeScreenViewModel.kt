@@ -37,10 +37,6 @@ class HomeScreenViewModel @Inject constructor(
         MutableStateFlow(ConnectivityObserver.Status.Unavailable)
     val connectivityStateFlow: StateFlow<ConnectivityObserver.Status> = _connectivityStateFlow
 
-    private val _searchedNotesFlow: MutableStateFlow<NotesState<List<Note>>> =
-        MutableStateFlow(NotesState.Idle)
-    val searchedNotesFlow: StateFlow<NotesState<List<Note>>> = _searchedNotesFlow
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             observeConnectivity()
@@ -88,18 +84,8 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-
     fun logout(activity: FragmentActivity) {
         logoutUseCase.logoutUser(activity)
-    }
-
-    fun searchNotesByTitle(title: String) {
-        viewModelScope.launch {
-            _searchedNotesFlow.value = NotesState.Loading
-            handleNotesUseCase.searchNotesByTitle(title).collectLatest {
-                _searchedNotesFlow.value = it
-            }
-        }
     }
 
     private suspend fun getAllNotes() {
@@ -114,5 +100,4 @@ class HomeScreenViewModel @Inject constructor(
     fun deleteAllNotes(storage: FirebaseStorage) {
         viewModelScope.launch { handleNotesUseCase.deleteAllNotes(storage) }
     }
-
 }

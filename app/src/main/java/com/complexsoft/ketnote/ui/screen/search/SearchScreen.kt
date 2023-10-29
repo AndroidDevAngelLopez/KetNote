@@ -18,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
-import com.complexsoft.ketnote.ui.screen.home.HomeScreenViewModel
 import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -35,7 +34,7 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = SearchViewLayoutBinding.inflate(layoutInflater)
-        val viewModel by viewModels<HomeScreenViewModel>()
+        val viewModel by viewModels<SearchScreenViewModel>()
         binding.searchView.show()
         ViewCompat.setOnApplyWindowInsetsListener(binding.searchConstraint) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
