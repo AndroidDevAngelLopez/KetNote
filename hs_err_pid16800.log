@@ -1,0 +1,230 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 266338304 bytes for G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3769), pid=16800, tid=12168
+#
+# JRE version:  (17.0.6) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.6+0-b2043.56-10027231, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: git4idea.http.GitAskPassApp Username for 'https://github.com': 
+
+Host: Intel(R) Core(TM) i7-10870H CPU @ 2.20GHz, 16 cores, 15G,  Windows 11 , 64 bit Build 22621 (10.0.22621.2428)
+Time: Sun Oct 29 15:30:53 2023 Hora estándar central (México) elapsed time: 0.013053 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000207c35968e0):  JavaThread "Unknown thread" [_thread_in_vm, id=12168, stack(0x0000001268500000,0x0000001268600000)]
+
+Stack: [0x0000001268500000,0x0000001268600000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x683c9a]
+V  [jvm.dll+0x8427a4]
+V  [jvm.dll+0x843f9e]
+V  [jvm.dll+0x844603]
+V  [jvm.dll+0x249b75]
+V  [jvm.dll+0x680b69]
+V  [jvm.dll+0x67505a]
+V  [jvm.dll+0x309acb]
+V  [jvm.dll+0x310f86]
+V  [jvm.dll+0x3608ee]
+V  [jvm.dll+0x360b1f]
+V  [jvm.dll+0x2dfbf8]
+V  [jvm.dll+0x2e0b64]
+V  [jvm.dll+0x814091]
+V  [jvm.dll+0x36e6a1]
+V  [jvm.dll+0x7f35cc]
+V  [jvm.dll+0x3f0e8f]
+V  [jvm.dll+0x3f29d1]
+C  [jli.dll+0x526b]
+C  [ucrtbase.dll+0x29363]
+C  [KERNEL32.DLL+0x1257d]
+C  [ntdll.dll+0x5aa78]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffdab93c058, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x00000207c36013c0 GCTaskThread "GC Thread#0" [stack: 0x0000001268600000,0x0000001268700000] [id=9056]
+  0x00000207c3611f80 ConcurrentGCThread "G1 Main Marker" [stack: 0x0000001268700000,0x0000001268800000] [id=2572]
+  0x00000207c36139a0 ConcurrentGCThread "G1 Conc#0" [stack: 0x0000001268800000,0x0000001268900000] [id=12548]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffdab0f0797]
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00000207c3591da0] Heap_lock - owner thread: 0x00000207c35968e0
+
+Heap address: 0x0000000703800000, size: 4040 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 0.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000703800000, 0x0000000800000000)
+  region size 2048K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffdab4dda89]
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.009 Loaded shared library C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff700dd0000 - 0x00007ff700dda000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\java.exe
+0x00007ffdf11f0000 - 0x00007ffdf1407000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007ffdc21a0000 - 0x00007ffdc21b9000 	C:\Program Files\Avast Software\Avast\aswhook.dll
+0x00007ffdf0390000 - 0x00007ffdf0454000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007ffdee5e0000 - 0x00007ffdee986000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007ffdeec70000 - 0x00007ffdeed81000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ffdd8710000 - 0x00007ffdd8727000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\jli.dll
+0x00007ffdcf120000 - 0x00007ffdcf13b000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\VCRUNTIME140.dll
+0x00007ffdefe10000 - 0x00007ffdeffbd000 	C:\WINDOWS\System32\USER32.dll
+0x00007ffdeec40000 - 0x00007ffdeec66000 	C:\WINDOWS\System32\win32u.dll
+0x00007ffdce9f0000 - 0x00007ffdcec83000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.2361_none_2712ced57382f843\COMCTL32.dll
+0x00007ffdeef50000 - 0x00007ffdeef79000 	C:\WINDOWS\System32\GDI32.dll
+0x00007ffdf00c0000 - 0x00007ffdf0167000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007ffdeee30000 - 0x00007ffdeef48000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007ffdeed90000 - 0x00007ffdeee2a000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007ffdeef80000 - 0x00007ffdeefb1000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007ffdd9950000 - 0x00007ffdd995c000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\vcruntime140_1.dll
+0x00007ffdb74a0000 - 0x00007ffdb752d000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\msvcp140.dll
+0x00007ffdaae00000 - 0x00007ffdaba6e000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\server\jvm.dll
+0x00007ffdeefc0000 - 0x00007ffdef070000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007ffdf0620000 - 0x00007ffdf06c6000 	C:\WINDOWS\System32\sechost.dll
+0x00007ffdf0270000 - 0x00007ffdf0387000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007ffde7290000 - 0x00007ffde72c4000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007ffdd9430000 - 0x00007ffdd9439000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x00007ffde7660000 - 0x00007ffde766a000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007ffdf1080000 - 0x00007ffdf10f1000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007ffded600000 - 0x00007ffded618000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007ffddad30000 - 0x00007ffddad3a000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\jimage.dll
+0x00007ffdebe50000 - 0x00007ffdec07e000 	C:\WINDOWS\SYSTEM32\DBGHELP.DLL
+0x00007ffdefa80000 - 0x00007ffdefe0a000 	C:\WINDOWS\System32\combase.dll
+0x00007ffdf0190000 - 0x00007ffdf0267000 	C:\WINDOWS\System32\OLEAUT32.dll
+0x00007ffddf7c0000 - 0x00007ffddf7f2000 	C:\WINDOWS\SYSTEM32\dbgcore.DLL
+0x00007ffdeeb00000 - 0x00007ffdeeb7a000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007ffdd9530000 - 0x00007ffdd9555000 	C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin;C:\WINDOWS\SYSTEM32;C:\Program Files\Avast Software\Avast;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.2361_none_2712ced57382f843;C:\Users\angel\AppData\Local\Programs\Android Studio\jbr\bin\server
+
+VM Arguments:
+java_command: git4idea.http.GitAskPassApp Username for 'https://github.com': 
+java_class_path (initial): C:/Users/angel/AppData/Local/Programs/Android Studio/plugins/vcs-git/lib/git4idea-rt.jar;C:/Users/angel/AppData/Local/Programs/Android Studio/lib/externalProcess-rt.jar;C:/Users/angel/AppData/Local/Programs/Android Studio/lib/app.jar;C:/Users/angel/AppData/Local/Programs/Android Studio/lib/3rd-party-rt.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 3                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 13                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 2097152                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 266338304                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4236247040                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 2097152                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 7602480                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122027880                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122027880                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 4236247040                             {manageable} {ergonomic}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Users\angel\.jdks\corretto-20.0.2.1
+PATH=C:\Program Files\Git\mingw64\libexec\git-core;C:\Program Files\Git\mingw64\libexec\git-core;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\angel\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\BellSoft\LibericaJDK-21-Full\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\libnvvp;C:\Program Files\dotnet;C:\Program Files\Git\cmd;C:\Program Files\NVIDIA Corporation\Nsight Compute 2023.2.2;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\PowerShell\7;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\angel\AppData\Local\Programs\Python\Python310\Scripts;C:\Users\angel\AppData\Local\Programs\Python\Python310;C:\Users\angel\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\IntelliJ IDEA 2022.1.2\bin;C:\Program Files\JetBrains\PyCharm 2022.1.2\bin;C:\Program Files\JetBrains\CLion 2022.1.2\bin;C:\Users\angel\.dotnet\tools;C:\texlive\2022\bin\win32;C:\Users\angel\AppData\Local\JetBrains\Toolbox\scripts;C:\Program Files\ffmpeg-5.0.1-essentials_build\bin;C:\Users\angel\.dotnet\tools;C:\Users\angel\AppData\Local\Programs\oh-my-posh\bin;C:\Users\angel\AppData\Local\Microsoft\WindowsApps;C:\Program Files\HP\Common\HPDestPlgIn;C:\Program Files (x86)\HP\Common\HPDestPlgIn;C:\Gradle\bin;C:\Maven\bin;C:\ffmpeg-5.1.2-essentials_build\bin;C:\Program Files\MongoDB\Server\6.0\bin;C:\Users\angel\AppData\Roaming\JetBrains\IntelliJIdea2023.1\node\node-v18.15.0-win-x64;C:\kafka\bin\windows;C:\kafka\config;C:\Users\angel\AppData\Local\Android\Sdk\cmake\3.22.1\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\cmd;C:\WINDOWS;C:\WINDOWS\System32;C:\kobweb-0.9.13\bin
+USERNAME=angel
+DISPLAY=:0.0
+LC_ALL=en_US.UTF-8
+TERM=xterm-256color
+TMPDIR=C:\Users\angel\AppData\Local\Temp
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
+TMP=C:\Users\angel\AppData\Local\Temp
+TEMP=C:\Users\angel\AppData\Local\Temp
+
+
+JNI global refs:
+
+[error occurred during error reporting (JNI global references), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffdaaeb7a10]
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 22621 (10.0.22621.2428)
+OS uptime: 0 days 7:00 hours
+Hyper-V role detected
+
+CPU: total 16 (initial active 16) (8 cores per cpu, 2 threads per core) family 6 model 165 stepping 2 microcode 0xf8, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, fma, vzeroupper, clflush, clflushopt, hv
+
+Memory: 4k page, system-wide physical 16158M (2265M free)
+TotalPageFile size 18462M (AvailPageFile size 82M)
+current process WorkingSet (physical memory assigned to process): 11M, peak: 11M
+current process commit charge ("private bytes"): 70M, peak: 324M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.6+0-b2043.56-10027231) for windows-amd64 JRE (17.0.6+0-b2043.56-10027231), built on Apr 28 2023 00:43:19 by "androidbuild" with MS VC++ 16.10 / 16.11 (VS2019)
+
+END.
