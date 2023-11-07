@@ -1,154 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/create_note_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/create_note_constraint">
+    android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:menu="@menu/create_note_menu"
+            app:navigationIcon="@drawable/baseline_arrow_back_24"
+            app:title="@string/create_note" />
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/topAppBar"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize"
-                app:menu="@menu/create_note_menu"
-                app:navigationIcon="@drawable/baseline_arrow_back_24"
-                app:title="@string/create_note" />
+                android:layout_gravity="center">
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/note_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/title"
+                    android:inputType="text"
+                    android:maxLength="225"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/note_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:gravity="start"
+                    android:hint="@string/text"
+                    android:inputType="text|textMultiLine|textLongMessage"
+                    android:maxLength="520" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="10dp"
+                android:text="@string/add_image_new" />
 
             <LinearLayout
-                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/note_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:hint="@string/title"
-                        android:inputType="text"
-                        android:maxLength="225"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/note_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:gravity="start"
-                        android:hint="@string/text"
-                        android:inputType="text|textMultiLine|textLongMessage"
-                        android:maxLength="520" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textview.MaterialTextView
-                    style="@style/TextAppearance.Material3.TitleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/add_image_new" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/note_add_image_button"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
-                        android:textAlignment="center"
-                        app:cornerRadius="0dp"
-                        app:icon="@drawable/baseline_add_photo_alternate_24"
-                        app:iconGravity="textTop"
-                        app:iconSize="32dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/note_delete_image_button"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="120dp"
-                        android:layout_weight="1"
-                        app:backgroundTint="@color/md_theme_light_error"
-                        app:cornerRadius="0dp"
-                        app:icon="@drawable/baseline_close_24"
-                        app:iconGravity="textTop"
-                        app:iconSize="32dp"
-                        app:iconTint="@color/md_theme_light_onSecondary" />
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/create_note_progress_indicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:indeterminate="true"
-                        android:visibility="gone" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/note_image_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_gravity="center" />
-                </RelativeLayout>
-
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/note_send_button"
-                    android:layout_width="match_parent"
+                    android:id="@+id/note_add_image_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/submit_note"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                    app:cornerRadius="0dp" />
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    app:cornerRadius="0dp"
+                    app:icon="@drawable/baseline_add_photo_alternate_24"
+                    app:iconGravity="textTop"
+                    app:iconSize="32dp" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/note_delete_image_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="120dp"
+                    android:layout_weight="1"
+                    app:backgroundTint="@color/md_theme_light_error"
+                    app:cornerRadius="0dp"
+                    app:icon="@drawable/baseline_close_24"
+                    app:iconGravity="textTop"
+                    app:iconSize="32dp"
+                    app:iconTint="@color/md_theme_light_onSecondary" />
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/create_note_progress_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/note_image_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center" />
+            </RelativeLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/note_send_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/submit_note"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                app:cornerRadius="0dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

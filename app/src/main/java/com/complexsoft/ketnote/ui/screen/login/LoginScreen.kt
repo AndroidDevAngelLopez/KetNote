@@ -60,7 +60,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.connectivityStateFlow.collectLatest {
+                    viewModel.newConnectivityObserver.collectLatest {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
                                 binding.loginConnectivityLayout.root.visibility = View.VISIBLE

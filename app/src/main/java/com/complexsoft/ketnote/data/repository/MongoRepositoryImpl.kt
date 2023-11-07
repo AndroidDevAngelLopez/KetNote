@@ -2,7 +2,6 @@ package com.complexsoft.ketnote.data.repository
 
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.MongoDBAPP.app
-import com.complexsoft.ketnote.ui.screen.utils.NotesState
 import com.complexsoft.ketnote.utils.Constants.APP_ID
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
@@ -25,9 +24,6 @@ object MongoDB : MongoRepository {
 
     lateinit var realm: Realm
 
-    init {
-        configureTheRealm()
-    }
 
     override fun configureTheRealm() {
         if (app.currentUser != null) {
@@ -46,15 +42,16 @@ object MongoDB : MongoRepository {
         }
     }
 
-    override fun getNotes(): Flow<NotesState<List<Note>>> {
+    override fun getNotes(): Flow<List<Note>> {
+        configureTheRealm()
         return realm.query<Note>().sort("date", Sort.DESCENDING).asFlow().map {
-            NotesState.Success(it.list)
+            it.list
         }
     }
 
-    override fun searchNotesByTitle(title: String): Flow<NotesState<List<Note>>> {
+    override fun searchNotesByTitle(title: String): Flow<List<Note>> {
         return realm.query<Note>("title CONTAINS[c] $0", title).sort("date", Sort.DESCENDING)
-            .asFlow().map { NotesState.Success(it.list) }
+            .asFlow().map { it.list }
     }
 
     override suspend fun createNote(currentTitle: String, currentText: String, image: String) {
@@ -70,10 +67,7 @@ object MongoDB : MongoRepository {
     }
 
     override suspend fun updateNote(
-        noteId: ObjectId,
-        newTitle: String,
-        newText: String,
-        image: String
+        noteId: ObjectId, newTitle: String, newText: String, image: String
     ) {
         realm.write {
             val note: Note? = this.query<Note>("_id == $0", noteId).first().find()

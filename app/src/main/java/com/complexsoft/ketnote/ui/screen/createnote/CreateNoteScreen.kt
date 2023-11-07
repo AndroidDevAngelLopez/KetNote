@@ -50,7 +50,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
         storage = Firebase.storage
         storageRef = storage.reference
         binding = CreateNoteScreenLayoutBinding.inflate(layoutInflater)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.createNoteConstraint) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.createNoteCoordinator) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = insets.left

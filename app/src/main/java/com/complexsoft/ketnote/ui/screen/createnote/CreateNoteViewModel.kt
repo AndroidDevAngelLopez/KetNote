@@ -10,11 +10,10 @@ import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NoteUiState
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
@@ -23,49 +22,21 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateNoteViewModel @Inject constructor(
     private val handleNotesUseCase: HandleNotesUseCase,
-    private val connectivityUseCase: HandleConnectivityUseCase
+    connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
-
-    private val _connectivityStateFlow: MutableStateFlow<ConnectivityObserver.Status> =
-        MutableStateFlow(ConnectivityObserver.Status.Unavailable)
-    val connectivityStateFlow: StateFlow<ConnectivityObserver.Status> = _connectivityStateFlow
 
     private val _noteUiState = MutableStateFlow(NoteUiState())
     val noteUiState: StateFlow<NoteUiState> = _noteUiState
 
-
     private val _isNoteJobDone = MutableStateFlow(false)
     val isNoteJobDone: StateFlow<Boolean> = _isNoteJobDone
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            observeConnectivity()
-        }
-    }
-
-    private fun observeConnectivity() {
-        connectivityUseCase().onEach {
-            when (it) {
-                ConnectivityObserver.Status.Unavailable -> {
-                    _connectivityStateFlow.value = ConnectivityObserver.Status.Unavailable
-                }
-
-                ConnectivityObserver.Status.Losing -> {
-                    _connectivityStateFlow.value = ConnectivityObserver.Status.Losing
-                }
-
-                ConnectivityObserver.Status.Available -> {
-                    _connectivityStateFlow.value = ConnectivityObserver.Status.Available
-                }
-
-                ConnectivityObserver.Status.Lost -> {
-                    _connectivityStateFlow.value = ConnectivityObserver.Status.Lost
-                }
-
-            }
-
-        }.launchIn(viewModelScope)
-    }
+    private val newConnectivityObserver = connectivityUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = ConnectivityObserver.Status.Unavailable,
+            started = SharingStarted.WhileSubscribed(5_000)
+        )
 
     fun updateCurrentState(title: String, text: String, image: Uri) {
         _noteUiState.update { currentUiState ->
@@ -96,7 +67,7 @@ class CreateNoteViewModel @Inject constructor(
         var ownerId = ""
         if (noteId != null) {
             ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id.toString()
-            if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+            if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
                 viewModelScope.launch {
                     handleNotesUseCase.addImageToUpload(
                         uploadTask.path, uri.toString(), ownerId
@@ -129,7 +100,7 @@ class CreateNoteViewModel @Inject constructor(
                 }
             }
         } else {
-            if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+            if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
                 viewModelScope.launch {
                     handleNotesUseCase.addImageToUpload(
                         uploadTask.path, uri.toString(), ownerId
@@ -158,7 +129,7 @@ class CreateNoteViewModel @Inject constructor(
         toDeleteRef: StorageReference, noteId: ObjectId, title: String, text: String
     ) {
         val ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id
-        if (connectivityStateFlow.value == ConnectivityObserver.Status.Unavailable || connectivityStateFlow.value == ConnectivityObserver.Status.Lost) {
+        if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
             viewModelScope.launch {
                 if (ownerId != null) {
                     handleNotesUseCase.addImageToDelete(toDeleteRef.path, ownerId)

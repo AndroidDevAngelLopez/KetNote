@@ -18,7 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
-import com.complexsoft.ketnote.ui.screen.utils.NotesState
+import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView.TransitionState
@@ -57,7 +57,7 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.searchNotesByTitle(s.toString())
+                viewModel.onSearchQueryChanged(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -74,9 +74,9 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchedNotesFlow.collectLatest { state ->
+                viewModel.newSearchedNotesFlow.collectLatest { state ->
                     when (state) {
-                        is NotesState.Success -> {
+                        is NotesUiState.Success -> {
                             if (state.data.isNotEmpty()) {
                                 notesAdapter.updateList(state.data)
                                 binding.searchScreenMessage.visibility = View.GONE
@@ -87,15 +87,11 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
                             }
                         }
 
-                        is NotesState.Error -> {
+                        is NotesUiState.Error -> {
                             emptyUI(message = state.error.message.toString())
                         }
 
-                        is NotesState.Idle -> {
-                            emptyUI()
-                        }
-
-                        is NotesState.Loading -> {
+                        is NotesUiState.Loading -> {
                             emptyUI(loading = true)
                         }
                     }

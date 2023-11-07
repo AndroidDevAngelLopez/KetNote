@@ -23,7 +23,7 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.components.createDialog
-import com.complexsoft.ketnote.ui.screen.utils.NotesState
+import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
@@ -40,6 +40,11 @@ import kotlinx.coroutines.launch
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
     private lateinit var binding: HomeScreenLayoutBinding
+    /*
+    *
+    * Migrate Flows,DI(also inject scopes,dispatchers)
+    *
+    * */
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -136,9 +141,9 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.notesFlow.collectLatest { state ->
+                    viewModel.newNotesFlow.collectLatest { state ->
                         when (state) {
-                            is NotesState.Success -> {
+                            is NotesUiState.Success -> {
                                 if (state.data.isNotEmpty()) {
                                     notesAdapter.updateList(state.data)
                                     binding.homeScreenMessage.visibility = View.GONE
@@ -149,22 +154,18 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                                 }
                             }
 
-                            is NotesState.Error -> {
+                            is NotesUiState.Error -> {
                                 emptyUI(message = state.error.message.toString())
                             }
 
-                            is NotesState.Idle -> {
-                                emptyUI()
-                            }
-
-                            is NotesState.Loading -> {
+                            is NotesUiState.Loading -> {
                                 emptyUI(loading = true)
                             }
                         }
                     }
                 }
                 launch {
-                    viewModel.connectivityStateFlow.collectLatest {
+                    viewModel.connectivityStatusFlow.collectLatest {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE

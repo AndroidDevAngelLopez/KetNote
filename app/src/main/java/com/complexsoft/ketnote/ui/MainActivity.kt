@@ -1,7 +1,9 @@
 package com.complexsoft.ketnote.ui
 
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -17,11 +19,34 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val screenSplash = installSplashScreen()
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         screenSplash.setKeepOnScreenCondition { false }
+        val configuration = resources.configuration
+        when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.light(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ), navigationBarStyle = SystemBarStyle.light(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    )
+                )
+            }
+
+            Configuration.UI_MODE_NIGHT_YES -> {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.dark(
+                        android.graphics.Color.TRANSPARENT
+                    ), navigationBarStyle = SystemBarStyle.dark(
+                        android.graphics.Color.TRANSPARENT
+                    )
+                )
+            }
+        }
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
