@@ -8,10 +8,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.ActivityMainBinding
+import com.complexsoft.ketnote.ui.screen.onboarding.dataStore
+import com.complexsoft.ketnote.ui.screen.onboarding.isOnBoardingCompleted
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -50,6 +59,18 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+        val isOnBoardingCompleted: Flow<Boolean> = this.dataStore.data.map { preferences ->
+            preferences[isOnBoardingCompleted] ?: false
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                isOnBoardingCompleted.collectLatest {
+                    if (!it) {
+                        navController.navigate(R.id.onBoardingSetUp)
+                    }
+                }
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
         } else {

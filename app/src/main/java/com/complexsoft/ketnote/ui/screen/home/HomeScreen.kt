@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -40,11 +39,6 @@ import kotlinx.coroutines.launch
 class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
     private lateinit var binding: HomeScreenLayoutBinding
-    /*
-    *
-    * Migrate Flows,DI(also inject scopes,dispatchers)
-    *
-    * */
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -169,7 +163,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas trabajando sin conexion"
                                 delay(3000)
@@ -178,7 +171,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
                             ConnectivityObserver.Status.Losing -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas perdiendo conexion!"
                                 delay(2000)
@@ -187,7 +179,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
                             ConnectivityObserver.Status.Available -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(true)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Sincronizando notas..."
                                 delay(1200)
@@ -196,7 +187,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
                             ConnectivityObserver.Status.Lost -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas trabajando sin conexion!"
                                 delay(3000)
@@ -222,30 +212,6 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             binding.homeScreenProgressIndicator.visibility = View.GONE
             binding.homeScreenMessage.visibility = View.VISIBLE
             binding.homeScreenMessage.text = message
-        }
-    }
-
-    private fun switchConnectivityObserverLayoutColor(isAvailable: Boolean) {
-        if (isAvailable) {
-            this@HomeScreen.context?.let { it1 ->
-                ContextCompat.getColor(
-                    it1, R.color.md_theme_light_tertiary
-                )
-            }?.let { it2 ->
-                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
-                    it2
-                )
-            }
-        } else {
-            this@HomeScreen.context?.let { it1 ->
-                ContextCompat.getColor(
-                    it1, R.color.md_theme_dark_inversePrimary
-                )
-            }?.let { it2 ->
-                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
-                    it2
-                )
-            }
         }
     }
 }

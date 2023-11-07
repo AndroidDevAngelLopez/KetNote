@@ -9,18 +9,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SetupOnboardingLayoutBinding
 import com.complexsoft.ketnote.ui.screen.utils.adapters.OnBoardingAdapter
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
 
@@ -42,7 +35,9 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
             WindowInsetsCompat.CONSUMED
         }
         val viewModel by activityViewModels<OnBoardingViewModel>()
-        onBoardingAdapter = OnBoardingAdapter(this)
+
+        binding.onboardingButton.visibility = View.VISIBLE
+        onBoardingAdapter = OnBoardingAdapter(this@OnBoardingSetUp)
         binding.onboardingPager.adapter = onBoardingAdapter
         binding.onboardingPager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
@@ -66,24 +61,17 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
                     2 -> {
                         binding.onboardingButton.text = getString(R.string.comenzar)
                         binding.onboardingButton.setOnClickListener {
-                            context?.let { it1 -> viewModel.onBoardingComplete(it1) }
+                            context?.let { it1 ->
+                                run {
+                                    viewModel.onBoardingComplete(it1)
+                                    findNavController().navigate(R.id.action_onBoardingSetUp_to_loginScreen)
+                                }
+                            }
                         }
                     }
                 }
             }
         })
-        val isOnBoardingCompleted: Flow<Boolean>? = context?.dataStore?.data?.map { preferences ->
-            preferences[isOnBoardingCompleted] ?: false
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                isOnBoardingCompleted?.collectLatest {
-                    if (it) {
-                        findNavController().navigate(R.id.action_onBoardingSetUp_to_loginScreen)
-                    }
-                }
-            }
-        }
         return binding.root
     }
 }

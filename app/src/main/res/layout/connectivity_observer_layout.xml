@@ -4,7 +4,7 @@
     android:id="@+id/connectivity_layout"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/md_theme_dark_inversePrimary">
+    android:background="@color/md_theme_light_tertiary">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/connectivity_layout_message"
