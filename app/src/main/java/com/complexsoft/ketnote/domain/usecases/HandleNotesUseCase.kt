@@ -7,6 +7,7 @@ import com.complexsoft.ketnote.data.local.entity.ImageToUpload
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.LocalImagesRepository
 import com.complexsoft.ketnote.data.repository.MongoDB
+import com.complexsoft.ketnote.ui.screen.utils.NoteJobUiState
 import com.complexsoft.ketnote.ui.screen.utils.NoteUiState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -23,8 +24,8 @@ class HandleNotesUseCase @Inject constructor(
     private val localImagesRepository: LocalImagesRepository
 ) {
 
-    val noteUiState = MutableStateFlow(NoteUiState("", "", ""))
-    val isNoteJobDone = MutableStateFlow(false)
+    val noteUiState = MutableStateFlow(NoteUiState())
+    val isNoteJobDone = MutableStateFlow(NoteJobUiState())
     fun updateNoteUiStateFlow(
         title: String, text: String, imageUri: String
     ) = noteUiState.update {
@@ -33,12 +34,10 @@ class HandleNotesUseCase @Inject constructor(
         )
     }
 
-
-    fun updateIsNoteJobDone(){
-        isNoteJobDone.update {
-            !it
-        }
+    fun updateIsNoteJobDone(value: Boolean) = isNoteJobDone.update {
+        it.copy(value = value)
     }
+
 
     suspend fun addImageToUpload(
         remoteImagePath: String, imageUri: String, ownerId: String

@@ -12,3 +12,7 @@ sealed interface NotesUiState {
 data class NoteUiState(
     val title: String = "", val text: String = "", val image: String = ""
 )
+
+data class NoteJobUiState(
+    val value : Boolean = false
+)

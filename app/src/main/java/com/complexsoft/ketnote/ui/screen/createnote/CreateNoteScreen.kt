@@ -22,7 +22,6 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.CreateNoteScreenLayoutBinding
-import com.complexsoft.ketnote.ui.screen.utils.NoteUiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -85,159 +84,152 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.newIsNoteJobDone.collectLatest {
-                        if (it) {
-                            findNavController().popBackStack()
+                viewModel.newIsNoteJobDone.collectLatest {
+                    if (it.value) {
+                        viewModel.updateCurrentJobDone(false)
+                        findNavController().popBackStack()
+                    }
+                }
+            }
+        }
+
+        /**THIS SECTION IS FOR UPDATING AN EXISTING NOTE*/
+        if (args.id.isNotEmpty()) {
+            val note = viewModel.getNote(ObjectId(args.id))!!
+            viewModel.updateCurrentState(note.title, note.text, Uri.parse(note.images))
+            binding.noteTitle.setText(note.title)
+            binding.noteText.setText(note.text)
+            binding.noteSendButton.text = "Actualizar"
+            binding.topAppBar.title = "Actualizar Nota"
+            binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible = true
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.newCurrentNoteState.collectLatest { noteUiState ->
+                        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                            noteUiState.image.isNotEmpty()
+                        Glide.with(requireContext())
+                            .load(noteUiState.image.ifEmpty { R.drawable.addphoto })
+                            .into(binding.currentImageLayout.itemImage)
+                        if (noteUiState.image.isEmpty()) {
+                            binding.currentImageLayout.itemImage.setOnClickListener {
+                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            }
+                        } else {
+                            binding.currentImageLayout.itemImage.setOnClickListener {
+                                val action =
+                                    CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
+                                        noteUiState.image
+                                    )
+                                findNavController().navigate(action)
+                            }
                         }
                     }
                 }
-                launch {
-                    if (args.id.isNotEmpty()) {
-                        val noteee = viewModel.getNote(ObjectId(args.id))!!
+            }
+
+            binding.topAppBar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.delete_note_menu_option -> {
+                        viewModel.deleteNote(ObjectId(args.id))
+                        true
+                    }
+
+                    R.id.delete_image_menu_option -> {
+                        Glide.with(requireContext()).load(R.drawable.addphoto)
+                            .into(binding.currentImageLayout.itemImage)
+                        uploadTask = storageRef.child("/")
+                        imageUri = Uri.EMPTY
                         viewModel.updateCurrentState(
-                            noteee.title,
-                            noteee.text,
-                            Uri.parse(noteee.images)
+                            binding.noteTitle.text.toString(),
+                            binding.noteText.text.toString(),
+                            imageUri
                         )
-                        viewModel.newCurrentNoteState.collectLatest {
-                            binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
-                                true
-                            binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
-                                false
-                            binding.noteSendButton.text = "Actualizar"
-                            binding.topAppBar.title = "Actualizar Nota"
-                            binding.noteTitle.setText(it.title)
-                            binding.noteText.setText(it.text)
-                            if (it.image.isNotEmpty()) {
-                                noteWithImageUi(it)
-                            } else {
-                                noteWithoutImageUi(it)
+                        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                            false
+                        true
+                    }
+
+                    else -> {
+                        true
+                    }
+                }
+            }
+            binding.noteSendButton.setOnClickListener {
+                if (binding.noteTitle.text.toString().isNotEmpty()) {
+                    viewModel.updateCurrentState(
+                        title = binding.noteTitle.text.toString(),
+                        text = binding.noteText.text.toString(),
+                        image = Uri.parse(viewModel.newCurrentNoteState.value.image)
+                    )
+                    viewModel.updateNote(
+                        note, uploadTask
+                    )
+                }
+            }
+        } else {
+            /**THIS SECTION IS FOR CREATING A NOTE*/
+            binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible = false
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.newCurrentNoteState.collectLatest { noteUiState ->
+                        if (noteUiState.image.isEmpty()) {
+                            binding.currentImageLayout.itemImage.setOnClickListener {
+                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            }
+                        } else {
+                            binding.currentImageLayout.itemImage.setOnClickListener {
+                                val action =
+                                    CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
+                                        noteUiState.image
+                                    )
+                                findNavController().navigate(action)
                             }
                         }
-                    } else {
-                        createNoteUi()
+                        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                            noteUiState.image.isNotEmpty()
+                        Glide.with(requireContext())
+                            .load(noteUiState.image.ifEmpty { R.drawable.addphoto })
+                            .into(binding.currentImageLayout.itemImage)
+                        if (noteUiState.image.isEmpty()) {
+                            uploadTask = storage.reference.child("/")
+                            imageUri = Uri.EMPTY
+                        }
                     }
+                }
+            }
+            binding.currentImageLayout.itemImage.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+            binding.topAppBar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.delete_image_menu_option -> {
+                        viewModel.updateCurrentState(
+                            binding.noteTitle.text.toString(),
+                            binding.noteText.text.toString(),
+                            Uri.EMPTY
+                        )
+                        true
+                    }
+
+                    else -> {
+                        true
+                    }
+                }
+            }
+            binding.noteSendButton.setOnClickListener {
+                if (binding.noteTitle.text.toString().isNotEmpty()) {
+                    viewModel.updateCurrentState(
+                        title = binding.noteTitle.text.toString(),
+                        text = binding.noteText.text.toString(),
+                        image = imageUri
+                    )
+                    viewModel.insertNote(
+                        uploadTask, viewModel.newCurrentNoteState.value
+                    )
                 }
             }
         }
         return binding.root
     }
-
-    private fun createNoteUi() {
-        /** THIS SECTION IS FOR CREATE NEW NOTE */
-        binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible = false
-        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible = false
-        binding.currentImageLayout.itemImage.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-        binding.topAppBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.delete_image_menu_option -> {
-                    Glide.with(requireContext()).load(R.drawable.addphoto)
-                        .into(binding.currentImageLayout.itemImage)
-                    uploadTask = storageRef.child("/")
-                    imageUri = Uri.EMPTY
-                    binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible = false
-                    true
-                }
-
-                else -> {
-                    true
-                }
-            }
-        }
-        binding.noteSendButton.setOnClickListener {
-            if (binding.noteTitle.text.toString().isNotEmpty()) {
-                val newNote = NoteUiState(
-                    title = binding.noteTitle.text.toString(),
-                    text = binding.noteText.text.toString(),
-                    image = imageUri.toString()
-                )
-                viewModel.insertNote(
-                    uploadTask, newNote
-                )
-            }
-        }
-    }
-
-    private fun noteWithImageUi(noteUiState: NoteUiState) {
-        /**LOAD IMAGE USING GLIDE*/
-        Glide.with(requireContext()).load(noteUiState.image)
-            .into(binding.currentImageLayout.itemImage)
-        /**
-         * SET VISIBILITY OF DELETE IMAGE MENU OPTION AND SET FUNCTIONALITY
-         * */
-        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible = true
-        binding.topAppBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.delete_note_menu_option -> {
-                    viewModel.deleteNote(ObjectId(args.id))
-                    true
-                }
-
-                R.id.delete_image_menu_option -> {
-                    Glide.with(requireContext()).load(R.drawable.addphoto)
-                        .into(binding.currentImageLayout.itemImage)
-                    uploadTask = storageRef.child("/")
-                    imageUri = Uri.EMPTY
-                    viewModel.updateCurrentState(
-                        binding.noteTitle.text.toString(),
-                        binding.noteText.text.toString(),
-                        imageUri
-                    )
-                    binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible = false
-                    true
-                }
-
-                else -> {
-                    true
-                }
-            }
-        }
-        binding.noteSendButton.setOnClickListener {
-            if (binding.noteTitle.text.toString().isNotEmpty()) {
-                viewModel.updateCurrentState(
-                    title = binding.noteTitle.text.toString(),
-                    text = binding.noteText.text.toString(),
-                    image = Uri.parse(noteUiState.image)
-                )
-                viewModel.updateNote(
-                    ObjectId(args.id), noteUiState, uploadTask
-                )
-            }
-        }
-    }
-
-    private fun noteWithoutImageUi(noteUiState: NoteUiState) {
-        binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible = false
-        binding.currentImageLayout.itemImage.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-        binding.topAppBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.delete_note_menu_option -> {
-                    viewModel.deleteNote(ObjectId(args.id))
-                    true
-                }
-
-                else -> {
-                    true
-                }
-            }
-        }
-        binding.noteSendButton.setOnClickListener {
-            if (binding.noteTitle.text.toString().isNotEmpty()) {
-                viewModel.updateCurrentState(
-                    binding.noteTitle.text.toString(),
-                    binding.noteText.text.toString(),
-                    Uri.parse(noteUiState.image)
-                )
-                viewModel.updateNote(
-                    ObjectId(args.id), noteUiState, uploadTask
-                )
-            }
-        }
-    }
-
 }
