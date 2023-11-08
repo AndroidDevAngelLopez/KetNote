@@ -11,4 +11,4 @@ Goals:
 With this app written in the old views and xml system, I would like to be able to demonstrate the use of clean architecture and the MVVM+ presentation pattern which consists of adding MVI elements as classes that save state to the view model Likewise, the skill in using the old views system to create a modern application using views and xml.
 
 
-<img src='./three.jpeg' width=60%><img src='./two.jpeg' width=60%>
+<img src='./three.png' width=60%><img src='./two.png' width=60%>
