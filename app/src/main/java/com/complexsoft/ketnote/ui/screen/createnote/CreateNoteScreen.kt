@@ -169,6 +169,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
             }
         } else {
             /**THIS SECTION IS FOR CREATING A NOTE*/
+            viewModel.updateCurrentState("", "", Uri.EMPTY)
             binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible = false
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

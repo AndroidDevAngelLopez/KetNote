@@ -101,14 +101,23 @@ class CreateNoteViewModel @Inject constructor(
         val noteUiState = newCurrentNoteState.value
         if (currentNote.images.isNotEmpty()) {
             if (noteUiState.image.isNotEmpty()) {
-                deletePhoto(currentNote) {
-                    uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
-                        viewModelScope.launch {
-                            handleNotesUseCase.updateNote(
-                                currentNote._id, noteUiState.title, noteUiState.text, it
-                            )
-                            handleNotesUseCase.updateIsNoteJobDone(true)
+                if (uploadTask.path != "/") {
+                    deletePhoto(currentNote) {
+                        uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
+                            viewModelScope.launch {
+                                handleNotesUseCase.updateNote(
+                                    currentNote._id, noteUiState.title, noteUiState.text, it
+                                )
+                                handleNotesUseCase.updateIsNoteJobDone(true)
+                            }
                         }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        handleNotesUseCase.updateNote(
+                            currentNote._id, noteUiState.title, noteUiState.text, noteUiState.image
+                        )
+                        handleNotesUseCase.updateIsNoteJobDone(true)
                     }
                 }
             } else {
