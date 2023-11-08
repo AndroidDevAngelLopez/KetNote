@@ -37,4 +37,6 @@
     <string name="comenzar">Comenzar!</string>
     <string name="content_description_more">Delete Note</string>
     <string name="more">Borrar Nota</string>
+    <string name="content_description_delete_image">Delete Image</string>
+    <string name="more_delete_image">Borrar Imagen</string>
 </resources>

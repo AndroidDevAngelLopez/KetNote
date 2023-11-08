@@ -8,13 +8,12 @@ import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NoteUiState
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
@@ -25,184 +24,118 @@ class CreateNoteViewModel @Inject constructor(
     connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
 
-    private val _noteUiState = MutableStateFlow(NoteUiState())
-    val noteUiState: StateFlow<NoteUiState> = _noteUiState
+    val newIsNoteJobDone = handleNotesUseCase.isNoteJobDone.stateIn(
+        scope = viewModelScope,
+        initialValue = false,
+        started = SharingStarted.WhileSubscribed(5_000)
+    )
 
-    private val _isNoteJobDone = MutableStateFlow(false)
-    val isNoteJobDone: StateFlow<Boolean> = _isNoteJobDone
-
-    private val newConnectivityObserver = connectivityUseCase()
-        .stateIn(
-            scope = viewModelScope,
-            initialValue = ConnectivityObserver.Status.Unavailable,
-            started = SharingStarted.WhileSubscribed(5_000)
-        )
+    val newCurrentNoteState = handleNotesUseCase.noteUiState.stateIn(
+        scope = viewModelScope, initialValue = NoteUiState(), started = SharingStarted.Eagerly
+    )
 
     fun updateCurrentState(title: String, text: String, image: Uri) {
-        _noteUiState.update { currentUiState ->
-            currentUiState.copy(
-                title = title, text = text, image = image.toString()
-            )
-        }
+        handleNotesUseCase.updateNoteUiStateFlow(title, text, image.toString())
     }
 
-    fun getNote(noteId: ObjectId) {
-        val note = handleNotesUseCase.getNoteById(noteId = noteId)
-        if (note != null) {
-            _noteUiState.update { currentUiState ->
-                currentUiState.copy(
-                    title = note.title, text = note.text, image = note.images
-                )
-            }
-        }
-    }
+    private val newConnectivityObserver = connectivityUseCase().stateIn(
+        scope = viewModelScope,
+        initialValue = ConnectivityObserver.Status.Unavailable,
+        started = SharingStarted.WhileSubscribed(5_000)
+    )
 
-    fun insertNewImage(
-        uploadTask: StorageReference,
-        noteId: ObjectId? = null,
-        uri: Uri,
-        title: String,
-        text: String
-    ) {
-        var ownerId = ""
-        if (noteId != null) {
-            ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id.toString()
-            if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
-                viewModelScope.launch {
-                    handleNotesUseCase.addImageToUpload(
-                        uploadTask.path, uri.toString(), ownerId
-                    )
-                }
-                updateCurrentState(
-                    title, text, uri
-                )
-                updateCurrentNote(
-                    noteId,
-                    noteUiState.value.title,
-                    noteUiState.value.text,
-                    noteUiState.value.image,
-                    true
-                )
-            } else {
-                handleNotesUseCase.uploadPhotoToFirebase(
-                    uploadTask, uri.toString()
-                ) {
-                    updateCurrentState(
-                        title, text, Uri.parse(it)
-                    )
-                    updateCurrentNote(
-                        noteId,
-                        noteUiState.value.title,
-                        noteUiState.value.text,
-                        noteUiState.value.image,
-                        true
-                    )
-                }
-            }
-        } else {
-            if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
-                viewModelScope.launch {
-                    handleNotesUseCase.addImageToUpload(
-                        uploadTask.path, uri.toString(), ownerId
-                    )
-                }
-                updateCurrentState(
-                    title, text, uri
-                )
-                createNote()
-            } else {
-                handleNotesUseCase.uploadPhotoToFirebase(
-                    uploadTask, uri.toString()
-                ) {
-                    updateCurrentState(
-                        title, text, Uri.parse(it)
-                    )
-                    createNote()
-                }
-            }
-        }
+    fun getNote(noteId: ObjectId) = handleNotesUseCase.getNoteById(noteId = noteId)
 
-
-    }
-
-    fun deleteImage(
-        toDeleteRef: StorageReference, noteId: ObjectId, title: String, text: String
-    ) {
-        val ownerId = handleNotesUseCase.getNoteById(noteId)?.owner_id
-        if (newConnectivityObserver.value == ConnectivityObserver.Status.Unavailable || newConnectivityObserver.value == ConnectivityObserver.Status.Lost) {
-            viewModelScope.launch {
-                if (ownerId != null) {
-                    handleNotesUseCase.addImageToDelete(toDeleteRef.path, ownerId)
-                }
-            }
-            updateCurrentState(
-                title, text, Uri.EMPTY
-            )
-            updateCurrentNote(
-                noteId,
-                noteUiState.value.title,
-                noteUiState.value.text,
-                noteUiState.value.image,
-                true
-            )
-        } else {
+    fun deleteNote(noteId: ObjectId) {
+        val note = getNote(noteId)
+        if (note?.images?.isNotEmpty() == true) {
+            val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
             handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
-                updateCurrentState(
-                    title, text, Uri.EMPTY
-                )
-                updateCurrentNote(
-                    noteId,
-                    noteUiState.value.title,
-                    noteUiState.value.text,
-                    noteUiState.value.image,
-                    true
-                )
+                viewModelScope.launch {
+                    handleNotesUseCase.deleteNoteById(noteId)
+                }.invokeOnCompletion {
+                    Log.d("inserted!", "inserted!")
+                    handleNotesUseCase.updateIsNoteJobDone()
+                }
             }
-        }
-
-    }
-
-    fun deleteCurrentNote(noteId: ObjectId) {
-        viewModelScope.launch {
-            handleNotesUseCase.deleteNoteById(noteId)
-        }.invokeOnCompletion {
-            Log.d("inserted!", "inserted!")
-            _isNoteJobDone.value = true
-        }
-    }
-
-    fun updateCurrentNote(
-        id: ObjectId, title: String, text: String, image: String, isUpdatingFromImage: Boolean
-    ) {
-        viewModelScope.launch {
-            handleNotesUseCase.updateNote(id, title, text, image)
-        }.invokeOnCompletion {
-            if (!isUpdatingFromImage) {
-                Log.d("updated!", "updated!")
-                _isNoteJobDone.value = true
+        } else {
+            viewModelScope.launch {
+                handleNotesUseCase.deleteNoteById(noteId)
+            }.invokeOnCompletion {
+                Log.d("inserted!", "inserted!")
+                handleNotesUseCase.updateIsNoteJobDone()
             }
         }
     }
 
-
-    fun setEmptyNote() {
-        _noteUiState.update { currentUiState ->
-            currentUiState.copy(
-                title = "", text = "", image = ""
-            )
-        }
-    }
-
-    fun createNote() {
+    fun createNote(title: String, text: String, image: String) {
         viewModelScope.launch {
             handleNotesUseCase.insertNote(
-                title = noteUiState.value.title,
-                text = noteUiState.value.text,
-                image = noteUiState.value.image
+                title = title, text = text, image = image
             )
         }.invokeOnCompletion {
             Log.d("inserted!", "inserted!")
-            _isNoteJobDone.value = true
+            handleNotesUseCase.updateIsNoteJobDone()
+        }
+    }
+
+    fun insertNote(uploadTask: StorageReference, noteUiState: NoteUiState) {
+        if (uploadTask.path != "/") {
+            handleNotesUseCase.uploadPhotoToFirebase(uploadTask, noteUiState.image) {
+                createNote(noteUiState.title, noteUiState.text, it)
+            }
+        } else {
+            createNote(noteUiState.title, noteUiState.text, "")
+        }
+    }
+
+    fun updateNote(
+        id: ObjectId, noteUiState: NoteUiState, uploadTask: StorageReference
+    ) {
+        val currentNote = getNote(id)
+        if (currentNote?.images?.isNotEmpty() == true) {
+            if (noteUiState.image.isEmpty()) {
+                deletePhoto(id)
+            } else {
+                deletePhoto(id)
+                uploadPhoto(uploadTask, Uri.parse(noteUiState.image))
+            }
+        } else {
+            if (noteUiState.image.isNotEmpty()) {
+                uploadPhoto(uploadTask, Uri.parse(noteUiState.image))
+            }
+        }
+        viewModelScope.launch {
+            handleNotesUseCase.updateNote(
+                id, noteUiState.title, noteUiState.text, noteUiState.image
+            )
+        }.invokeOnCompletion {
+            Log.d("updated!", "updated!")
+            handleNotesUseCase.updateIsNoteJobDone()
+        }
+    }
+
+    private fun uploadPhoto(uploadTask: StorageReference, image: Uri) {
+        handleNotesUseCase.uploadPhotoToFirebase(uploadTask, image.toString()) {
+            updateCurrentState(
+                newCurrentNoteState.value.title, newCurrentNoteState.value.text, Uri.parse(it)
+            )
+        }
+    }
+
+    private fun deletePhoto(noteId: ObjectId) {
+        val note = getNote(noteId)
+        val toDeleteRef = note?.images?.let { Firebase.storage.getReferenceFromUrl(it) }
+        if (toDeleteRef != null) {
+            handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+                viewModelScope.launch {
+                    updateCurrentState(
+                        newCurrentNoteState.value.title, newCurrentNoteState.value.text, Uri.EMPTY
+                    )
+                }.invokeOnCompletion {
+                    Log.d("photo delted!", "deleted!")
+                }
+            }
         }
     }
 }

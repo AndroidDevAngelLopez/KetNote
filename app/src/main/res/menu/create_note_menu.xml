@@ -8,4 +8,11 @@
         android:title="@string/more"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/delete_image_menu_option"
+        android:contentDescription="@string/content_description_delete_image"
+        android:title="@string/more_delete_image"
+        android:icon="@drawable/deletephoto"
+        app:showAsAction="ifRoom" />
+
 </menu>

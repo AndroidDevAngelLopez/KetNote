@@ -7,19 +7,38 @@ import com.complexsoft.ketnote.data.local.entity.ImageToUpload
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.LocalImagesRepository
 import com.complexsoft.ketnote.data.repository.MongoDB
+import com.complexsoft.ketnote.ui.screen.utils.NoteUiState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 
 class HandleNotesUseCase @Inject constructor(
     private val localImagesRepository: LocalImagesRepository
 ) {
+
+    val noteUiState = MutableStateFlow(NoteUiState("", "", ""))
+    val isNoteJobDone = MutableStateFlow(false)
+    fun updateNoteUiStateFlow(
+        title: String, text: String, imageUri: String
+    ) = noteUiState.update {
+        it.copy(
+            title = title, text = text, image = imageUri
+        )
+    }
+
+
+    fun updateIsNoteJobDone(){
+        isNoteJobDone.update {
+            !it
+        }
+    }
 
     suspend fun addImageToUpload(
         remoteImagePath: String, imageUri: String, ownerId: String

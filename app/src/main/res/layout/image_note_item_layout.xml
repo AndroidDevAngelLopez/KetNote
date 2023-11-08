@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/materialCardView"
     style="@style/Widget.Material3.CardView.Outlined"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true">
-
+    app:cardUseCompatPadding="true"
+    android:focusable="true"
+    android:clickable="true">
     <ImageView
-        android:id="@+id/image_note_item_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:id="@+id/item_image"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
         android:contentDescription="@string/notas_con_imagenes"
         android:scaleType="centerCrop"
-        android:src="@drawable/first" />
+        android:src="@drawable/addphoto" />
 </com.google.android.material.card.MaterialCardView>
