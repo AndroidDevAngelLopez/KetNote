@@ -39,4 +39,6 @@
     <string name="more">Borrar Nota</string>
     <string name="content_description_delete_image">Delete Image</string>
     <string name="more_delete_image">Borrar Imagen</string>
+    <string name="msg_token_fmt">quantum</string>
+    <string name="default_notification_channel_id">Channel ID</string>
 </resources>
