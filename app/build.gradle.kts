@@ -44,6 +44,8 @@ android {
 }
 
 dependencies {
+    //PHOTO VIEW
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
     //ROOM
     val roomVersion = "2.6.0"
     implementation("androidx.room:room-runtime:$roomVersion")

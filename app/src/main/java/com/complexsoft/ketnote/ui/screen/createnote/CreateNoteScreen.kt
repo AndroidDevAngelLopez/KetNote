@@ -190,7 +190,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                             binding.currentImageLayout.itemImage.setOnClickListener {
                                 val action =
                                     CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
-                                        noteUiState.image
+                                        noteUiState.image,noteUiState.title
                                     )
                                 findNavController().navigate(action)
                             }
@@ -257,7 +257,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                             binding.currentImageLayout.itemImage.setOnClickListener {
                                 val action =
                                     CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
-                                        noteUiState.image
+                                        noteUiState.image, "Vista Previa"
                                     )
                                 findNavController().navigate(action)
                             }
