@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -235,6 +236,10 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                     viewModel.updateNote(
                         note, uploadTask
                     )
+                } else {
+                    Toast.makeText(
+                        requireContext(), "Debes ingresar un titulo a la nota!", Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         } else {
@@ -298,6 +303,10 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                     viewModel.insertNote(
                         uploadTask, viewModel.newCurrentNoteState.value
                     )
+                } else {
+                    Toast.makeText(
+                        requireContext(), "Debes ingresar un titulo a la nota!", Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

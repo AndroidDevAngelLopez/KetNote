@@ -12,6 +12,7 @@ import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -75,6 +76,7 @@ class HomeScreenViewModel @Inject constructor(
                 for (note in notes) {
                     deleteNote(note._id)
                 }
+                cancel()
             }
         }
     }
