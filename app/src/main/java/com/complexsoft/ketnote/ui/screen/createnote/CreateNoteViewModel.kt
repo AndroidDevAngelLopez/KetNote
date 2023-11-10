@@ -1,7 +1,6 @@
 package com.complexsoft.ketnote.ui.screen.createnote
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.model.Note
@@ -54,44 +53,88 @@ class CreateNoteViewModel @Inject constructor(
 
     fun deleteNote(noteId: ObjectId) {
         val note = getNote(noteId)
-        if (note?.images?.isNotEmpty() == true) {
-            val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
-            handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+        if (newConnectivityObserver.value == ConnectivityObserver.Status.Available) {
+            if (note?.images?.isNotEmpty() == true) {
+                val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
+                handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+                    viewModelScope.launch {
+                        handleNotesUseCase.deleteNoteById(noteId)
+                    }.invokeOnCompletion {
+                        handleNotesUseCase.updateIsNoteJobDone(true)
+                    }
+                }
+            } else {
                 viewModelScope.launch {
                     handleNotesUseCase.deleteNoteById(noteId)
                 }.invokeOnCompletion {
-                    Log.d("inserted!", "inserted!")
                     handleNotesUseCase.updateIsNoteJobDone(true)
                 }
             }
         } else {
-            viewModelScope.launch {
-                handleNotesUseCase.deleteNoteById(noteId)
-            }.invokeOnCompletion {
-                Log.d("inserted!", "inserted!")
-                handleNotesUseCase.updateIsNoteJobDone(true)
+            if (note?.images?.isNotEmpty() == true) {
+                if (!note.images.contains("content")) {
+                    val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
+                    viewModelScope.launch {
+                        handleNotesUseCase.addImageToDelete(
+                            toDeleteRef.path, note._id.toHexString()
+                        )
+                        handleNotesUseCase.deleteNoteById(noteId)
+                    }.invokeOnCompletion {
+                        handleNotesUseCase.updateIsNoteJobDone(true)
+                    }
+                } else {
+                    viewModelScope.launch {
+                        handleNotesUseCase.cleanImageToUpload(note.images)
+                        handleNotesUseCase.deleteNoteById(noteId)
+                    }.invokeOnCompletion {
+                        handleNotesUseCase.updateIsNoteJobDone(true)
+                    }
+                }
+            } else {
+                viewModelScope.launch {
+                    handleNotesUseCase.deleteNoteById(noteId)
+                }.invokeOnCompletion {
+                    handleNotesUseCase.updateIsNoteJobDone(true)
+                }
             }
         }
-    }
 
-    private fun createNote(title: String, text: String, image: String) {
-        viewModelScope.launch {
-            handleNotesUseCase.insertNote(
-                title = title, text = text, image = image
-            )
-        }.invokeOnCompletion {
-            Log.d("inserted!", "inserted!")
-            handleNotesUseCase.updateIsNoteJobDone(true)
-        }
     }
 
     fun insertNote(uploadTask: StorageReference, noteUiState: NoteUiState) {
-        if (uploadTask.path != "/") {
-            handleNotesUseCase.uploadPhotoToFirebase(uploadTask, noteUiState.image) {
-                createNote(noteUiState.title, noteUiState.text, it)
+        if (newConnectivityObserver.value == ConnectivityObserver.Status.Available) {
+            if (uploadTask.path != "/") {
+                handleNotesUseCase.uploadPhotoToFirebase(uploadTask, noteUiState.image) {
+                    viewModelScope.launch {
+                        handleNotesUseCase.insertNote(noteUiState.title, noteUiState.text, it)
+                    }.invokeOnCompletion {
+                        handleNotesUseCase.updateIsNoteJobDone(true)
+                    }
+                }
+            } else {
+                viewModelScope.launch {
+                    handleNotesUseCase.insertNote(noteUiState.title, noteUiState.text, "")
+                }.invokeOnCompletion {
+                    handleNotesUseCase.updateIsNoteJobDone(true)
+                }
             }
         } else {
-            createNote(noteUiState.title, noteUiState.text, "")
+            if (uploadTask.path != "/") {
+                viewModelScope.launch {
+                    handleNotesUseCase.addImageToUpload(uploadTask.path, noteUiState.image)
+                    handleNotesUseCase.insertNote(
+                        noteUiState.title, noteUiState.text, noteUiState.image
+                    )
+                }.invokeOnCompletion {
+                    handleNotesUseCase.updateIsNoteJobDone(true)
+                }
+            } else {
+                viewModelScope.launch {
+                    handleNotesUseCase.insertNote(noteUiState.title, noteUiState.text, "")
+                }.invokeOnCompletion {
+                    handleNotesUseCase.updateIsNoteJobDone(true)
+                }
+            }
         }
     }
 
@@ -99,17 +142,52 @@ class CreateNoteViewModel @Inject constructor(
         currentNote: Note, uploadTask: StorageReference
     ) {
         val noteUiState = newCurrentNoteState.value
-        if (currentNote.images.isNotEmpty()) {
-            if (noteUiState.image.isNotEmpty()) {
-                if (uploadTask.path != "/") {
-                    deletePhoto(currentNote) {
-                        uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
-                            viewModelScope.launch {
-                                handleNotesUseCase.updateNote(
-                                    currentNote._id, noteUiState.title, noteUiState.text, it
-                                )
-                                handleNotesUseCase.updateIsNoteJobDone(true)
+        if (newConnectivityObserver.value == ConnectivityObserver.Status.Available) {
+            if (currentNote.images.isNotEmpty()) {
+                if (noteUiState.image.isNotEmpty()) {
+                    if (uploadTask.path != "/") {
+                        deletePhoto(currentNote) {
+                            uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
+                                viewModelScope.launch {
+                                    handleNotesUseCase.updateNote(
+                                        currentNote._id, noteUiState.title, noteUiState.text, it
+                                    )
+                                    handleNotesUseCase.updateIsNoteJobDone(true)
+                                }
                             }
+                        }
+                    } else {
+                        viewModelScope.launch {
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                noteUiState.image
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    }
+                } else {
+                    deletePhoto(currentNote) {
+                        viewModelScope.launch {
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                Uri.EMPTY.toString()
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    }
+                }
+            } else {
+                if (noteUiState.image.isNotEmpty()) {
+                    uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
+                        viewModelScope.launch {
+                            handleNotesUseCase.updateNote(
+                                currentNote._id, noteUiState.title, noteUiState.text, it
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
                         }
                     }
                 } else {
@@ -120,9 +198,84 @@ class CreateNoteViewModel @Inject constructor(
                         handleNotesUseCase.updateIsNoteJobDone(true)
                     }
                 }
-            } else {
-                deletePhoto(currentNote) {
+            }
+        } else {
+            if (currentNote.images.isNotEmpty() && !currentNote.images.contains("content")) {
+                if (noteUiState.image.isNotEmpty()) {
+                    if (uploadTask.path != "/") {
+                        val toDeleteRef =
+                            currentNote.images.let { Firebase.storage.getReferenceFromUrl(it) }
+                        viewModelScope.launch {
+                            handleNotesUseCase.addImageToDelete(
+                                toDeleteRef.path,
+                                currentNote._id.toHexString()
+                            )
+                            handleNotesUseCase.addImageToUpload(uploadTask.path, noteUiState.image)
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                noteUiState.image
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    } else {
+                        viewModelScope.launch {
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                noteUiState.image
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    }
+                } else {
+                    val toDeleteRef =
+                        currentNote.images.let { Firebase.storage.getReferenceFromUrl(it) }
                     viewModelScope.launch {
+                        handleNotesUseCase.addImageToDelete(
+                            toDeleteRef.path,
+                            currentNote._id.toHexString()
+                        )
+                        handleNotesUseCase.updateNote(
+                            currentNote._id,
+                            noteUiState.title,
+                            noteUiState.text,
+                            Uri.EMPTY.toString()
+                        )
+                        handleNotesUseCase.updateIsNoteJobDone(true)
+                    }
+
+                }
+            } else {
+                if (noteUiState.image.isNotEmpty()) {
+                    if (uploadTask.path != "/") {
+                        viewModelScope.launch {
+                            handleNotesUseCase.cleanImageToUpload(noteUiState.image)
+                            handleNotesUseCase.addImageToUpload(uploadTask.path, noteUiState.image)
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                noteUiState.image
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    } else {
+                        viewModelScope.launch {
+                            handleNotesUseCase.updateNote(
+                                currentNote._id,
+                                noteUiState.title,
+                                noteUiState.text,
+                                noteUiState.image
+                            )
+                            handleNotesUseCase.updateIsNoteJobDone(true)
+                        }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        handleNotesUseCase.cleanImageToUpload(noteUiState.image)
                         handleNotesUseCase.updateNote(
                             currentNote._id,
                             noteUiState.title,
@@ -133,25 +286,8 @@ class CreateNoteViewModel @Inject constructor(
                     }
                 }
             }
-        } else {
-            if (noteUiState.image.isNotEmpty()) {
-                uploadPhoto(uploadTask, Uri.parse(noteUiState.image)) {
-                    viewModelScope.launch {
-                        handleNotesUseCase.updateNote(
-                            currentNote._id, noteUiState.title, noteUiState.text, it
-                        )
-                        handleNotesUseCase.updateIsNoteJobDone(true)
-                    }
-                }
-            } else {
-                viewModelScope.launch {
-                    handleNotesUseCase.updateNote(
-                        currentNote._id, noteUiState.title, noteUiState.text, noteUiState.image
-                    )
-                    handleNotesUseCase.updateIsNoteJobDone(true)
-                }
-            }
         }
+
     }
 
     private fun uploadPhoto(

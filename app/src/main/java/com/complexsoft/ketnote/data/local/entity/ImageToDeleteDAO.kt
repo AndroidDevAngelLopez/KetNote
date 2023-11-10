@@ -14,7 +14,7 @@ interface ImageToDeleteDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addImageToDelete(imageToDelete: ImageToDelete)
 
-    @Query("DELETE FROM image_to_delete_table WHERE id=:imageId")
-    suspend fun cleanupImageToDelete(imageId: Int)
+    @Query("DELETE FROM image_to_delete_table WHERE ownerId=:ownerId")
+    suspend fun cleanupImageToDelete(ownerId: String)
 
 }

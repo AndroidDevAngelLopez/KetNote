@@ -16,8 +16,8 @@ class LocalImagesRepositoryImpl @Inject constructor(
         localImagesDataSource.addImageToUpload(imageToUpload = imageToUpload)
     }
 
-    override suspend fun cleanupImageToUpload(imageId: Int) {
-        localImagesDataSource.cleanupImageToUpload(imageId = imageId)
+    override suspend fun cleanupImageToUpload(remotePath: String) {
+        localImagesDataSource.cleanupImageToUpload(remotePath = remotePath)
     }
 
     override suspend fun getAllDeleteImages(): List<ImageToDelete> {
@@ -28,7 +28,7 @@ class LocalImagesRepositoryImpl @Inject constructor(
         localImagesDataSource.addImageToDelete(imageToDelete = imageToDelete)
     }
 
-    override suspend fun cleanupImageToDelete(imageId: Int) {
-        localImagesDataSource.cleanupImageToDelete(imageId = imageId)
+    override suspend fun cleanupImageToDelete(ownerId : String) {
+        localImagesDataSource.cleanupImageToDelete(ownerId = ownerId)
     }
 }

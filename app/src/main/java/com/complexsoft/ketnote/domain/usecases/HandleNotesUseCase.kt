@@ -40,10 +40,10 @@ class HandleNotesUseCase @Inject constructor(
 
 
     suspend fun addImageToUpload(
-        remoteImagePath: String, imageUri: String, ownerId: String
+        remoteImagePath: String, imageUri: String
     ) {
         val imageToUpload = ImageToUpload(
-            remoteImagePath = remoteImagePath, imageUri = imageUri, ownerId = ownerId
+            remoteImagePath = remoteImagePath, imageUri = imageUri , ownerId = ""
         )
         localImagesRepository.addImageToUpload(imageToUpload)
     }
@@ -53,7 +53,6 @@ class HandleNotesUseCase @Inject constructor(
     ) {
         val storage = Firebase.storage
         val storageRef = storage.reference
-        var counter = 0
         localImagesRepository.getAllUploadImages().asFlow().collectLatest {
             uploadPhotoToFirebase(storageRef.child(it.remoteImagePath), it.imageUri) { uri ->
                 onUriDownloadReceived(uri, it.ownerId)
@@ -61,6 +60,9 @@ class HandleNotesUseCase @Inject constructor(
         }
     }
 
+    suspend fun cleanImageToUpload(remoteImagePath: String){
+        localImagesRepository.cleanupImageToUpload(remotePath = remoteImagePath)
+    }
 
     suspend fun addImageToDelete(
         remoteImagePath: String, ownerId: String
@@ -95,19 +97,6 @@ class HandleNotesUseCase @Inject constructor(
     suspend fun deleteNoteById(noteId: ObjectId) = MongoDB.deleteNoteById(noteId)
     fun getAllNotes() = MongoDB.getNotes()
     fun getNoteById(noteId: ObjectId): Note? = MongoDB.getNoteById(noteId)
-    suspend fun deleteAllNotes(storage: FirebaseStorage) {
-        getAllNotes().collectLatest {
-            for (note in it) {
-                if (note.images.isNotEmpty()) {
-                    val toDeleteRef = storage.getReferenceFromUrl(note.images)
-                    deletePhotoFromFirebase(toDeleteRef) {
-                        Log.d("Firebase on all notes deleted : ", "image successfully deleted!")
-                    }
-                }
-            }
-            MongoDB.deleteAllNotes()
-        }
-    }
 
     suspend fun updateNote(id: ObjectId, title: String, text: String, image: String) =
         MongoDB.updateNote(id, title, text, image)

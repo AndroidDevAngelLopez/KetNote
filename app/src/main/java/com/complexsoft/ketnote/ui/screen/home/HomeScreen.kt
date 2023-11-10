@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -28,7 +29,6 @@ import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -82,7 +82,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         "Eliminar notas"
                     ) {
                         viewLifecycleOwner.lifecycleScope.launch {
-                            viewModel.deleteAllNotes(Firebase.storage)
+                            viewModel.deleteAllNotes()
                         }
                     }?.show()
                     menuItem.isCheckable = false
@@ -163,6 +163,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas trabajando sin conexion"
                                 delay(3000)
@@ -171,22 +172,28 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
 
                             ConnectivityObserver.Status.Losing -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas perdiendo conexion!"
-                                delay(2000)
+                                delay(1000)
                                 binding.homeConnectivityLayout.root.visibility = View.GONE
                             }
 
                             ConnectivityObserver.Status.Available -> {
+
+
+
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(true)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Sincronizando notas..."
-                                delay(1200)
+                                delay(1000)
                                 binding.homeConnectivityLayout.root.visibility = View.GONE
                             }
 
                             ConnectivityObserver.Status.Lost -> {
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                switchConnectivityObserverLayoutColor(false)
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas trabajando sin conexion!"
                                 delay(3000)
@@ -214,4 +221,30 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
             binding.homeScreenMessage.text = message
         }
     }
+
+    private fun switchConnectivityObserverLayoutColor(isAvailable: Boolean) {
+        if (isAvailable) {
+            this@HomeScreen.context?.let { it1 ->
+                ContextCompat.getColor(
+                    it1, R.color.md_theme_light_tertiary
+                )
+            }?.let { it2 ->
+                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
+                    it2
+                )
+            }
+        } else {
+            this@HomeScreen.context?.let { it1 ->
+                ContextCompat.getColor(
+                    it1, R.color.md_theme_default_blue
+                )
+            }?.let { it2 ->
+                binding.homeConnectivityLayout.connectivityLayout.setBackgroundColor(
+                    it2
+                )
+            }
+        }
+    }
+
+
 }
