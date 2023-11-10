@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -21,6 +20,7 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.data.repository.MongoDBAPP
 import com.complexsoft.ketnote.databinding.LoginScreenLayoutBinding
+import com.complexsoft.ketnote.ui.screen.components.switchConnectivityObserverLayoutColor
 import dagger.hilt.android.AndroidEntryPoint
 import io.realm.kotlin.mongodb.AuthenticationChange
 import io.realm.kotlin.mongodb.LoggedIn
@@ -64,7 +64,9 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
                                 binding.loginConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.loginConnectivityLayout
+                                )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
                                     "No tienes internet!"
                                 loginButtonStatus(false)
@@ -72,7 +74,9 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
                             ConnectivityObserver.Status.Losing -> {
                                 binding.loginConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.loginConnectivityLayout
+                                )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas perdiendo conexion!"
                                 delay(2000)
@@ -82,7 +86,9 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
                             ConnectivityObserver.Status.Available -> {
                                 binding.loginConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(true)
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), true, binding.loginConnectivityLayout
+                                )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
                                     "Conexion establecida!"
                                 delay(2000)
@@ -92,7 +98,9 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
                             ConnectivityObserver.Status.Lost -> {
                                 binding.loginConnectivityLayout.root.visibility = View.VISIBLE
-                                switchConnectivityObserverLayoutColor(false)
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.loginConnectivityLayout
+                                )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
                                     "Perdiste la conexion!"
                                 loginButtonStatus(false)
@@ -132,30 +140,6 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
         } else {
             binding.loginButton.visibility = View.GONE
             binding.loginSubtitle.text = "Conectate a internet para comenzar!"
-        }
-    }
-
-    private fun switchConnectivityObserverLayoutColor(isAvailable: Boolean) {
-        if (isAvailable) {
-            this@LoginScreen.context?.let { it1 ->
-                ContextCompat.getColor(
-                    it1, R.color.md_theme_light_tertiary
-                )
-            }?.let { it2 ->
-                binding.loginConnectivityLayout.connectivityLayout.setBackgroundColor(
-                    it2
-                )
-            }
-        } else {
-            this@LoginScreen.context?.let { it1 ->
-                ContextCompat.getColor(
-                    it1, R.color.md_theme_light_error
-                )
-            }?.let { it2 ->
-                binding.loginConnectivityLayout.connectivityLayout.setBackgroundColor(
-                    it2
-                )
-            }
         }
     }
 }

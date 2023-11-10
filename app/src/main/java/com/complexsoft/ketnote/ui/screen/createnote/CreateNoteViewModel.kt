@@ -15,6 +15,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
@@ -26,6 +27,12 @@ class CreateNoteViewModel @Inject constructor(
     connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
 
+    val connectivityStatusFlow: StateFlow<ConnectivityObserver.Status> =
+        connectivityUseCase().stateIn(
+            scope = viewModelScope,
+            initialValue = ConnectivityObserver.Status.Unavailable,
+            started = SharingStarted.WhileSubscribed(5_000)
+        )
     val newIsNoteJobDone = handleNotesUseCase.isNoteJobDone.stateIn(
         scope = viewModelScope,
         initialValue = NoteJobUiState(),
@@ -44,16 +51,8 @@ class CreateNoteViewModel @Inject constructor(
         handleNotesUseCase.updateNoteUiStateFlow(title, text, image.toString())
     }
 
-    private val newConnectivityObserver = connectivityUseCase().stateIn(
-        scope = viewModelScope,
-        initialValue = ConnectivityObserver.Status.Unavailable,
-        started = SharingStarted.WhileSubscribed(5_000)
-    )
-
-    fun getNote(noteId: ObjectId) = handleNotesUseCase.getNoteById(noteId = noteId)
-
     fun deleteNote(noteId: ObjectId) {
-        val note = getNote(noteId)
+        val note = handleNotesUseCase.getNoteById(noteId)
         if (note?.images?.isNotEmpty() == true) {
             val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
             handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
@@ -167,5 +166,9 @@ class CreateNoteViewModel @Inject constructor(
         handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
             onDeletePhotoCompletion()
         }
+    }
+
+    fun getNote(objectId: ObjectId) : Note{
+        return handleNotesUseCase.getNoteById(objectId)!!
     }
 }

@@ -22,13 +22,13 @@ import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.databinding.HomeScreenLayoutBinding
 import com.complexsoft.ketnote.ui.screen.components.createDialog
+import com.complexsoft.ketnote.ui.screen.components.switchConnectivityObserverLayoutColor
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -82,7 +82,7 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         "Eliminar notas"
                     ) {
                         viewLifecycleOwner.lifecycleScope.launch {
-                            viewModel.deleteAllNotes(Firebase.storage)
+                            viewModel.deleteAllNotes()
                         }
                     }?.show()
                     menuItem.isCheckable = false
@@ -162,22 +162,42 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                     viewModel.connectivityStatusFlow.collectLatest {
                         when (it) {
                             ConnectivityObserver.Status.Unavailable -> {
+                                binding.mainNavigationView.menu.findItem(R.id.delete_all_item).isVisible =
+                                    false
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.homeConnectivityLayout
+                                )
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                binding.homeConnectivityLayout.root.setOnClickListener {
+                                    binding.homeConnectivityLayout.root.visibility = View.GONE
+                                }
+                                binding.createNoteButton.visibility = View.GONE
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Estas trabajando sin conexion"
-                                delay(3000)
-                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                                    "Sin conexion a internet!"
                             }
 
                             ConnectivityObserver.Status.Losing -> {
+                                binding.mainNavigationView.menu.findItem(R.id.delete_all_item).isVisible =
+                                    false
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.homeConnectivityLayout
+                                )
+                                binding.homeConnectivityLayout.root.setOnClickListener {
+                                    binding.homeConnectivityLayout.root.visibility = View.GONE
+                                }
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
+                                binding.createNoteButton.visibility = View.GONE
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Estas perdiendo conexion!"
-                                delay(2000)
-                                binding.homeConnectivityLayout.root.visibility = View.GONE
                             }
 
                             ConnectivityObserver.Status.Available -> {
+                                binding.mainNavigationView.menu.findItem(R.id.delete_all_item).isVisible =
+                                    true
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), true, binding.homeConnectivityLayout
+                                )
+                                binding.createNoteButton.visibility = View.VISIBLE
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
                                     "Sincronizando notas..."
@@ -186,11 +206,18 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                             }
 
                             ConnectivityObserver.Status.Lost -> {
+                                binding.mainNavigationView.menu.findItem(R.id.delete_all_item).isVisible =
+                                    false
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(), false, binding.homeConnectivityLayout
+                                )
+                                binding.homeConnectivityLayout.root.setOnClickListener {
+                                    binding.homeConnectivityLayout.root.visibility = View.GONE
+                                }
+                                binding.createNoteButton.visibility = View.GONE
                                 binding.homeConnectivityLayout.root.visibility = View.VISIBLE
                                 binding.homeConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Estas trabajando sin conexion!"
-                                delay(3000)
-                                binding.homeConnectivityLayout.root.visibility = View.GONE
+                                    "Sin conexion a internet!"
                             }
                         }
                     }

@@ -78,7 +78,16 @@
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                 app:cornerRadius="0dp" />
 
+            <include
+                android:id="@+id/createNoteScreen_connectivity_layout"
+                layout="@layout/connectivity_observer_layout"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

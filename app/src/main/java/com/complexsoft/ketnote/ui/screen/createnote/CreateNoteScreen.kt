@@ -21,7 +21,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.complexsoft.ketnote.R
+import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.databinding.CreateNoteScreenLayoutBinding
+import com.complexsoft.ketnote.ui.screen.components.switchConnectivityObserverLayoutColor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -84,10 +86,78 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.newIsNoteJobDone.collectLatest {
-                    if (it.value) {
-                        viewModel.updateCurrentJobDone(false)
-                        findNavController().popBackStack()
+                launch {
+                    viewModel.newIsNoteJobDone.collectLatest {
+                        if (it.value) {
+                            viewModel.updateCurrentJobDone(false)
+                            findNavController().popBackStack()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.connectivityStatusFlow.collectLatest {
+                        when (it) {
+                            ConnectivityObserver.Status.Unavailable -> {
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(),
+                                    false,
+                                    binding.createNoteScreenConnectivityLayout
+                                )
+                                binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                    false
+                                binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                                    false
+                                binding.noteSendButton.visibility = View.GONE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
+                                    View.VISIBLE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Conectate a internet para seguir trabajando!"
+                            }
+
+                            ConnectivityObserver.Status.Losing -> {
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(),
+                                    false,
+                                    binding.createNoteScreenConnectivityLayout
+                                )
+                                binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                    false
+                                binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                                    false
+                                binding.noteSendButton.visibility = View.GONE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
+                                    View.VISIBLE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Estas perdiendo la conexion a internet!"
+                            }
+
+                            ConnectivityObserver.Status.Available -> {
+                                if (args.id.isNotEmpty()) {
+                                    binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                        true
+                                }
+                                binding.noteSendButton.visibility = View.VISIBLE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
+                                    View.GONE
+                            }
+
+                            ConnectivityObserver.Status.Lost -> {
+                                switchConnectivityObserverLayoutColor(
+                                    requireContext(),
+                                    false,
+                                    binding.createNoteScreenConnectivityLayout
+                                )
+                                binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible =
+                                    false
+                                binding.topAppBar.menu.findItem(R.id.delete_image_menu_option).isVisible =
+                                    false
+                                binding.noteSendButton.visibility = View.GONE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
+                                    View.VISIBLE
+                                binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
+                                    "Conectate a internet para seguir trabajando!"
+                            }
+                        }
                     }
                 }
             }
@@ -95,7 +165,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
 
         /**THIS SECTION IS FOR UPDATING AN EXISTING NOTE*/
         if (args.id.isNotEmpty()) {
-            val note = viewModel.getNote(ObjectId(args.id))!!
+            val note = viewModel.getNote(ObjectId(args.id))
             viewModel.updateCurrentState(note.title, note.text, Uri.parse(note.images))
             binding.noteTitle.setText(note.title)
             binding.noteText.setText(note.text)

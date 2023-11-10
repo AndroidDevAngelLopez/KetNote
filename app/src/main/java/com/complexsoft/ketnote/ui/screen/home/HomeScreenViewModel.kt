@@ -1,5 +1,6 @@
 package com.complexsoft.ketnote.ui.screen.home
 
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,10 +9,12 @@ import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
-import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,26 +43,39 @@ class HomeScreenViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000)
         )
 
-    private fun uploadImages() {
-        viewModelScope.launch {
-            handleNotesUseCase.uploadLocalImages { uri, id ->
-                viewModelScope.launch {
-                    val note = handleNotesUseCase.getNoteById(ObjectId(id))
-                    if (note != null) {
-                        handleNotesUseCase.updateNote(
-                            ObjectId(id), note.title, note.text, uri
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     fun logout(activity: FragmentActivity) {
         logoutUseCase.logoutUser(activity)
     }
 
-    fun deleteAllNotes(storage: FirebaseStorage) {
-        viewModelScope.launch { handleNotesUseCase.deleteAllNotes(storage) }
+    private fun deleteNote(noteId: ObjectId) {
+        val note = handleNotesUseCase.getNoteById(noteId)
+        if (note?.images?.isNotEmpty() == true) {
+            val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
+            handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+                viewModelScope.launch {
+                    handleNotesUseCase.deleteNoteById(noteId)
+                }.invokeOnCompletion {
+                    Log.d("inserted!", "inserted!")
+                    handleNotesUseCase.updateIsNoteJobDone(true)
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                handleNotesUseCase.deleteNoteById(noteId)
+            }.invokeOnCompletion {
+                Log.d("inserted!", "inserted!")
+                handleNotesUseCase.updateIsNoteJobDone(true)
+            }
+        }
+    }
+
+    fun deleteAllNotes() {
+        viewModelScope.launch {
+            handleNotesUseCase.getAllNotes().collectLatest { notes ->
+                for (note in notes) {
+                    deleteNote(note._id)
+                }
+            }
+        }
     }
 }
