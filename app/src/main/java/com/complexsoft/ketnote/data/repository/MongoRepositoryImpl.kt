@@ -2,7 +2,7 @@ package com.complexsoft.ketnote.data.repository
 
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.repository.MongoDBAPP.app
-import com.complexsoft.ketnote.utils.Constants.APP_ID
+import com.complexsoft.ketnote.utils.PasswordsConstants.APP_ID
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.log.LogLevel
