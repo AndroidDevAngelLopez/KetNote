@@ -1,11 +1,14 @@
 package com.complexsoft.ketnote.domain.di
 
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
-import com.complexsoft.ketnote.data.repository.LocalImagesRepository
+import com.complexsoft.ketnote.domain.usecases.DeletePhotoFromFirebaseUseCase
+import com.complexsoft.ketnote.domain.usecases.GetActivityForResultUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
-import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
-import com.complexsoft.ketnote.domain.usecases.LoginUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
+import com.complexsoft.ketnote.domain.usecases.StartLoginWithGoogleUseCase
+import com.complexsoft.ketnote.domain.usecases.UpdateIsNoteJobDoneUseCase
+import com.complexsoft.ketnote.domain.usecases.UpdateNoteStateUseCase
+import com.complexsoft.ketnote.domain.usecases.UploadPhotoToFirebaseUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +22,12 @@ object DomainModule {
 
     @Singleton
     @Provides
-    fun providesLoginUseCase(): LoginUseCase = LoginUseCase()
+    fun getActivityForResultUseCase(): GetActivityForResultUseCase = GetActivityForResultUseCase()
+
+    @Singleton
+    @Provides
+    fun getStartLoginWithGoogleUseCase(): StartLoginWithGoogleUseCase =
+        StartLoginWithGoogleUseCase()
 
     @Singleton
     @Provides
@@ -27,8 +35,24 @@ object DomainModule {
 
     @Singleton
     @Provides
-    fun providesHandleNotesUseCase(localImagesRepository: LocalImagesRepository): HandleNotesUseCase =
-        HandleNotesUseCase(localImagesRepository)
+    fun providesUpdateIsNoteJobDoneUseCase(): UpdateIsNoteJobDoneUseCase =
+        UpdateIsNoteJobDoneUseCase()
+
+    @Singleton
+    @Provides
+    fun providesUpdateNoteStateUseCase(): UpdateNoteStateUseCase =
+        UpdateNoteStateUseCase()
+
+    @Singleton
+    @Provides
+    fun providesUploadPhotoToFirebaseUseCase(): UploadPhotoToFirebaseUseCase =
+        UploadPhotoToFirebaseUseCase()
+
+
+    @Singleton
+    @Provides
+    fun providesDeletePhotoFromFirebaseUseCase(): DeletePhotoFromFirebaseUseCase =
+        DeletePhotoFromFirebaseUseCase()
 
     @Singleton
     @Provides

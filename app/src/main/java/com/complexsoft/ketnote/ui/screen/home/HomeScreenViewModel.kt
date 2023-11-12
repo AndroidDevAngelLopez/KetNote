@@ -5,8 +5,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
+import com.complexsoft.ketnote.data.repository.MongoDB
+import com.complexsoft.ketnote.domain.usecases.DeletePhotoFromFirebaseUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
-import com.complexsoft.ketnote.domain.usecases.HandleNotesUseCase
 import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.google.firebase.ktx.Firebase
@@ -25,11 +26,11 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
-    private val handleNotesUseCase: HandleNotesUseCase,
+    private val deletePhotoFromFirebaseUseCase: DeletePhotoFromFirebaseUseCase,
     connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
 
-    val newNotesFlow: StateFlow<NotesUiState> = handleNotesUseCase.getAllNotes().map(
+    val newNotesFlow: StateFlow<NotesUiState> = MongoDB.getNotes().map(
         NotesUiState::Success
     ).stateIn(
         scope = viewModelScope,
@@ -45,34 +46,32 @@ class HomeScreenViewModel @Inject constructor(
         )
 
     fun logout(activity: FragmentActivity) {
-        logoutUseCase.logoutUser(activity)
+        logoutUseCase(activity)
     }
 
     private fun deleteNote(noteId: ObjectId) {
-        val note = handleNotesUseCase.getNoteById(noteId)
+        val note = MongoDB.getNoteById(noteId)
         if (note?.images?.isNotEmpty() == true) {
             val toDeleteRef = note.images.let { Firebase.storage.getReferenceFromUrl(it) }
-            handleNotesUseCase.deletePhotoFromFirebase(toDeleteRef) {
+            deletePhotoFromFirebaseUseCase(toDeleteRef) {
                 viewModelScope.launch {
-                    handleNotesUseCase.deleteNoteById(noteId)
+                    MongoDB.deleteNoteById(noteId)
                 }.invokeOnCompletion {
                     Log.d("inserted!", "inserted!")
-                    handleNotesUseCase.updateIsNoteJobDone(true)
                 }
             }
         } else {
             viewModelScope.launch {
-                handleNotesUseCase.deleteNoteById(noteId)
+                MongoDB.deleteNoteById(noteId)
             }.invokeOnCompletion {
                 Log.d("inserted!", "inserted!")
-                handleNotesUseCase.updateIsNoteJobDone(true)
             }
         }
     }
 
     fun deleteAllNotes() {
         viewModelScope.launch {
-            handleNotesUseCase.getAllNotes().collectLatest { notes ->
+            MongoDB.getNotes().collectLatest { notes ->
                 for (note in notes) {
                     deleteNote(note._id)
                 }

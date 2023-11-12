@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
 class LogoutUseCase {
-    fun logoutUser(activity: FragmentActivity) {
+    operator fun invoke(activity: FragmentActivity) {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 MongoDBAPP.app.currentUser?.remove()
