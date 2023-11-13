@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "584951843971",
+    "project_id": "ketnote",
+    "storage_bucket": "ketnote.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584951843971:android:e7f4f5fc02730e047e5fb6",
+        "android_client_info": {
+          "package_name": "com.complexsoft.ketnote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584951843971-eddq98plp1rbui27siljqnrtht6dljkk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.complexsoft.ketnote",
+            "certificate_hash": "8425d9f99c78f0370c3b7e23cb5e460c3ff0b595"
+          }
+        },
+        {
+          "client_id": "584951843971-r602jjb1cp42lvpq8qbhg60hgbhd7uor.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjU40jCyislcJfyJqtQaJfBmzIIfHyhwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584951843971-pl6j9brdsqo2160tn3798oubc8126le7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
