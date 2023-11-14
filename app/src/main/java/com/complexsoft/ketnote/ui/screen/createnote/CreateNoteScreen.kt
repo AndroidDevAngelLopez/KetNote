@@ -238,7 +238,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                     )
                 } else {
                     Toast.makeText(
-                        requireContext(), "Debes ingresar un titulo a la nota!", Toast.LENGTH_SHORT
+                        requireContext(), getString(R.string.must_insert_title), Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -257,7 +257,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                             binding.currentImageLayout.itemImage.setOnClickListener {
                                 val action =
                                     CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
-                                        noteUiState.image, "Vista Previa"
+                                        noteUiState.image, getString(R.string.image_preview)
                                     )
                                 findNavController().navigate(action)
                             }

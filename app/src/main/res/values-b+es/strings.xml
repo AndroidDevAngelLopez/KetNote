@@ -64,4 +64,5 @@
     <string name="get_connection">Conectate a internet para seguir trabajando!</string>
     <string name="signal_restored">Conexion establecida!</string>
     <string name="you_lost_signal">Perdiste la conexion!</string>
+    <string name="image_preview">Vista Previa</string>
 </resources>

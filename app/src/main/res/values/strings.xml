@@ -63,4 +63,5 @@
     <string name="get_connection">Connect to the internet to continue working!</string>
     <string name="signal_restored">Signal Restored!</string>
     <string name="you_lost_signal">You Lost Signal!</string>
+    <string name="image_preview">Vista Previa</string>
 </resources>
