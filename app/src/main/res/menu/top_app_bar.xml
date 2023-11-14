@@ -9,4 +9,10 @@
         android:title="@string/search"
         android:contentDescription="@string/search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="@string/settings"
+        android:contentDescription="@string/settings"
+        app:showAsAction="ifRoom" />
 </menu>

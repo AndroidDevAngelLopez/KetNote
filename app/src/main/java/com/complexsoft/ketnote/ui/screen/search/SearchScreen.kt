@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
+import com.complexsoft.ketnote.ui.screen.components.EmptyUI
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -83,16 +84,27 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
                                 binding.searchScreenProgressIndicator.visibility = View.GONE
                             } else {
                                 notesAdapter.updateList(emptyList())
-                                emptyUI()
+                                EmptyUI(
+                                    fragment = this@SearchScreen,
+                                    searchScreenLayoutBinding = binding
+                                )
                             }
                         }
 
                         is NotesUiState.Error -> {
-                            emptyUI(message = state.error.message.toString())
+                            EmptyUI(
+                                fragment = this@SearchScreen,
+                                searchScreenLayoutBinding = binding,
+                                message = state.error.message.toString()
+                            )
                         }
 
                         is NotesUiState.Loading -> {
-                            emptyUI(loading = true)
+                            EmptyUI(
+                                fragment = this@SearchScreen,
+                                searchScreenLayoutBinding = binding,
+                                loading = true
+                            )
                         }
                     }
                 }
@@ -114,16 +126,4 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
 
         return binding.root
     }
-
-    private fun emptyUI(loading: Boolean = false, message: String = "No hay notas que mostrar") {
-        if (loading) {
-            binding.searchScreenProgressIndicator.visibility = View.VISIBLE
-            binding.searchScreenMessage.visibility = View.GONE
-        } else {
-            binding.searchScreenProgressIndicator.visibility = View.GONE
-            binding.searchScreenMessage.visibility = View.VISIBLE
-            binding.searchScreenMessage.text = message
-        }
-    }
-
 }

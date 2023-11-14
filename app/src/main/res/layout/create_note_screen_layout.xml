@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="5dp">
+
             <include
                 android:id="@+id/current_image_layout"
                 layout="@layout/image_note_item_layout" />
@@ -46,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:hint="@string/title"
-                    android:inputType="text"
+                    android:inputType="textCapSentences|textAutoCorrect|textAutoComplete"
                     android:maxLength="225"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -64,7 +65,7 @@
                     android:background="@android:color/transparent"
                     android:gravity="start"
                     android:hint="@string/text"
-                    android:inputType="text|textMultiLine|textLongMessage"
+                    android:inputType="textCapSentences|text|textMultiLine|textAutoCorrect|textAutoComplete"
                     android:maxLength="520" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,10 +82,9 @@
             <include
                 android:id="@+id/createNoteScreen_connectivity_layout"
                 layout="@layout/connectivity_observer_layout"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                />
+                android:visibility="gone" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

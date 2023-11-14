@@ -68,7 +68,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                                     requireContext(), false, binding.loginConnectivityLayout
                                 )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
-                                    "No tienes internet!"
+                                    getString(R.string.no_internet_signal)
                                 loginButtonStatus(false)
                             }
 
@@ -78,7 +78,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                                     requireContext(), false, binding.loginConnectivityLayout
                                 )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Estas perdiendo conexion!"
+                                    getString(R.string.losing_internet_signal)
                                 delay(2000)
                                 binding.loginConnectivityLayout.root.visibility = View.GONE
                                 loginButtonStatus(false)
@@ -90,7 +90,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                                     requireContext(), true, binding.loginConnectivityLayout
                                 )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Conexion establecida!"
+                                    getString(R.string.signal_restored)
                                 delay(2000)
                                 binding.loginConnectivityLayout.root.visibility = View.GONE
                                 loginButtonStatus(true)
@@ -102,7 +102,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
                                     requireContext(), false, binding.loginConnectivityLayout
                                 )
                                 binding.loginConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Perdiste la conexion!"
+                                    getString(R.string.you_lost_signal)
                                 loginButtonStatus(false)
                             }
                         }
@@ -139,7 +139,7 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
             binding.loginSubtitle.text = getString(R.string.please_sign_in)
         } else {
             binding.loginButton.visibility = View.GONE
-            binding.loginSubtitle.text = "Conectate a internet para comenzar!"
+            binding.loginSubtitle.text = getString(R.string.get_connection)
         }
     }
 }

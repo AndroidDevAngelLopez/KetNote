@@ -21,6 +21,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //resourceConfigurations += mutableSetOf("en-US", "es-MX")
     }
 
     buildTypes {
@@ -40,6 +41,9 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+    androidResources {
+        generateLocaleConfig = true
     }
 }
 
