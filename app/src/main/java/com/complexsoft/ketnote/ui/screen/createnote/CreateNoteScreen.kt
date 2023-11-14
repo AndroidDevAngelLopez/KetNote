@@ -112,7 +112,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
                                     View.VISIBLE
                                 binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Conectate a internet para seguir trabajando!"
+                                    getString(R.string.get_connection)
                             }
 
                             ConnectivityObserver.Status.Losing -> {
@@ -129,7 +129,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
                                     View.VISIBLE
                                 binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Estas perdiendo la conexion a internet!"
+                                    getString(R.string.losing_internet_signal)
                             }
 
                             ConnectivityObserver.Status.Available -> {
@@ -156,7 +156,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                                 binding.createNoteScreenConnectivityLayout.connectivityLayout.visibility =
                                     View.VISIBLE
                                 binding.createNoteScreenConnectivityLayout.connectivityLayoutMessage.text =
-                                    "Conectate a internet para seguir trabajando!"
+                                    getString(R.string.get_connection)
                             }
                         }
                     }
@@ -170,8 +170,8 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
             viewModel.updateCurrentState(note.title, note.text, Uri.parse(note.images))
             binding.noteTitle.setText(note.title)
             binding.noteText.setText(note.text)
-            binding.noteSendButton.text = "Actualizar"
-            binding.topAppBar.title = "Actualizar Nota"
+            binding.noteSendButton.text = getString(R.string.update)
+            binding.topAppBar.title = getString(R.string.update_note)
             binding.topAppBar.menu.findItem(R.id.delete_note_menu_option).isVisible = true
 
             viewLifecycleOwner.lifecycleScope.launch {
@@ -190,7 +190,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                             binding.currentImageLayout.itemImage.setOnClickListener {
                                 val action =
                                     CreateNoteScreenDirections.actionNewCreateNoteToImageVisorFragment(
-                                        noteUiState.image,noteUiState.title
+                                        noteUiState.image, noteUiState.title
                                     )
                                 findNavController().navigate(action)
                             }
@@ -305,7 +305,7 @@ class CreateNoteScreen : Fragment(R.layout.create_note_screen_layout) {
                     )
                 } else {
                     Toast.makeText(
-                        requireContext(), "Debes ingresar un titulo a la nota!", Toast.LENGTH_SHORT
+                        requireContext(), getString(R.string.must_insert_title), Toast.LENGTH_SHORT
                     ).show()
                 }
             }
