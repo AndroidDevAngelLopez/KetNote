@@ -26,4 +26,5 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideImagesToDeleteDao(imagesDatabase: ImagesDatabase) = imagesDatabase.imageToDeleteDao()
+
 }

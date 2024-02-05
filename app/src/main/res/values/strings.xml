@@ -13,8 +13,8 @@
     <string name="welcome_to_home_screen">Welcome to HOME screen!</string>
     <string name="onBoardingTextButton">Next</string>
     <string name="options_subheader_title">Options</string>
-    <string name="signout_title">Log Out</string>
-    <string name="delete_title">Delete All Notes!</string>
+    <string name="signout_title">SignOut</string>
+    <string name="delete_title">Delete all notes</string>
     <string name="page_title">KetNote</string>
     <string name="search">Search</string>
     <string name="title">Write Title for Note…</string>
@@ -27,7 +27,7 @@
     <string name="searchbar_hint">Search Notes…</string>
     <string name="action_text">OK</string>
     <string name="notas">Create Note</string>
-    <string name="about_title">About…</string>
+    <string name="about_title">About</string>
     <string name="add_image">Add Image</string>
     <string name="add_image_new">Image</string>
     <string name="update">Update</string>
@@ -64,4 +64,31 @@
     <string name="signal_restored">Signal Restored!</string>
     <string name="you_lost_signal">You Lost Signal!</string>
     <string name="image_preview">Vista Previa</string>
+    <string name="home_greeting">Hi Angel! stay productive today.</string>
+    <string name="home_last_notes">Latests Notes</string>
+    <string name="settings_title">Settings</string>
+    <string name="notifications">Notifications</string>
+    <string name="home_pinned_notes">Pinned Notes</string>
+    <string name="home_active_task">Active Tasks</string>
+    <string name="home_active_reminders">Active Reminders</string>
+    <string name="note_tab">Note</string>
+    <string name="task_tab">Task</string>
+    <string name="story_tab">Story</string>
+    <string name="create_layout_page">Create Note</string>
+    <string name="see_more">See All</string>
+    <string name="accelerator" translatable="false">accelerator</string>
+    <string name="content_description_accelerator" translatable="false">accelerator</string>
+    <string name="rotation" translatable="false">rotation</string>
+    <string name="content_description_rotation" translatable="false">rotatiojn</string>
+    <string name="dashboard" translatable="false">dashboard</string>
+    <string name="content_description_dashboard" translatable="false">dashboard</string>
+    <string name="voice_control">Voice Control</string>
+    <string name="image_control">Add Image</string>
+    <string name="gemini_control">Gemini</string>
+    <string name="edit_screen_title">Edit Note</string>
+    <string name="home_stories">Stories</string>
+    <string name="home_last_stories">Lastest Stories</string>
+    <string name="notifications_clear_all">Clear All</string>
+    <string name="share_instagram">Share To Instagram</string>
+    <string name="story_title">Write a title for your story.</string>
 </resources>

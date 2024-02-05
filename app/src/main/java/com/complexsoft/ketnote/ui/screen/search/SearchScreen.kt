@@ -3,7 +3,6 @@ package com.complexsoft.ketnote.ui.screen.search
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -15,12 +14,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.complexsoft.ketnote.R
 import com.complexsoft.ketnote.databinding.SearchViewLayoutBinding
 import com.complexsoft.ketnote.ui.screen.components.EmptyUI
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
-import com.complexsoft.ketnote.ui.screen.utils.adapters.NoteAdapter
+import com.complexsoft.ketnote.ui.screen.utils.adapters.SearchedNotesAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView.TransitionState
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,10 +30,10 @@ import kotlinx.coroutines.launch
 class SearchScreen : Fragment(R.layout.search_view_layout) {
 
     private lateinit var binding: SearchViewLayoutBinding
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = SearchViewLayoutBinding.inflate(layoutInflater)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = SearchViewLayoutBinding.bind(view)
         val viewModel by viewModels<SearchScreenViewModel>()
         binding.searchView.show()
         ViewCompat.setOnApplyWindowInsetsListener(binding.searchConstraint) { view, windowInsets ->
@@ -67,9 +66,8 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
 
         })
 
-        val notesAdapter = NoteAdapter(emptyList()) {
-            val action =
-                SearchScreenDirections.actionSearchScreenToNewCreateNote(it._id.toHexString())
+        val notesAdapter = SearchedNotesAdapter(emptyList()) {
+            val action = SearchScreenDirections.actionSearchScreenToEditScreen(it._id.toHexString())
             findNavController().navigate(action)
         }
 
@@ -113,17 +111,15 @@ class SearchScreen : Fragment(R.layout.search_view_layout) {
 
         val divider = this.context?.let {
             MaterialDividerItemDecoration(
-                it, LinearLayoutManager.VERTICAL
+                it, StaggeredGridLayoutManager.VERTICAL
             )
         }
         binding.searchRecycler.apply {
-            layoutManager = LinearLayoutManager(this@SearchScreen.context)
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             adapter = notesAdapter
             if (divider != null) {
                 addItemDecoration(divider)
             }
         }
-
-        return binding.root
     }
 }

@@ -1,6 +1,12 @@
 package com.complexsoft.ketnote.ui.screen.home
 
+import android.content.Context
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +14,10 @@ import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
 import com.complexsoft.ketnote.data.repository.MongoDB
 import com.complexsoft.ketnote.domain.usecases.DeletePhotoFromFirebaseUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
-import com.complexsoft.ketnote.domain.usecases.LogoutUseCase
+import com.complexsoft.ketnote.domain.usecases.HandleLogoutUseCase
+import com.complexsoft.ketnote.domain.usecases.UpdateNotificationsButtonUseCase
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
+import com.complexsoft.ketnote.ui.screen.utils.NotificationsButtonState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,10 +31,15 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 
+
+val Context.dataStore2: DataStore<Preferences> by preferencesDataStore(name = "home_language")
+val languageSelected = stringPreferencesKey("languageSelected")
+
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val logoutUseCase: LogoutUseCase,
+    private val handleLogoutUseCase: HandleLogoutUseCase,
     private val deletePhotoFromFirebaseUseCase: DeletePhotoFromFirebaseUseCase,
+    private val updateNotificationsButtonUseCase: UpdateNotificationsButtonUseCase,
     connectivityUseCase: HandleConnectivityUseCase
 ) : ViewModel() {
 
@@ -38,6 +51,12 @@ class HomeScreenViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000)
     )
 
+    val notificationsButtonState = updateNotificationsButtonUseCase.notificationsUiState.stateIn(
+        scope = viewModelScope,
+        initialValue = NotificationsButtonState(),
+        started = SharingStarted.WhileSubscribed(5_000)
+    )
+
     val connectivityStatusFlow: StateFlow<ConnectivityObserver.Status> =
         connectivityUseCase().stateIn(
             scope = viewModelScope,
@@ -46,7 +65,17 @@ class HomeScreenViewModel @Inject constructor(
         )
 
     fun logout(activity: FragmentActivity) {
-        logoutUseCase(activity)
+        handleLogoutUseCase(activity)
+    }
+
+    fun updateNotificationsButtonState(value: Boolean) = updateNotificationsButtonUseCase(value)
+
+    fun setAppLanguage(context: Context, value: String) {
+        viewModelScope.launch {
+            context.dataStore2.edit { settings ->
+                settings[languageSelected] = value
+            }
+        }
     }
 
     private fun deleteNote(noteId: ObjectId) {

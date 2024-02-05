@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/edit_voice_control"
+        android:contentDescription="@string/voice_control"
+        android:icon="@drawable/mic"
+        android:title="@string/voice_control"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/edit_image_control"
+        android:contentDescription="@string/image_control"
+        android:icon="@drawable/picture"
+        android:title="@string/image_control"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/edit_gemini_control"
+        android:contentDescription="@string/gemini_control"
+        android:icon="@drawable/gemini"
+        android:title="@string/gemini_control"
+        app:showAsAction="ifRoom" />
+</menu>

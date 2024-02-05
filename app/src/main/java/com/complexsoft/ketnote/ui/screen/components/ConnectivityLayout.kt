@@ -16,7 +16,7 @@ fun switchConnectivityObserverLayoutColor(
                 it1, R.color.md_theme_light_tertiary
             )
         }.let { it2 ->
-            loginConnectivityLayout.connectivityLayout.setBackgroundColor(
+            loginConnectivityLayout.connectivityLayout.setCardBackgroundColor(
                 it2
             )
         }
@@ -26,7 +26,7 @@ fun switchConnectivityObserverLayoutColor(
                 it1, R.color.md_theme_light_error
             )
         }.let { it2 ->
-            loginConnectivityLayout.connectivityLayout.setBackgroundColor(
+            loginConnectivityLayout.connectivityLayout.setCardBackgroundColor(
                 it2
             )
         }
