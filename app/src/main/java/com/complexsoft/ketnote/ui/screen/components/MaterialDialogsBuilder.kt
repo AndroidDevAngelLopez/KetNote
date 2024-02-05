@@ -34,7 +34,7 @@ fun createRadioButtonDialog(
         dialog.dismiss()
     }?.setSingleChoiceItems(
         arrayOf(english, spanish), getCheckedItem
-    ) { dialog, which ->
+    ) { _, which ->
         when (which) {
             0 -> {
                 onEnglishAction()

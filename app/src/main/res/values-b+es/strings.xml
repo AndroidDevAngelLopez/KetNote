@@ -65,4 +65,25 @@
     <string name="signal_restored">Conexion establecida!</string>
     <string name="you_lost_signal">Perdiste la conexion!</string>
     <string name="image_preview">Vista Previa</string>
+    <string name="home_greeting">Hola Angel! Mantente Productivo Hoy.</string>
+    <string name="home_last_notes">Ultimas Notas</string>
+    <string name="settings_title">Configuracion</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="home_pinned_notes">Notas Fijadas</string>
+    <string name="home_active_task">Tareas Activas</string>
+    <string name="home_active_reminders">Recordatorios Activos</string>
+    <string name="note_tab">Nota</string>
+    <string name="task_tab">Tarea</string>
+    <string name="story_tab">Historia</string>
+    <string name="create_layout_page">Crear Nuevo</string>
+    <string name="see_more">Ver todo</string>
+    <string name="voice_control">Control de voz</string>
+    <string name="image_control">Añadir Imagen</string>
+    <string name="gemini_control">Gemini</string>
+    <string name="edit_screen_title">Editar Nota</string>
+    <string name="home_stories">Historias</string>
+    <string name="home_last_stories">Ultimas Historias</string>
+    <string name="notifications_clear_all">Borrar Todas</string>
+    <string name="share_instagram">Compartir a Instagram</string>
+    <string name="story_title">Escribe un titulo para tu historia.</string>
 </resources>

@@ -2,13 +2,16 @@ package com.complexsoft.ketnote.ui.screen.login
 
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.complexsoft.ketnote.data.network.connectivity.ConnectivityObserver
-import com.complexsoft.ketnote.data.network.firebase.OneTapConstants
 import com.complexsoft.ketnote.domain.usecases.GetActivityForResultUseCase
 import com.complexsoft.ketnote.domain.usecases.HandleConnectivityUseCase
 import com.complexsoft.ketnote.domain.usecases.StartLoginWithGoogleUseCase
+import com.complexsoft.ketnote.ui.screen.utils.UIConstants.AUTH
+import com.complexsoft.ketnote.ui.screen.utils.UIConstants.SIGNINREQUEST
+import com.complexsoft.ketnote.ui.screen.utils.UIConstants.TAG
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,20 +32,20 @@ class LoginViewModel @Inject constructor(
     )
 
     fun startLoggingWithGoogle(
-        activity: LoginScreen, activityForResult: ActivityResultLauncher<IntentSenderRequest>
+        fragment: Fragment, activityForResult: ActivityResultLauncher<IntentSenderRequest>
     ) = startLoginWithGoogleUseCase(
-        activity,
-        activity.let { Identity.getSignInClient(it.requireActivity()) },
-        OneTapConstants.signInRequest,
+        fragment,
+        fragment.let { Identity.getSignInClient(it.requireActivity()) },
+        SIGNINREQUEST,
         activityForResult,
-        OneTapConstants.TAG
+        TAG
     )
 
-    fun getActivityForResult(activity: LoginScreen): ActivityResultLauncher<IntentSenderRequest> =
+    fun getActivityForResult(fragment: Fragment): ActivityResultLauncher<IntentSenderRequest> =
         getActivityForResultUseCase(
-            oneTapClient = activity.let { Identity.getSignInClient(it.requireActivity()) },
-            OneTapConstants.auth,
-            activity,
-            OneTapConstants.TAG
+            oneTapClient = fragment.let { Identity.getSignInClient(it.requireActivity()) },
+            AUTH,
+            fragment,
+            TAG
         )
 }

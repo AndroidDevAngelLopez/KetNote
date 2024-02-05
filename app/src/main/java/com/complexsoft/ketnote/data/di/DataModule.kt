@@ -29,4 +29,5 @@ interface DataModule {
     fun provideConnectivityObserver(
         networkConnectivityObserver: NetworkConnectivityObserver
     ): ConnectivityObserver
+
 }

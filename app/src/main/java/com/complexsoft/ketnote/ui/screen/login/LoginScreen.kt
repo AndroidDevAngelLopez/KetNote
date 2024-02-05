@@ -1,7 +1,6 @@
 package com.complexsoft.ketnote.ui.screen.login
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
@@ -39,13 +38,8 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = LoginScreenLayoutBinding.bind(view)
         activityForResult = viewModel.getActivityForResult(this)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = LoginScreenLayoutBinding.inflate(layoutInflater)
         ViewCompat.setOnApplyWindowInsetsListener(binding.loginConstraint) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -130,7 +124,6 @@ class LoginScreen : Fragment(R.layout.login_screen_layout) {
         binding.loginButton.setOnClickListener {
             viewModel.startLoggingWithGoogle(this, activityForResult)
         }
-        return binding.root
     }
 
     private fun loginButtonStatus(isAvailable: Boolean) {

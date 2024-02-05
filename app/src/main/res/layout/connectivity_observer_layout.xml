@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/connectivity_layout"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/md_theme_light_tertiary">
+    app:cardBackgroundColor="@color/md_theme_light_tertiary"
+    app:contentPadding="6dp"
+    app:cardUseCompatPadding="true"
+    style="@style/Widget.Material3.CardView.Elevated">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/connectivity_layout_message"
         style="@style/TextAppearance.Material3.TitleLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/md_theme_light_onSecondary"
         android:gravity="center"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+        android:text="@string/all_notes_will_be_deleted"
+        android:textAlignment="center" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

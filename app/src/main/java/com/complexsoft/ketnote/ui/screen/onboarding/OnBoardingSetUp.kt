@@ -1,7 +1,6 @@
 package com.complexsoft.ketnote.ui.screen.onboarding
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -20,10 +19,9 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
     private lateinit var binding: SetupOnboardingLayoutBinding
     private lateinit var onBoardingAdapter: OnBoardingAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = SetupOnboardingLayoutBinding.inflate(layoutInflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = SetupOnboardingLayoutBinding.bind(view)
         ViewCompat.setOnApplyWindowInsetsListener(binding.onboardingConstraint) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -72,7 +70,6 @@ class OnBoardingSetUp : Fragment(R.layout.setup_onboarding_layout) {
                 }
             }
         })
-        return binding.root
     }
 }
 

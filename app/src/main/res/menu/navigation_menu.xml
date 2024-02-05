@@ -7,6 +7,11 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
+                    android:id="@+id/settings_item"
+                    android:checkable="true"
+                    android:icon="@drawable/baseline_settings_24"
+                    android:title="@string/settings_title" />
+                <item
                     android:id="@+id/delete_all_item"
                     android:checkable="true"
                     android:icon="@drawable/baseline_delete_24"

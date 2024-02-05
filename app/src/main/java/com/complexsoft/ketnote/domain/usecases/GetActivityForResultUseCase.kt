@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import com.complexsoft.ketnote.data.repository.MongoDBAPP
-import com.complexsoft.ketnote.ui.screen.login.LoginScreen
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 
 class GetActivityForResultUseCase {
     operator fun invoke(
-        oneTapClient: SignInClient, auth: FirebaseAuth, activity: LoginScreen, tag: String
+        oneTapClient: SignInClient, auth: FirebaseAuth, fragment: Fragment, tag: String
     ): ActivityResultLauncher<IntentSenderRequest> {
-        return activity.registerForActivityResult(
+        return fragment.registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
             val task: SignInCredential = oneTapClient.getSignInCredentialFromIntent(result.data)
@@ -31,7 +31,7 @@ class GetActivityForResultUseCase {
                     CoroutineScope(Dispatchers.IO).launch {
                         val firebaseCredential = GoogleAuthProvider.getCredential(token, null)
                         auth.signInWithCredential(firebaseCredential)
-                            .addOnCompleteListener(activity.requireActivity()) { task ->
+                            .addOnCompleteListener(fragment.requireActivity()) { task ->
                                 if (task.isSuccessful) {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         runCatching {

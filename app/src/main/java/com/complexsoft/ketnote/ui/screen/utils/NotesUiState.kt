@@ -1,7 +1,7 @@
 package com.complexsoft.ketnote.ui.screen.utils
 
+import android.net.Uri
 import com.complexsoft.ketnote.data.model.Note
-import kotlinx.coroutines.flow.Flow
 
 sealed interface NotesUiState {
     data object Loading : NotesUiState
@@ -10,9 +10,9 @@ sealed interface NotesUiState {
 }
 
 data class NoteUiState(
-    val title: String = "", val text: String = "", val image: String = ""
+    val title: String = "", val text: String = "", val image: Uri = Uri.EMPTY
 )
 
 data class NoteJobUiState(
-    val value : Boolean = false
+    val value: Boolean = false
 )
