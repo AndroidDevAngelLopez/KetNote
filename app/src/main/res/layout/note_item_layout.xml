@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Widget.Material3.CardView.Outlined"
+    style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="12dp"
     android:checkable="true"
     android:clickable="true"
     android:focusable="true"
@@ -13,57 +16,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/note_item_layout_image_container"
+        <ImageView
+            android:id="@+id/note_item_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="160dp"
+            android:contentDescription="TODO"
+            android:scaleType="centerCrop"
+            android:src="@drawable/first"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0">
-
-            <ImageView
-                android:id="@+id/note_item_image"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:contentDescription="TODO"
-                android:scaleType="centerCrop"
-                android:src="@drawable/first" />
-        </com.google.android.material.card.MaterialCardView>
-
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_title"
-            style="@style/TextAppearance.Material3.HeadlineSmall"
+            style="@style/TextAppearance.Material3.HeadlineMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
+            android:padding="16dp"
             android:text="@string/app_title"
-            android:padding="6dp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/note_item_date"
-            app:layout_constraintVertical_bias="0"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/note_item_image"
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_date"
-            style="@style/TextAppearance.Material3.BodyLarge"
+            style="@style/TextAppearance.Material3.BodySmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:text="@string/app_date"
-            android:padding="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.9"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/note_item_layout_image_container"
-            />
-
+            app:layout_constraintTop_toBottomOf="@+id/note_item_title"
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_item_text"
@@ -71,14 +65,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:padding="6dp"
             android:maxLines="6"
+            android:padding="16dp"
             android:text="@string/app_text_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/note_item_title"
-            />
+            app:layout_constraintTop_toBottomOf="@id/note_item_date" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
