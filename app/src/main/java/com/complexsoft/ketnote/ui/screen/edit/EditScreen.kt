@@ -72,7 +72,13 @@ class EditScreen : Fragment(R.layout.edit_screen_layout) {
         }
         val speechToGeminiLauncher = viewModel.openGemini(this, noteFetched.images) {
             CoroutineScope(Dispatchers.Main).launch {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                if (binding.editScreenTitle.isFocused) binding.editScreenTitle.setText(it)
+                else if (binding.editScreenText.isFocused) binding.editScreenText.setText(
+                    it
+                ) else Toast.makeText(
+                    requireContext(),
+                    "You Must select either title or text to set generated text!"
+                ,Toast.LENGTH_SHORT).show()
             }
         }
 

@@ -1,9 +1,9 @@
 package com.complexsoft.ketnote.data.repository
 
+import com.complexsoft.ketnote.BuildConfig
 import com.complexsoft.ketnote.data.model.Note
 import com.complexsoft.ketnote.data.model.NotificationItem
 import com.complexsoft.ketnote.data.repository.MongoDBAPP.app
-import com.complexsoft.ketnote.utils.PasswordsConstants.APP_ID
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.log.LogLevel
@@ -17,7 +17,7 @@ import org.mongodb.kbson.ObjectId
 
 
 object MongoDBAPP {
-    var app: App = App.create(APP_ID)
+    var app: App = App.create(BuildConfig.APP_ID)
 }
 
 object MongoDB : MongoRepository {
@@ -79,8 +79,9 @@ object MongoDB : MongoRepository {
 
     override suspend fun deleteAllNotifications() {
         realm.write {
-            val notifications: RealmResults<NotificationItem>? =
-                app.currentUser?.let { this.query<NotificationItem>(query = "owner_id == $0", it.id).find() }
+            val notifications: RealmResults<NotificationItem>? = app.currentUser?.let {
+                this.query<NotificationItem>(query = "owner_id == $0", it.id).find()
+            }
             if (notifications != null) {
                 delete(notifications)
             }

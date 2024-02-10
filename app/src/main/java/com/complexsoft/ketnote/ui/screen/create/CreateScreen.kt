@@ -73,7 +73,11 @@ class CreateScreen : Fragment(R.layout.create_screen_layout) {
                 if (binding.noteTitle.isFocused) binding.noteTitle.setText(it)
                 else if (binding.noteText.isFocused) binding.noteText.setText(
                     it
-                )
+                ) else Toast.makeText(
+                    requireContext(),
+                    "You Must select either title or text to set generated text!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

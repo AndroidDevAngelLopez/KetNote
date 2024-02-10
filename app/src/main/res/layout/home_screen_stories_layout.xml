@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.CardView.Filled"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:checkable="true"
     android:clickable="true"
     android:focusable="true"
-    app:cardUseCompatPadding="true"
-    android:layout_margin="6dp"
-    style="@style/Widget.Material3.CardView.Elevated">
+    app:cardBackgroundColor="#00FFFFFF"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/stories_item_image_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/stories_item_image"
-            android:layout_width="match_parent"
-            android:layout_height="540dp"
-            android:contentDescription="TODO"
-            android:scaleType="center"
-            android:src="@drawable/first" />
-    </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/stories_item_title"
-        style="@style/TextAppearance.Material3.BodyMedium"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:background="#80000000"
-        android:textColor="#fafafa"
-        android:maxLines="1"
-        android:text="@string/app_title"
-        android:padding="12dp"
-        android:textStyle="bold"
-        android:layout_gravity="bottom"/>
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stories_item_image_container"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            app:cardCornerRadius="60dp">
+
+            <ImageView
+                android:id="@+id/stories_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="TODO"
+                android:scaleType="center"
+                android:src="@drawable/first" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/stories_item_title"
+            style="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:text="@string/app_title"
+            />
+
+    </LinearLayout>
+
 
 </com.google.android.material.card.MaterialCardView>

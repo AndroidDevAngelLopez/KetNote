@@ -8,9 +8,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.complexsoft.ketnote.ui.screen.utils.UIConstants
+import com.complexsoft.ketnote.BuildConfig
 import com.complexsoft.ketnote.ui.screen.utils.UIConstants.TEXTTOSPEECH
-import com.complexsoft.ketnote.utils.Constants.GEMINI_API_KEY
 import com.complexsoft.ketnote.utils.Constants.GEMINI_IMAGE_MODEL
 import com.complexsoft.ketnote.utils.Constants.GEMINI_MODEL
 import com.google.ai.client.generativeai.GenerativeModel
@@ -38,7 +37,7 @@ class GeminiUseCase {
                             // For text-and-image input (multimodal), use the gemini-pro-vision model
                             modelName = GEMINI_IMAGE_MODEL,
                             // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-                            apiKey = GEMINI_API_KEY
+                            apiKey = BuildConfig.GEMINI_API_KEY
                         )
                         var fullResponse = ""
                         val inputContent = content {
@@ -57,7 +56,7 @@ class GeminiUseCase {
                 } else {
                     CoroutineScope(Dispatchers.IO).launch {
                         val generativeModel = GenerativeModel(
-                            modelName = GEMINI_MODEL, apiKey = GEMINI_API_KEY
+                            modelName = GEMINI_MODEL, apiKey = BuildConfig.GEMINI_API_KEY
                         )
                         val response = generativeModel.generateContent(matches[0])
                         TEXTTOSPEECH.speak(

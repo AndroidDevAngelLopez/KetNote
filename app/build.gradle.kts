@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -19,7 +21,15 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        //APP_ID
+        val appId = gradleLocalProperties(rootDir).getProperty("APP_ID") ?: ""
+        buildConfigField("String" , "APP_ID" ,  "\"$appId\"")
+        //GEMINI_API_KEY
+        val geminiApiKey = gradleLocalProperties(rootDir).getProperty("GEMINI_API_KEY") ?: ""
+        buildConfigField("String" , "GEMINI_API_KEY" ,  "\"$geminiApiKey\"")
+        //WEB CLIENT
+        val webClient = gradleLocalProperties(rootDir).getProperty("WEB_CLIENT") ?: ""
+        buildConfigField("String" , "WEB_CLIENT" ,  "\"$webClient\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,6 +50,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     androidResources {
         generateLocaleConfig = true
@@ -76,11 +87,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     //Navigation
-    val navVersion = "2.7.6"
+    val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
     //Fragments
-    val fragmentVersion = "1.7.0-alpha09"
+    val fragmentVersion = "1.7.0-alpha10"
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     //Recyclerview
     implementation("androidx.recyclerview:recyclerview:1.3.2")
@@ -111,7 +122,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

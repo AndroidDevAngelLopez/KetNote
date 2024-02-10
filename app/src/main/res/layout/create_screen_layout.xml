@@ -76,7 +76,6 @@
                             android:gravity="start"
                             android:hint="@string/text"
                             android:inputType="textCapSentences|text|textMultiLine|textAutoCorrect|textAutoComplete"
-                            android:maxLength="520"
                             android:minLines="12"
                             android:textIsSelectable="true" />
                     </com.google.android.material.textfield.TextInputLayout>

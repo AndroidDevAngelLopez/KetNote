@@ -33,8 +33,8 @@ import com.complexsoft.ketnote.ui.screen.components.createRadioButtonDialog
 import com.complexsoft.ketnote.ui.screen.components.createSimpleDialog
 import com.complexsoft.ketnote.ui.screen.components.switchConnectivityObserverLayoutColor
 import com.complexsoft.ketnote.ui.screen.utils.NotesUiState
-import com.complexsoft.ketnote.ui.screen.utils.adapters.StoriesAdapter
 import com.complexsoft.ketnote.ui.screen.utils.adapters.NotesAdapter
+import com.complexsoft.ketnote.ui.screen.utils.adapters.StoriesAdapter
 import com.complexsoft.ketnote.utils.Constants.APP_VERSION
 import com.google.android.material.carousel.CarouselLayoutManager
 import com.google.android.material.carousel.CarouselSnapHelper
@@ -198,27 +198,34 @@ class HomeScreen : Fragment(R.layout.home_screen_layout) {
                         when (state) {
                             is NotesUiState.Success -> {
                                 if (state.data.isNotEmpty()) {
-                                    binding.homeDividerNotes.visibility = View.VISIBLE
-                                    val newSubList = state.data.filter {
+                                    val storiesList = state.data.filter {
                                         it.images.isNotEmpty()
                                         it.text.isEmpty()
                                     }
-                                    if (newSubList.size <= 5) {
-                                        storiesAdapter.updateList(newSubList)
+                                    val notesList = state.data.minus(storiesList.toSet())
+                                    if (computeWindowSizeClasses().heightWindowSizeClass != WindowHeightSizeClass.COMPACT) {
+                                        //portrait mode
+                                        if (storiesList.size <= 5) {
+                                            storiesAdapter.updateList(storiesList)
+                                        } else {
+                                            storiesAdapter.updateList(storiesList.subList(0, 5))
+                                        }
+                                        if (notesList.size <= 5) {
+                                            notesAdapter.updateList(notesList)
+                                        } else {
+                                            notesAdapter.updateList(
+                                                notesList.subList(0, 5)
+                                            )
+                                        }
                                     } else {
-                                        storiesAdapter.updateList(newSubList.subList(0, 5))
-                                    }
-                                    if (state.data.size <= 5) {
-                                        notesAdapter.updateList(state.data.minus(newSubList.toSet()))
-                                    } else {
-                                        notesAdapter.updateList(
-                                            state.data.minus(newSubList.toSet()).subList(0, 5)
-                                        )
+                                        //landscape
+                                        storiesAdapter.updateList(storiesList)
+                                        notesAdapter.updateList(notesList)
                                     }
                                     binding.homeScreenMessage.visibility = View.GONE
                                     binding.homeScreenProgressIndicator.visibility = View.GONE
                                 } else {
-                                    binding.homeDividerNotes.visibility = View.GONE
+                                    // binding.homeDividerNotes.visibility = View.GONE
                                     EmptyUI(
                                         fragment = this@HomeScreen,
                                         homeScreenLayoutBinding = binding
