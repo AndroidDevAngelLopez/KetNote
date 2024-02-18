@@ -1,5 +1,5 @@
 # KetNote
-<img src='./first.png' width=100%>
+<img src='./newfirst.png' width=100%>
 
 
 It is a simple Todo-App where you can save, edit and delete your favorite notes. In addition to being able to add an image if you wish.
@@ -12,7 +12,7 @@ App details:
 - the app uses the latest jetpack component libraries such as Room,Hilt,Material 3, Navigation component, View Binding,
 - uses third-party libraries and apis such as Glide,Mongo Realm,Firebase(auth,storage,crashlytics)
 
-<img src='./second.png' width=100%>
+<img src='./newsecond.png' width=100%>
 
 Goals:
 
